@@ -1,0 +1,6 @@
+name: arduino-api
+
+build:
+  cmake: .
+  kconfig: Kconfig
+
