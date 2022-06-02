@@ -13,3 +13,6 @@ Maintainers:
 
 Contributor(s):
 DhruvaG2000
+
+## License
+Please note that the current license is [LGPL 2.1](https://github.com/zephyrproject-rtos/gsoc-2022-arduino-core/blob/dev/LICENSE) before using it in your applications. Due to [licensing requirements](https://docs.zephyrproject.org/latest/contribute/external.html#) of the Zephyr project, this module cannot be included in the official distribution of Zephyr at this time and the maintainers of this repository have no plans to do so.
