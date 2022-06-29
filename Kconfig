@@ -1,0 +1,39 @@
+#
+# Copyright (c) 2020 Toita, Hiroshi
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+config ARDUINO_API
+	bool "ARDUINO_API"
+	depends on CPLUSPLUS
+	default n
+
+if ARDUINO_API
+
+config ARDUINO_MAIN_LOOP
+	bool "ARDUINO_MAIN_LOOP"
+	default n
+
+config ARDUINO_GPIO
+	bool "ARDUINO_API"
+	depends on GPIO
+	default y
+
+config ARDUINO_QUERY_PIN_CONFIG
+	bool
+	depends on ARDUINO_GPIO
+	default n
+
+config ARDUINO_UART
+	bool "ARDUINO_API"
+	depends on SERIAL
+	depends on UART_INTERRUPT_DRIVEN
+	default y
+
+config QEMU_ICOUNT
+	bool "QEMU icount mode"
+	default n
+	depends on QEMU_TARGET
+
+endif
