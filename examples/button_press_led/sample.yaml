@@ -1,9 +1,5 @@
 sample:
-<<<<<<< HEAD
   name: Button Press Sample
-=======
-  name: Blinky Sample
->>>>>>> ba84fd8 (gpio: adds basic digital i/o support)
 tests:
   sample.basic.blinky:
     tags: LED gpio
