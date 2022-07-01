@@ -1,4 +1,8 @@
-/* Blink inbuilt LED example */
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* Button Press turns on inbuilt LED example */
 
 #include <Arduino.h>
 

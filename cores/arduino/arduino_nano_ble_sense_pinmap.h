@@ -1,6 +1,11 @@
 /*
-All the pins that are 100 + x are gpio1 pins and < 100 are in gpio0
-*/
+ * Copyright (c) 2022 Dhruva Gole
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* All the pins that are 100 + x are gpio1 pins and < 100 are in gpio0 */
+
 #define LED_BUILTIN 13
 
 enum digitalPins {
