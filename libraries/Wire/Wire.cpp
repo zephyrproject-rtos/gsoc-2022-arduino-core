@@ -19,7 +19,7 @@ void arduino::ZephyrI2C::end() {}
 
 void arduino::ZephyrI2C::setClock(uint32_t freq) {}
 
-void arduino::ZephyrI2C::beginTransmission(uint8_t address) { // TODO for ADS1115
+void arduino::ZephyrI2C::beginTransmission(uint8_t address) {
   _address = address;
   usedTxBuffer = 0;
 }
@@ -32,7 +32,7 @@ uint8_t arduino::ZephyrI2C::endTransmission(bool stopBit) {
   return 0;
 }
 
-uint8_t arduino::ZephyrI2C::endTransmission(void) { // TODO for ADS1115
+uint8_t arduino::ZephyrI2C::endTransmission(void) {
   return endTransmission(true);
 }
 
@@ -53,11 +53,11 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
   return len;
 }
 
-size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len) { // TODO for ADS1115
+size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len) {
   return requestFrom(address, len, true);
 }
 
-size_t arduino::ZephyrI2C::write(uint8_t data) {  // TODO for ADS1115
+size_t arduino::ZephyrI2C::write(uint8_t data) {
   txBuffer[usedTxBuffer++] = data;
   return 1;
 }
@@ -79,11 +79,11 @@ int arduino::ZephyrI2C::read() {
   return rxBuffer[0];
 }
 
-int arduino::ZephyrI2C::available() { // TODO for ADS1115 
+int arduino::ZephyrI2C::available() { // TODO
   return 1; 
   }
 
-int arduino::ZephyrI2C::peek() { return 1; }
+int arduino::ZephyrI2C::peek() { return 1; }   // TODO
 
 void arduino::ZephyrI2C::flush() {}
 
