@@ -29,6 +29,10 @@ $ git clone git@github.com:arduino/ArduinoCore-API # Any location
 $ ln -s /<your>/<location>/ArduinoCore-API/api cores/arduino/.
 ```
 
+**Known Bugs:**
+While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. It needs to be deleted from ArduinoAPI.h (it is unused in this port.) We are looking into resolving the issue.
+
+
 **Maintainers**:
 - beriberikix
 - szczys 
