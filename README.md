@@ -34,9 +34,9 @@ While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. It
 
 
 **Maintainers**:
-- beriberikix
-- szczys 
-- alvarowolfx
+- [beriberikix](https://github.com/beriberikix)
+- [szczys](https://github.com/szczys) 
+- [alvarowolfx](https://github.com/alvarowolfx)
 
 **Contributor**: [DhruvaG2000](https://github.com/DhruvaG2000)
 
