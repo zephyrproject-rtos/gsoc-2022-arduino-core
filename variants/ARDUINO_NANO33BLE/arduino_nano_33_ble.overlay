@@ -1,0 +1,26 @@
+/ {
+	zephyr,user {
+        a0_gpios = <&arduino_nano_header 0 0>;
+		a1_gpios = <&arduino_nano_header 1 0>;
+		a2_gpios = <&arduino_nano_header 2 0>;
+        a3_gpios = <&arduino_nano_header 3 0>;
+		a4_gpios = <&arduino_nano_header 4 0>;
+		a5_gpios = <&arduino_nano_header 5 0>;
+		d0_gpios = <&arduino_nano_header 6 0>;
+		d1_gpios = <&arduino_nano_header 7 0>;
+		d2_gpios = <&arduino_nano_header 8 0>;
+        d3_gpios = <&arduino_nano_header 9 0>;
+		d4_gpios = <&arduino_nano_header 10 0>;
+		d5_gpios = <&arduino_nano_header 11 0>;
+        d6_gpios = <&arduino_nano_header 12 0>;
+		d7_gpios = <&arduino_nano_header 13 0>;
+		d8_gpios = <&arduino_nano_header 14 0>;
+        d9_gpios = <&arduino_nano_header 15 0>;
+		d10_gpios = <&arduino_nano_header 16 0>;
+		d11_gpios = <&arduino_nano_header 17 0>;
+        d12_gpios = <&arduino_nano_header 18 0>;
+        d13_gpios = <&arduino_nano_header 19 0>;
+		d14_gpios = <&arduino_nano_header 20 0>;
+		d15_gpios = <&arduino_nano_header 21 0>;
+	};
+};

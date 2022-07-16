@@ -5,13 +5,22 @@
  */
 
 /* All the pins that are 100 + x are gpio1 pins and < 100 are in gpio0 */
+#pragma once
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/zephyr.h>
 
 #define LED_BUILTIN 13
 
+static struct gpio_dt_spec d0 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d0_gpios);
+static struct gpio_dt_spec d1 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d1_gpios);
+static struct gpio_dt_spec d2 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d2_gpios);
+
+static struct gpio_dt_spec *arduino_pins[3] = { &d0, &d1, &d2 };
+
 enum digitalPins {
-  D0 = 103,
-  D1 = 110,
-  D2 = 111,
+  D0 = 3,
+  D1 = 10,
+  D2 = 11,
   D3 = 112,
   D4 = 115,
   D5 = 113,
