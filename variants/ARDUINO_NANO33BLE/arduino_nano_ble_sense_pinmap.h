@@ -14,30 +14,70 @@
 static struct gpio_dt_spec d0 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d0_gpios);
 static struct gpio_dt_spec d1 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d1_gpios);
 static struct gpio_dt_spec d2 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d2_gpios);
+static struct gpio_dt_spec d3 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d3_gpios);
+static struct gpio_dt_spec d4 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d4_gpios);
+static struct gpio_dt_spec d5 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d5_gpios);
+static struct gpio_dt_spec d6 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d6_gpios);
+static struct gpio_dt_spec d7 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d7_gpios);
+static struct gpio_dt_spec d8 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d8_gpios);
+static struct gpio_dt_spec d9 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d9_gpios);
+static struct gpio_dt_spec d10 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d10_gpios);
+static struct gpio_dt_spec d11 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d11_gpios);
+static struct gpio_dt_spec d12 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d12_gpios);
+static struct gpio_dt_spec d13 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d13_gpios);
+static struct gpio_dt_spec d14 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d13_gpios);
+static struct gpio_dt_spec d15 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d15_gpios);
+static struct gpio_dt_spec d16 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d16_gpios);
+static struct gpio_dt_spec d17 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d17_gpios);
+static struct gpio_dt_spec d18 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d18_gpios);
+static struct gpio_dt_spec d19 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d19_gpios);
+static struct gpio_dt_spec d20 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d20_gpios);
+static struct gpio_dt_spec d21 =
+    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d21_gpios);
 
-static struct gpio_dt_spec *arduino_pins[3] = { &d0, &d1, &d2 };
+static struct gpio_dt_spec *arduino_pins[22] = {
+    &d0,  &d1,  &d2,  &d3,  &d4,  &d5,  &d6,  &d7,  &d8,  &d9,  &d10,
+    &d11, &d12, &d13, &d14, &d15, &d16, &d17, &d18, &d19, &d20, &d21};
 
 enum digitalPins {
-  D0 = 3,
-  D1 = 10,
-  D2 = 11,
-  D3 = 112,
-  D4 = 115,
-  D5 = 113,
-  D6 = 114,
-  D7 = 9,
-  D8 = 10,
-  D9 = 27,
-  D10 = 102,
-  D11 = 101,
-  D12 = 108,
-  D13 = 13,
-  D14 = 4,
-  D15 = 5,
-  D16 = 30,
-  D17 = 29,
-  D18 = 14,
-  D19 = 15,
-  D20 = 28,
-  D21 = 103
+  D0,
+  D1,
+  D2,
+  D3,
+  D4,
+  D5,
+  D6,
+  D7,
+  D8,
+  D9,
+  D10,
+  D11,
+  D12,
+  D13,
+  D14,
+  D15,
+  D16,
+  D17,
+  D18,
+  D19,
+  D20,
+  D21
 };
