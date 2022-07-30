@@ -6,28 +6,28 @@
 
 #include "Arduino.h"
 
+/*
+ *  We have initialised all pins by default to pull down
+ *  inorder to not have random floating voltages in pins
+ *  The ACTIVE_HIGH flag is set so that A low physical
+ *  level on the pin will be interpreted as value 0.
+ *  A high physical level will be interpreted as value 1
+ */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
   if (pinMode == INPUT || pinMode == INPUT_PULLDOWN) { // input mode
     gpio_pin_configure_dt(arduino_pins[pinNumber],
-                          GPIO_INPUT | GPIO_ACTIVE_LOW);
+                          GPIO_INPUT | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
   } else { // output mode
-    gpio_pin_configure_dt(arduino_pins[pinNumber], GPIO_OUTPUT);
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_OUTPUT_LOW | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
   }
 }
 
 void digitalWrite(pin_size_t pinNumber, PinStatus status) {
-  if (status == HIGH) {
-    gpio_pin_set_dt(arduino_pins[pinNumber], GPIO_ACTIVE_HIGH);
-  } else if (status == LOW) {
-    gpio_pin_set_dt(arduino_pins[pinNumber], GPIO_ACTIVE_LOW);
-  }
+  gpio_pin_set_dt(arduino_pins[pinNumber], status);
 }
 
 PinStatus digitalRead(pin_size_t pinNumber) {
-  if (pinNumber >= 100) {
-    pinNumber -= 100;
-    return (gpio_pin_get_dt(arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
-  }
   return (gpio_pin_get_dt(arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
 

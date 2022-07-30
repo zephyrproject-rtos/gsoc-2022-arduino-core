@@ -14,8 +14,7 @@
 static struct gpio_dt_spec d0 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d0_gpios);
 static struct gpio_dt_spec d1 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d1_gpios);
 static struct gpio_dt_spec d2 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d2_gpios);
-static struct gpio_dt_spec d3 =
-    GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d3_gpios);
+static struct gpio_dt_spec d3 = GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d3_gpios);
 static struct gpio_dt_spec d4 =
     GPIO_DT_SPEC_GET(DT_PATH(zephyr_user), d4_gpios);
 static struct gpio_dt_spec d5 =
