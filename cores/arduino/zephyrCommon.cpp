@@ -7,17 +7,21 @@
 #include "Arduino.h"
 
 /*
- *  We have initialised all pins by default to pull down
- *  inorder to not have random floating voltages in pins
  *  The ACTIVE_HIGH flag is set so that A low physical
  *  level on the pin will be interpreted as value 0.
  *  A high physical level will be interpreted as value 1
  */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
-  if (pinMode == INPUT || pinMode == INPUT_PULLDOWN) { // input mode
+  if (pinMode == INPUT) { // input mode
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_INPUT | GPIO_ACTIVE_HIGH);
+  } else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_INPUT | GPIO_PULL_UP | GPIO_ACTIVE_HIGH);
+  } else if (pinMode == INPUT_PULLDOWN) { // input with internal pull-down
     gpio_pin_configure_dt(arduino_pins[pinNumber],
                           GPIO_INPUT | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
-  } else { // output mode
+  } else if (pinMode == OUTPUT) { // output mode
     gpio_pin_configure_dt(arduino_pins[pinNumber],
                           GPIO_OUTPUT_LOW | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
   }
