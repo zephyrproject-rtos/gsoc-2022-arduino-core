@@ -8,7 +8,7 @@ Arduino Core API module for zephyr leverages the power of Zephyr under an Arduin
 
 ## Adding Arduino Core API to Zephyr
 
-* **Pre requisites:** It is assumed that you have zephyrproject configured and installed on your system as per the official [Get Started Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html). The recommended path to install is `~/zephyrproject` as specified in the guide. You may face path issues if you have zephyr installed in a custom path.
+* **Pre requisites:** It is assumed that you have zephyrproject configured and installed on your system as per the official [Get Started Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html). The recommended path to install is `~/zephyrproject` as specified in the guide. If you have zephyr installed in a custom path you may need to make changes to the CMakeLists.txt file in the sample code directory when building these samples.
 
 * Add following entry to `west.yml` file in `manifest/projects` subtree of Zephyr:
 ```
@@ -32,7 +32,7 @@ $ ln -s /<your>/<location>/ArduinoCore-API/api cores/arduino/.
 ```
 
 **Known Bug(s):**
-* While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. It needs to be deleted from ArduinoAPI.h (it is unused in this port.) We are looking into resolving the issue.
+* While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. The include of that file needs to be deleted from `cores/arduino/api/ArduinoAPI.h` (it is unused in this port.) We are looking into resolving the issue.
 
 **Maintainers**:
 - [beriberikix](https://github.com/beriberikix)
