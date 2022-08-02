@@ -6,58 +6,33 @@
 
 #include "Arduino.h"
 
+/*
+ *  The ACTIVE_HIGH flag is set so that A low physical
+ *  level on the pin will be interpreted as value 0.
+ *  A high physical level will be interpreted as value 1
+ */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
-  if (pinNumber >= 100) {
-    pinNumber -= 100;
-    if (pinMode == INPUT || pinMode == INPUT_PULLDOWN) {
-      gpio_pin_configure(DEVICE_DT_GET(DT_NODELABEL(gpio1)), pinNumber,
-                         GPIO_INPUT | GPIO_ACTIVE_LOW);
-    } else {
-      gpio_pin_configure(DEVICE_DT_GET(DT_NODELABEL(gpio1)), pinNumber,
-                         GPIO_OUTPUT);
-    }
-  } else if (pinNumber < 100) {
-    if (pinMode == INPUT || pinMode == INPUT_PULLDOWN) {
-      gpio_pin_configure(DEVICE_DT_GET(DT_NODELABEL(gpio0)), pinNumber,
-                         GPIO_INPUT | GPIO_ACTIVE_LOW);
-    } else {
-      gpio_pin_configure(DEVICE_DT_GET(DT_NODELABEL(gpio0)), pinNumber,
-                         GPIO_OUTPUT);
-    }
+  if (pinMode == INPUT) { // input mode
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_INPUT | GPIO_ACTIVE_HIGH);
+  } else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_INPUT | GPIO_PULL_UP | GPIO_ACTIVE_HIGH);
+  } else if (pinMode == INPUT_PULLDOWN) { // input with internal pull-down
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_INPUT | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
+  } else if (pinMode == OUTPUT) { // output mode
+    gpio_pin_configure_dt(arduino_pins[pinNumber],
+                          GPIO_OUTPUT_LOW | GPIO_ACTIVE_HIGH);
   }
 }
 
 void digitalWrite(pin_size_t pinNumber, PinStatus status) {
-  if (pinNumber >= 100) {
-    pinNumber -= 100;
-    if (status == HIGH) {
-      gpio_pin_set(DEVICE_DT_GET(DT_NODELABEL(gpio1)), pinNumber,
-                   GPIO_ACTIVE_HIGH);
-    } else if (status == LOW) {
-      gpio_pin_set(DEVICE_DT_GET(DT_NODELABEL(gpio1)), pinNumber,
-                   GPIO_ACTIVE_LOW);
-    }
-  } else if (pinNumber < 100) {
-    if (status == HIGH) {
-      gpio_pin_set(DEVICE_DT_GET(DT_NODELABEL(gpio0)), pinNumber,
-                   GPIO_ACTIVE_HIGH);
-    } else if (status == LOW) {
-      gpio_pin_set(DEVICE_DT_GET(DT_NODELABEL(gpio0)), pinNumber,
-                   GPIO_ACTIVE_LOW);
-    }
-  }
+  gpio_pin_set_dt(arduino_pins[pinNumber], status);
 }
 
 PinStatus digitalRead(pin_size_t pinNumber) {
-  if (pinNumber >= 100) {
-    pinNumber -= 100;
-    return (gpio_pin_get(DEVICE_DT_GET(DT_NODELABEL(gpio1)), pinNumber) == 1)
-               ? HIGH
-               : LOW;
-  }
-  return (gpio_pin_get(DEVICE_DT_GET(DT_NODELABEL(gpio0)), pinNumber) == 1)
-             ? HIGH
-             : LOW;
+  return (gpio_pin_get_dt(arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
 
 void delay(unsigned long ms) { k_sleep(K_MSEC(ms)); }
