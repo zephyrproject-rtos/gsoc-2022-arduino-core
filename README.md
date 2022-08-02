@@ -4,7 +4,10 @@
 
 ## Arduino Core API module for zephyr
 
-Arduino Core API module for zephyr leverages the power of Zephyr under an Arduino-C++ style abtraction layer thus helping zephyr new-comers to start using it without worrying about learning about new APIs and libraries. Visit this project's [official blog](https://dhruvag2000.github.io/Blog-GSoC22/) for documentation.
+Arduino Core API module for zephyr leverages the power of Zephyr under an Arduino-C++ style abtraction layer thus helping zephyr new-comers to start using it without worrying about learning about new APIs and libraries. See the project documentation folder for detailed documentation on these topics:
+
+* [Using external Arduino Libraries](/documentation/arduino_libs.md)
+* [Adding custom boards/ variants](/documentation/variants.md)
 
 ## Adding Arduino Core API to Zephyr
 
@@ -44,3 +47,7 @@ The `cores` folder can be found at `~/zephyrproject/modules/lib/Arduino-Zephyr-A
 
 ## License
 Please note that the current license is Apache 2. Previously it was LGPL 2.1 but after careful review it was determined that no LGPL code or derivates was used and the more permissive license was chosen.
+
+**Additional Links**
+* [Official Project Blog](https://dhruvag2000.github.io/Blog-GSoC22/)
+* Golioth's Article: [Zephyr + Arduino: a Google Summer of Code story](https://blog.golioth.io/zephyr-arduino-a-google-summer-of-code-story/)
