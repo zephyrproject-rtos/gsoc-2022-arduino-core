@@ -25,18 +25,19 @@ Arduino Core API module for zephyr leverages the power of Zephyr under an Arduin
 west update
 ```
 
-* To "complete" the core you need to copy or symlink the api folder from [this repo](https://github.com/arduino/ArduinoCore-API.git) to the target's ``cores/arduino`` folder:
+* To "complete" the core you need to copy or symlink the api folder from the [ArduinoCore-API](https://github.com/arduino/ArduinoCore-API.git) repo to the target's ``cores/arduino`` folder:
 ```sh
 $ git clone git@github.com:arduino/ArduinoCore-API # Any location
 $ ln -s /<your>/<location>/ArduinoCore-API/api cores/arduino/.
 ```
+The `cores` folder can be found at `~/zephyrproject/modules/lib/Arduino-Zephyr-API/cores`.
 
 **Known Bug(s):**
 * While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. The include of that file needs to be deleted from `cores/arduino/api/ArduinoAPI.h` (it is unused in this port.) We are looking into resolving the issue.
 
 **Maintainers**:
-- [beriberikix](https://github.com/beriberikix)
-- [szczys](https://github.com/szczys) 
+- [szczys](https://github.com/szczys)
+- [beriberikix](https://github.com/beriberikix) 
 - [alvarowolfx](https://github.com/alvarowolfx)
 
 **Contributor**: [DhruvaG2000](https://github.com/DhruvaG2000)
