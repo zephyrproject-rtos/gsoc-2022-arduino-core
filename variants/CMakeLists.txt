@@ -2,3 +2,4 @@
 zephyr_include_directories(.)
 zephyr_include_directories(ARDUINO_NANO_33_BLE)
 zephyr_include_directories(ARDUINO_NANO_33_BLE_SENSE)
+zephyr_include_directories(ARDUINO_NANO_33_IOT)
