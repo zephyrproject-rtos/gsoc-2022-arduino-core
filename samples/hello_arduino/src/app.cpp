@@ -3,9 +3,16 @@
  */
 
 #include <Arduino.h>
+#include "zephyrSerial.h"
 
-void setup() { printk("Hello World! %s\n", CONFIG_BOARD); }
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200); // dummy as of now, need to study and refer https://docs.zephyrproject.org/latest/hardware/peripherals/uart.html
+}
 void loop() {
-  printk("\nInside Loop...\n");
+  char c = 'D';
+  Serial.print(c);
+  Serial.println("Dhruva");
   delay(1000); // 1 second delay
 }
