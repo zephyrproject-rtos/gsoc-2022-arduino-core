@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
-set(DTC_OVERLAY_FILE $ENV{HOME}/zephyrproject/modules/lib/Arduino-Zephyr-API/variants/ARDUINO_NANO_33_BLE/arduino_nano_33_ble.overlay)
+set(DTC_OVERLAY_FILE $ENV{ZEPHYR_BASE}/../modules/lib/Arduino-Zephyr-API/variants/${BOARD}/${BOARD}.overlay)
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(hello_world)
 
