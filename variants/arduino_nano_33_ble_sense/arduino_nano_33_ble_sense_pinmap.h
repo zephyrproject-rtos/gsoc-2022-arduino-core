@@ -8,8 +8,11 @@
 #pragma once
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/zephyr.h>
+<<<<<<< HEAD
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/device.h>
+=======
+>>>>>>> 3630ff9 (fix variant folders spellings)
 
 #define LED_BUILTIN 13
 
@@ -82,5 +85,8 @@ enum digitalPins {
   D20,
   D21
 };
+<<<<<<< HEAD
 
 const static struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
+=======
+>>>>>>> 3630ff9 (fix variant folders spellings)
