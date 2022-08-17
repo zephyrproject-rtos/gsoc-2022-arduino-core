@@ -13,6 +13,6 @@ void setup() {
 void loop() {
   char c = 'D';
   Serial.print(c);
-  Serial.println("Dhruva");
+  Serial.println("Hello, World!");
   delay(1000); // 1 second delay
 }
