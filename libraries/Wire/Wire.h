@@ -1,10 +1,8 @@
 #pragma once
 
-#include "api/ArduinoAPI.h"
-#include "api/HardwareI2C.h"
-#include "api/Print.h"
-#include <zephyr/drivers/i2c.h>
-#include <zephyr/device.h>
+#include <Arduino.h>
+#include <api/HardwareI2C.h>
+#include <api/Print.h>
 #include <zephyr/sys/ring_buffer.h>
 
 typedef void (*voidFuncPtrParamInt)(int);
@@ -36,12 +34,10 @@ public:
   virtual int peek();
   virtual void flush();
   virtual int available();
-  const struct device *i2c_dev;
-  static struct i2c_dt_spec bus;
 
 private:
   int _address;
-  uint8_t txBuffer[256], rxBuffer[256];
+  uint8_t txBuffer[256];
   uint32_t usedTxBuffer;
   struct rx_ring_buf{
     struct ring_buf rb;
