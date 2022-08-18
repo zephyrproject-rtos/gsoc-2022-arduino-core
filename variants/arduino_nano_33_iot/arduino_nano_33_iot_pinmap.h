@@ -8,6 +8,8 @@
 #pragma once
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/zephyr.h>
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/device.h>
 
 #define LED_BUILTIN 13
 
@@ -80,3 +82,5 @@ enum digitalPins {
   D20,
   D21
 };
+
+const static struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));

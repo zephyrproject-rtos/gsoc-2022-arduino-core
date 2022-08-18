@@ -1,7 +1,6 @@
 #include <Wire.h>
 
 void arduino::ZephyrI2C::begin() {
-  i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
   ring_buf_init(&rxRingBuffer.rb, sizeof(rxRingBuffer.buffer), rxRingBuffer.buffer);
 }
 
@@ -75,7 +74,7 @@ int arduino::ZephyrI2C::read() {
         }
 		return (int)buf[0];
   }
-  return rxBuffer[0];
+  return EXIT_FAILURE;
 }
 
 int arduino::ZephyrI2C::available() { // TODO for ADS1115 
