@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2022 Dhruva Gole <goledhruva@gmail.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/ {
+	zephyr,user {
+		d0_gpios = <&arduino_mkr_header 0 0>;
+		d1_gpios = <&arduino_mkr_header 1 0>;
+		d2_gpios = <&arduino_mkr_header 2 0>;
+		d3_gpios = <&arduino_mkr_header 3 0>;
+		d4_gpios = <&arduino_mkr_header 4 0>;
+		d5_gpios = <&arduino_mkr_header 5 0>;
+		d6_gpios = <&arduino_mkr_header 6 0>;
+		d7_gpios = <&arduino_mkr_header 7 0>;
+		d8_gpios = <&arduino_mkr_header 8 0>;
+		d9_gpios = <&arduino_mkr_header 9 0>;
+		d10_gpios = <&arduino_mkr_header 10 0>;
+		d11_gpios = <&arduino_mkr_header  11 0>;
+		d12_gpios = <&arduino_mkr_header 12 0>;
+		d13_gpios = <&arduino_mkr_header 13 0>;
+		d14_gpios = <&arduino_mkr_header 14 0>; /* D14 / A0 */
+		d15_gpios = <&arduino_mkr_header 15 0>;
+		d16_gpios = <&arduino_mkr_header 16 0>;
+		d17_gpios = <&arduino_mkr_header 17 0>;
+		d18_gpios = <&arduino_mkr_header 18 0>; /* D18 / A4 / I2C-SDA */
+		d19_gpios = <&arduino_mkr_header 19 0>; /* D19 / A5 / I2C-SCL */
+		d20_gpios = <&arduino_mkr_header 20 0>;
+		d21_gpios = <&arduino_mkr_header 21 0>;
+	};
+};
