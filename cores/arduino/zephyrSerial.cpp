@@ -12,7 +12,7 @@ size_t arduino::ZephyrSerial::print_char(char ch, bool lf){
 }
 
 size_t arduino::ZephyrSerial::print_str(const char* ptr, bool lf) {
-    printf(lf ? "%s\n" : "%s", ptr);
+    printk(lf ? "%s\n" : "%s", ptr);
     return lf ? strlen(ptr)+1 : strlen(ptr);
 }
 
@@ -33,7 +33,7 @@ size_t arduino::ZephyrSerial::println(const char* ptr){
 }
 
 size_t arduino::ZephyrSerial::println(void){
-    printf("\n");
+    printk("\n");
     return 0;
 }
 
