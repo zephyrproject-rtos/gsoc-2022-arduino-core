@@ -2,7 +2,9 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
+set(CONF_FILE $ENV{ZEPHYR_BASE}/../modules/lib/Arduino-Zephyr-API/module.conf)
 set(DTC_OVERLAY_FILE $ENV{ZEPHYR_BASE}/../modules/lib/Arduino-Zephyr-API/variants/${BOARD}/${BOARD}.overlay)
+
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(blinky)
 
