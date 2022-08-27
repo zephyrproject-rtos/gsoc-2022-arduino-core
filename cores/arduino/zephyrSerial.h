@@ -22,6 +22,8 @@ public:
 
     size_t print(const char c);
     size_t print(const char * ptr);
+    size_t print(const int val, const int base);
+
     size_t println(const char c);
     size_t println(const char* ptr);
     size_t println(void);
