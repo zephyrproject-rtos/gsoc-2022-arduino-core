@@ -1,6 +1,10 @@
+/*
+ * Copyright (c) 2022 Dhruva Gole
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <zephyrSerial.h>
-#include <Arduino.h>
-#include <zephyr/sys/printk.h>
 
 size_t arduino::ZephyrSerial::begin(unsigned long int baudrate){
     return 0;
