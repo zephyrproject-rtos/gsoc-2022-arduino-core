@@ -21,6 +21,8 @@ public:
     size_t begin(unsigned long int baudrate);  //TODO
 
     size_t print(const char c);
+    size_t print(const int val);
+    size_t print(double d);
     size_t print(const char * ptr);
     size_t print(const int val, const int base);
 
