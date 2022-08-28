@@ -10,3 +10,4 @@
 #include <zephyr/zephyr.h>
 
 #include <variants.h>
+#include <zephyrSerial.h>

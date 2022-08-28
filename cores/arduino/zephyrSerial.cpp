@@ -24,6 +24,16 @@ size_t arduino::ZephyrSerial::print(char ch){
     return print_char(ch, false);
 }
 
+size_t arduino::ZephyrSerial::print(const int val) {
+    printk("%d",val);
+    return sizeof(int);
+}
+
+size_t arduino::ZephyrSerial::print(double d) {
+    printk("%0.4f",d);
+    return sizeof(double);
+}
+
 size_t arduino::ZephyrSerial::print(const int val, const int base) {
     if (base == 2) {   /* Todo: print Binary */
         printk("%d", val);
