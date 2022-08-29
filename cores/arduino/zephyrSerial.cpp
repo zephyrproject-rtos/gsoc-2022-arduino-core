@@ -30,7 +30,7 @@ size_t arduino::ZephyrSerial::print(const int val) {
 }
 
 size_t arduino::ZephyrSerial::print(double d) {
-    printk("%0.4f",d);
+    printk("%.2f",d);
     return sizeof(double);
 }
 
@@ -40,14 +40,17 @@ size_t arduino::ZephyrSerial::print(const int val, const int base) {
     }   else if (base == 16) {  /* print Hex value */
         printk("%x",val);
     }   else if (base == 8) {   /* Todo: print octal value */
-        printk("%x", val);
+        printk("%d", val);
     }   else if (base == 10) {  /* print decimal value */
         printk("%d", val);
     }   else {
         return EINVAL;
     }
 
-    return 1;   /* Always return 1 byte */
+    return 1;   /* temporarily return 1 byte, but change this to
+                 * return strlen(buffer);
+                 * when we implement octal and binary
+                 */
 }
 
 size_t arduino::ZephyrSerial::println(char ch){
