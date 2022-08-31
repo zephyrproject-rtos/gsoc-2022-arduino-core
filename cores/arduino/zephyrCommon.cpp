@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "Arduino.h"
+#include <Arduino.h>
+
+void yield(void) {
+  k_yield();
+}
 
 /*
  *  The ACTIVE_HIGH flag is set so that A low physical
