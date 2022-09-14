@@ -6,7 +6,13 @@
 
 config ARDUINO_API
 	bool "ARDUINO_API"
-	depends on CPLUSPLUS
+	imply CPLUSPLUS
+	imply GPIO
+	imply CPLUSPLUS
+	imply I2C
+	imply NEWLIB_LIBC_FLOAT_PRINTF
+	imply CBPRINTF_FP_SUPPORT
+	imply RING_BUFFER
 	default n
 
 if ARDUINO_API
