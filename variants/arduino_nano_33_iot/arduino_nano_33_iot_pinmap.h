@@ -7,7 +7,7 @@
 /* All the pins that are 100 + x are gpio1 pins and < 100 are in gpio0 */
 #pragma once
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/device.h>
 
