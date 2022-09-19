@@ -7,7 +7,7 @@
 #include "api/ArduinoAPI.h"
 
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/zephyr.h>
+#include <zephyr/kernel.h>
 
 #include <variants.h>
 #include <zephyrSerial.h>
