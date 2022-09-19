@@ -17,26 +17,26 @@ void yield(void) {
  */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
   if (pinMode == INPUT) { // input mode
-    gpio_pin_configure_dt(arduino_pins[pinNumber],
+    gpio_pin_configure_dt(&arduino_pins[pinNumber],
                           GPIO_INPUT | GPIO_ACTIVE_HIGH);
   } else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
-    gpio_pin_configure_dt(arduino_pins[pinNumber],
+    gpio_pin_configure_dt(&arduino_pins[pinNumber],
                           GPIO_INPUT | GPIO_PULL_UP | GPIO_ACTIVE_HIGH);
   } else if (pinMode == INPUT_PULLDOWN) { // input with internal pull-down
-    gpio_pin_configure_dt(arduino_pins[pinNumber],
+    gpio_pin_configure_dt(&arduino_pins[pinNumber],
                           GPIO_INPUT | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
   } else if (pinMode == OUTPUT) { // output mode
-    gpio_pin_configure_dt(arduino_pins[pinNumber],
+    gpio_pin_configure_dt(&arduino_pins[pinNumber],
                           GPIO_OUTPUT_LOW | GPIO_ACTIVE_HIGH);
   }
 }
 
 void digitalWrite(pin_size_t pinNumber, PinStatus status) {
-  gpio_pin_set_dt(arduino_pins[pinNumber], status);
+  gpio_pin_set_dt(&arduino_pins[pinNumber], status);
 }
 
 PinStatus digitalRead(pin_size_t pinNumber) {
-  return (gpio_pin_get_dt(arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
+  return (gpio_pin_get_dt(&arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
 
 void delay(unsigned long ms) { k_sleep(K_MSEC(ms)); }
