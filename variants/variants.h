@@ -44,3 +44,11 @@ static struct gpio_dt_spec arduino_pins[NUM_OF_DIGITAL_PINS] = {
 	LISTIFY(MAX_DIGITAL_PINS, NUMBERED_GPIO_DT_SPEC, ())
 	DT_FOREACH_CHILD(DT_PATH(leds), LABELED_GPIO_DT_SPEC)
 };
+
+#ifdef CONFIG_ADC
+
+#define AN_ENUMS(n, p, i) A ## i = DT_PROP_BY_IDX(n, p, i),
+enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
+				       io_channel_pins, AN_ENUMS) };
+
+#endif
