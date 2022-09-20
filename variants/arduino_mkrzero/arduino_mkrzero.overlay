@@ -3,6 +3,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
+#include <zephyr/dt-bindings/adc/adc.h>
+
 / {
 	zephyr,user {
 		d0_gpios = <&arduino_mkr_header 0 0>;
@@ -27,27 +30,121 @@
 		d19_gpios = <&arduino_mkr_header 19 0>; /* D19 / A5 / I2C-SCL */
 		d20_gpios = <&arduino_mkr_header 20 0>;
 		d21_gpios = <&arduino_mkr_header 21 0>;
+
 		pwms =	<&tcc0 2 255>,
 			<&tcc0 3 255>;
 		pwm-pins = <2 3>;
+
+		io-channels =	<&adc 0>,
+				<&adc 10>,
+				<&adc 11>,
+				<&adc 4>,
+				<&adc 5>,
+				<&adc 6>,
+				<&adc 7>;
+		io-channel-pins = <15 16 17 18 19 20 21>;
 	};
 };
 
 &pinctrl {
-        pwm_default: pwm_default {
-                group1 {
-                        pinmux = <PA10F_TCC0_WO2>,
-                                 <PA11F_TCC0_WO3>;
-                };
-        };
+	pwm_default: pwm_default {
+		group1 {
+			pinmux = <PA10F_TCC0_WO2>,
+				 <PA11F_TCC0_WO3>;
+		};
+	};
+
+	adc_default: adc_default {
+		group1 {
+			pinmux = <PA2B_ADC_AIN0>,
+				 <PB2B_ADC_AIN10>,
+				 <PB3B_ADC_AIN11>,
+				 <PA4B_ADC_AIN4>,
+				 <PA5B_ADC_AIN5>,
+				 <PA6B_ADC_AIN6>,
+				 <PA7B_ADC_AIN7>;
+		};
+	};
 };
 
 &tcc0 {
-        status = "okay";
-        compatible = "atmel,sam0-tcc-pwm";
-        prescaler = <2>;
-        #pwm-cells = <2>;
+	status = "okay";
+	compatible = "atmel,sam0-tcc-pwm";
+	prescaler = <2>;
+	#pwm-cells = <2>;
 
-        pinctrl-0 = <&pwm_default>;
-        pinctrl-names = "default";
+	pinctrl-0 = <&pwm_default>;
+	pinctrl-names = "default";
+};
+
+&adc {
+	status = "okay";
+	pinctrl-0 = <&adc_default>;
+	pinctrl-names = "default";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <0>;
+	};
+
+	channel@4 {
+		reg = <4>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <4>;
+	};
+
+	channel@5 {
+		reg = <5>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <5>;
+	};
+
+	channel@6 {
+		reg = <6>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <6>;
+	};
+
+	channel@7 {
+		reg = <7>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <7>;
+	};
+
+	channel@10 {
+		reg = <10>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <10>;
+	};
+
+	channel@11 {
+		reg = <11>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <10>;
+		zephyr,input-positive = <11>;
+	};
 };
