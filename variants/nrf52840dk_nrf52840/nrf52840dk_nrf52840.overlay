@@ -23,5 +23,66 @@
 		d20_gpios = <&arduino_header 4 0>;
 		d21_gpios = <&arduino_header 5 0>;
 		d22_gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+		pwms =	<&pwm0 1 255 PWM_POLARITY_NORMAL>,
+			<&pwm0 2 255 PWM_POLARITY_NORMAL>,
+			<&pwm0 3 255 PWM_POLARITY_NORMAL>,
+			<&pwm1 0 255 PWM_POLARITY_NORMAL>,
+			<&pwm1 1 255 PWM_POLARITY_NORMAL>,
+			<&pwm1 2 255 PWM_POLARITY_NORMAL>;
+		pwm-pins = <22 3 5 6 9 10 11>;
 	};
+};
+
+&pinctrl {
+	pwm0_default: pwm0_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 4)>,
+				<NRF_PSEL(PWM_OUT2, 1, 6)>,
+				<NRF_PSEL(PWM_OUT3, 1, 7)>;
+				nordic,invert;
+		};
+	};
+
+	pwm0_sleep: pwm0_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 4)>,
+				<NRF_PSEL(PWM_OUT2, 1, 6)>,
+				<NRF_PSEL(PWM_OUT3, 1, 7)>;
+				low-power-enable;
+		};
+	};
+
+	pwm1_default: pwm1_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 11)>,
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>;
+				nordic,invert;
+		};
+	};
+
+	pwm1_sleep: pwm1_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 11)>,
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>;
+				low-power-enable;
+		};
+	};
+};
+
+&pwm0 {
+	status = "okay";
+	pinctrl-0 = <&pwm0_default>;
+	pinctrl-1 = <&pwm0_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&pwm1 {
+	status = "okay";
+	pinctrl-0 = <&pwm1_default>;
+	pinctrl-1 = <&pwm1_sleep>;
+	pinctrl-names = "default", "sleep";
 };

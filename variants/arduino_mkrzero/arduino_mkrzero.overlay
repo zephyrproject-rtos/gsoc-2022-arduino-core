@@ -27,5 +27,27 @@
 		d19_gpios = <&arduino_mkr_header 19 0>; /* D19 / A5 / I2C-SCL */
 		d20_gpios = <&arduino_mkr_header 20 0>;
 		d21_gpios = <&arduino_mkr_header 21 0>;
+		pwms =	<&tcc0 2 255>,
+			<&tcc0 3 255>;
+		pwm-pins = <2 3>;
 	};
+};
+
+&pinctrl {
+        pwm_default: pwm_default {
+                group1 {
+                        pinmux = <PA10F_TCC0_WO2>,
+                                 <PA11F_TCC0_WO3>;
+                };
+        };
+};
+
+&tcc0 {
+        status = "okay";
+        compatible = "atmel,sam0-tcc-pwm";
+        prescaler = <2>;
+        #pwm-cells = <2>;
+
+        pinctrl-0 = <&pwm_default>;
+        pinctrl-names = "default";
 };

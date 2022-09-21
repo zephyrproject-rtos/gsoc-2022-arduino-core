@@ -22,5 +22,69 @@
 		d19_gpios = <&arduino_nano_header 19 0>; /* D19 / A5 / I2C-SCL */
 		d20_gpios = <&arduino_nano_header 20 0>;
 		d21_gpios = <&arduino_nano_header 21 0>;
+		pwms =	<&pwm1 1 255 PWM_POLARITY_NORMAL>,
+			<&pwm1 2 255 PWM_POLARITY_NORMAL>,
+			<&pwm1 3 255 PWM_POLARITY_NORMAL>,
+			<&pwm2 0 255 PWM_POLARITY_NORMAL>,
+			<&pwm2 1 255 PWM_POLARITY_NORMAL>,
+			<&pwm2 2 255 PWM_POLARITY_NORMAL>,
+			<&pwm2 3 255 PWM_POLARITY_NORMAL>;
+		pwm-pins = <3 5 6 13 9 10 11>;
 	};
+};
+
+&pinctrl {
+	pwm1_default: pwm1_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 9)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>,
+				<NRF_PSEL(PWM_OUT3, 1, 14)>;
+				nordic,invert;
+		};
+	};
+
+	pwm1_sleep: pwm1_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 1, 9)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 1, 12)>,
+				<NRF_PSEL(PWM_OUT2, 1, 13)>,
+				<NRF_PSEL(PWM_OUT3, 1, 14)>;
+				low-power-enable;
+		};
+	};
+
+	pwm2_default: pwm2_default {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 0, 27)>,
+				<NRF_PSEL(PWM_OUT2, 1, 2)>,
+				<NRF_PSEL(PWM_OUT3, 1, 1)>;
+				nordic,invert;
+		};
+	};
+
+	pwm2_sleep: pwm2_sleep {
+		group1 {
+			psels = <NRF_PSEL(PWM_OUT0, 0, 13)>, /* keep original config */
+				<NRF_PSEL(PWM_OUT1, 0, 27)>,
+				<NRF_PSEL(PWM_OUT2, 1, 2)>,
+				<NRF_PSEL(PWM_OUT3, 1, 1)>;
+				low-power-enable;
+		};
+	};
+};
+
+&pwm1 {
+	status = "okay";
+	pinctrl-0 = <&pwm1_default>;
+	pinctrl-1 = <&pwm1_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+&pwm2 {
+	status = "okay";
+	pinctrl-0 = <&pwm2_default>;
+	pinctrl-1 = <&pwm2_sleep>;
+	pinctrl-names = "default", "sleep";
 };
