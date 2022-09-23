@@ -83,4 +83,5 @@ enum digitalPins {
   D21
 };
 
-const static struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
+const static struct device *i2c_dev =
+			DEVICE_DT_GET(DT_NODELABEL(arduino_nano_i2c));
