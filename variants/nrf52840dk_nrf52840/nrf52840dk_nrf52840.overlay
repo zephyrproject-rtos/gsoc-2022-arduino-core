@@ -1,28 +1,28 @@
 / {
 	zephyr,user {
-		d0_gpios = <&arduino_header 6 0>;	/* Digital */
-		d1_gpios = <&arduino_header 7 0>;
-		d2_gpios = <&arduino_header 8 0>;
-		d3_gpios = <&arduino_header 9 0>;
-		d4_gpios = <&arduino_header 10 0>;
-		d5_gpios = <&arduino_header 11 0>;
-		d6_gpios = <&arduino_header 12 0>;
-		d7_gpios = <&arduino_header 13 0>;
-		d8_gpios = <&arduino_header 14 0>;
-		d9_gpios = <&arduino_header 15 0>;
-		d10_gpios = <&arduino_header 16 0>;
-		d11_gpios = <&arduino_header 17 0>;
-		d12_gpios = <&arduino_header 18 0>;
-		d13_gpios = <&arduino_header 19 0>;
-		d14_gpios = <&arduino_header 20 0>;
-		d15_gpios = <&arduino_header 21 0>;
-		d16_gpios = <&arduino_header 0 0>;	/* Analog */
-		d17_gpios = <&arduino_header 1 0>;
-		d18_gpios = <&arduino_header 2 0>;
-		d19_gpios = <&arduino_header 3 0>;
-		d20_gpios = <&arduino_header 4 0>;
-		d21_gpios = <&arduino_header 5 0>;
-		d22_gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;
+		digital-pin-gpios = <&arduino_header 6 0>,	/* Digital */
+				    <&arduino_header 7 0>,
+				    <&arduino_header 8 0>,
+				    <&arduino_header 9 0>,
+				    <&arduino_header 10 0>,
+				    <&arduino_header 11 0>,
+				    <&arduino_header 12 0>,
+				    <&arduino_header 13 0>,
+				    <&arduino_header 14 0>,
+				    <&arduino_header 15 0>,
+				    <&arduino_header 16 0>,
+				    <&arduino_header 17 0>,
+				    <&arduino_header 18 0>,
+				    <&arduino_header 19 0>,
+				    <&arduino_header 20 0>,
+				    <&arduino_header 21 0>,
+				    <&arduino_header 0 0>,	/* Analog */
+				    <&arduino_header 1 0>,
+				    <&arduino_header 2 0>,
+				    <&arduino_header 3 0>,
+				    <&arduino_header 4 0>,
+				    <&arduino_header 5 0>,
+				    <&gpio0 13 GPIO_ACTIVE_LOW>;
 
 		pwms =	<&pwm0 1 255 PWM_POLARITY_NORMAL>,
 			<&pwm0 2 255 PWM_POLARITY_NORMAL>,
