@@ -6,7 +6,13 @@
 
 #include "Arduino.h"
 
+void func() {
+	printf("DO NOT MERGE!\n");
+	return FALSE;
+}
+
 int main(void) {
+	func();
   setup();
 
   for (;;) {
