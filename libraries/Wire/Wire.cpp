@@ -104,4 +104,9 @@ void arduino::ZephyrI2C::flush() {}
 void arduino::ZephyrI2C::onReceive(voidFuncPtrParamInt cb) {}
 void arduino::ZephyrI2C::onRequest(voidFuncPtr cb) {}
 
-arduino::ZephyrI2C Wire(i2c_dev);
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), i2cs) && (DT_PROP_LEN(DT_PATH(zephyr_user), i2cs) > 0)
+arduino::ZephyrI2C Wire(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), i2cs, 0)));
+/* If i2cs node is not defined, tries to use arduino_i2c */
+#elif DT_NODE_EXISTS(DT_NODELABEL(arduino_i2c))
+arduino::ZephyrI2C Wire(DEVICE_DT_GET(DT_NODELABEL(arduino_i2c)));
+#endif

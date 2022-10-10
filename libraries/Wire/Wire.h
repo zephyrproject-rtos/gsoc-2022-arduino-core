@@ -57,6 +57,10 @@ private:
 
 } // namespace arduino
 
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), i2cs) &&                                                \
+		(DT_PROP_LEN(DT_PATH(zephyr_user), i2cs) > 0) ||                                   \
+	DT_NODE_EXISTS(DT_NODELABEL(arduino_i2c))
 extern arduino::ZephyrI2C Wire;
+#endif
 
 typedef arduino::ZephyrI2C TwoWire;
