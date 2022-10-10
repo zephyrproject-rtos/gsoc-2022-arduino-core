@@ -17,6 +17,8 @@ namespace arduino {
 
 class ZephyrI2C : public HardwareI2C {
 public:
+  ZephyrI2C(const struct device* i2c);
+
   virtual void begin();
   virtual void end();
   virtual void begin(uint8_t address);
@@ -50,6 +52,7 @@ private:
     uint8_t buffer[256];
   };
   struct rx_ring_buf rxRingBuffer;
+  const struct device* i2c_dev;
 };
 
 } // namespace arduino

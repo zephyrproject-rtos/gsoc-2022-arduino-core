@@ -5,6 +5,9 @@
  */
 
 #include <Wire.h>
+arduino::ZephyrI2C::ZephyrI2C(const struct device *i2c) : i2c_dev(i2c)
+{
+}
 
 void arduino::ZephyrI2C::begin() {
   ring_buf_init(&rxRingBuffer.rb, sizeof(rxRingBuffer.buffer), rxRingBuffer.buffer);
@@ -101,4 +104,4 @@ void arduino::ZephyrI2C::flush() {}
 void arduino::ZephyrI2C::onReceive(voidFuncPtrParamInt cb) {}
 void arduino::ZephyrI2C::onRequest(voidFuncPtr cb) {}
 
-arduino::ZephyrI2C Wire;
+arduino::ZephyrI2C Wire(i2c_dev);
