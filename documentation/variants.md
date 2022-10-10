@@ -129,6 +129,34 @@ The following example instantiates `Wire` and `Wire2` with each `i2c0` and `i2c1
 };
 ```
 
+### Configure Builtin-LED
+
+The `builtin-led-gpios` node defines the Builtin-LED.
+This node defines the `LED_BUILTIN` value by looking up the `digital-pin-gpios`
+array to find the index of the pin.
+
+The node is phandle-array, which uses the format same as `digital-pin-gpios`.
+
+It set the digital pin number to the `LED_BUILTIN` if found the pin
+that defined in `builtin-led-gpios` from `digital-pin-gpios`.
+
+If the `builtin-led-gpios` is not defined, Use the node aliased as `led0`
+to define `LED_BUILTIN`.
+
+The `LED_BUILTIN` does not define here if it has not found both nodes or
+defined `LED_BUILTIN` already.
+
+For example, in the case of the 13th digital pins connected to the onboard LED,
+define `builtin-led-gpios` as follows.
+
+```
+/ {
+	zephyr,user {
+		builtin-led-gpios = <&arduino_nano_header 13 0>;
+	};
+};
+```
+
 ### Overlays from scratch
 
 You can see in the example above that there is no mapping for `LED0` in the
