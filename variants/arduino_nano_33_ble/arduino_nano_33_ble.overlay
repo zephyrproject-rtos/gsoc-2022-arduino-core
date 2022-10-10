@@ -43,6 +43,7 @@
 		io-channel-pins = <14 15 16 17 18 19 20 21>;
 
 		serials = <&uart0>;
+		i2cs = <&arduino_nano_i2c>;
 	};
 };
 

@@ -10,5 +10,3 @@
 #include <zephyr/drivers/i2c.h>
 
 #define LED_BUILTIN 22
-
-const static struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(sercom0));

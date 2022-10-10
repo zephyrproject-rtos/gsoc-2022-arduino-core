@@ -12,6 +12,3 @@
 #include <zephyr/device.h>
 
 #define LED_BUILTIN 13
-
-const static struct device *i2c_dev =
-			DEVICE_DT_GET(DT_NODELABEL(arduino_nano_i2c));

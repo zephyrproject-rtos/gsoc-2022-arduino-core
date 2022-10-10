@@ -13,6 +13,4 @@
 
 #define LED_BUILTIN 22
 
-const static struct device *i2c_dev = DEVICE_DT_GET(DT_NODELABEL(arduino_i2c));
-
 #endif
