@@ -107,6 +107,26 @@ The following example instantiates `Serial` and `Serial1` with each `uart0` and 
 };
 ```
 
+### Configure I2C devices
+
+The `i2cs` node defines the I2C devices to use.
+It instantiate the `Wire` with the i2c device that contained in the node.
+Also instantiate as `Wire1`, `Wire2`, .. `WireN` with the devices
+that is after the second in the case of the array contains plural devices.
+
+If the `i2cs` node is not defined, Use the node labeled `arduino-i2c`.
+Boards with Arduino-shield style connectors usually label `arduino-i2c`
+to i2c exposed in the connector.
+
+The following example instantiates `Wire` and `Wire2` with each `i2c0` and `i2c1`.
+
+```
+/ {
+       zephyr,user {
+               i2cs = <&i2c0, &i2c1>;
+       };
+};
+```
 
 ### Overlays from scratch
 
