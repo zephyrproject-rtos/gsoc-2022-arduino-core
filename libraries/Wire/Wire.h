@@ -57,9 +57,21 @@ private:
 
 } // namespace arduino
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), i2cs) &&                                                \
-		(DT_PROP_LEN(DT_PATH(zephyr_user), i2cs) > 0) ||                                   \
-	DT_NODE_EXISTS(DT_NODELABEL(arduino_i2c))
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), i2cs) && (DT_PROP_LEN(DT_PATH(zephyr_user), i2cs) > 1)
+#define ARDUINO_WIRE_DEFINED_0 1
+#define DECL_EXTERN_WIRE_0(i)  extern arduino::ZephyrI2C Wire;
+#define DECL_EXTERN_WIRE_N(i)  extern arduino::ZephyrI2C Wire##i;
+#define DECLARE_EXTERN_WIRE_N(n, p, i)                                                             \
+	COND_CODE_1(ARDUINO_WIRE_DEFINED_##i, (DECL_EXTERN_WIRE_0(i)), (DECL_EXTERN_WIRE_N(i)))
+
+/* Declare Wire, Wire1, Wire2, ... */
+DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), i2cs, DECLARE_EXTERN_WIRE_N)
+
+#undef DECLARE_EXTERN_WIRE_N
+#undef DECL_EXTERN_WIRE_N
+#undef DECL_EXTERN_WIRE_0
+#undef ARDUINO_WIRE_DEFINED_0
+#else
 extern arduino::ZephyrI2C Wire;
 #endif
 
