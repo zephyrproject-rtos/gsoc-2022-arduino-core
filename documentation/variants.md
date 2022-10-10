@@ -50,7 +50,7 @@ variants/
 ### DeviceTree Overlay files for Arduino boards
 
 This module requires that your Arduino header pins be mapped in the DeviceTree
-to a `zephyr,user` node using the `d0_gpios` format for each pin. Follow the
+to 'digital-pin-gpios' array that child of a `zephyr,user` node. Follow the
 examples in the variants directory to create an overlay file and a header file
 for your board.
 
@@ -68,17 +68,18 @@ uses [the Arduino header definitions](https://github.com/zephyrproject-rtos/zeph
 ```
 / {
 	zephyr,user {
-		d0_gpios = <&arduino_header 6 0>;			/* Digital */
-		d1_gpios = <&arduino_header 7 0>;
-		...
-		d13_gpios = <&arduino_header 19 0>;
-		d14_gpios = <&arduino_header 0 0>;			/* Analog */
-		d15_gpios = <&arduino_header 1 0>;
-		...
-		d19_gpios = <&arduino_header 5 0>;
-		d20_gpios = <&arduino_header 20 0>;			/* SDA */
-		d21_gpios = <&arduino_header 21 0>;			/* SCL */
-		d22_gpios = <&gpio0 13 GPIO_ACTIVE_LOW>;	/* LED0 */
+		digital-pin-gpios = <&arduino_header 6 0>,	/* Digital */
+				    <&arduino_header 7 0>;
+				    ...
+				    <&arduino_header 19 0>;
+				    <&arduino_header 0 0>;	/* Analog */
+				    <&arduino_header 1 0>;
+				    ...
+				    <&arduino_header 5 0>;
+				    <&arduino_header 20 0>;	/* SDA */
+				    <&arduino_header 21 0>;	/* SCL */
+				    <&gpio0 13 GPIO_ACTIVE_LOW>;	/* LED0 */
+		};
 	};
 };
 ```

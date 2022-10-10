@@ -24,6 +24,7 @@
 		 ? 1                                                                               \
 		 : 0)
 
+/* Check all pins are defined only once */
 #define DIGITAL_PIN_CHECK_UNIQUE(i, _)                                                             \
 	((DT_FOREACH_PROP_ELEM_SEP_VARGS(                                                          \
 		 DT_PATH(zephyr_user), digital_pin_gpios, DIGITAL_PIN_EXISTS, (+),                 \
