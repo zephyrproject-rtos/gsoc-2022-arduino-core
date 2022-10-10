@@ -18,6 +18,24 @@
 #include "arduino_mkrzero_pinmap.h"
 #endif // CONFIG_BOARD_ARDUINO_MKRZERO
 
+#define DIGITAL_PIN_EXISTS(n, p, i, dev, num)                                                      \
+	(((dev == DT_REG_ADDR(DT_PHANDLE_BY_IDX(n, p, i))) &&                                      \
+	  (num == DT_PHA_BY_IDX(n, p, i, pin)))                                                    \
+		 ? 1                                                                               \
+		 : 0)
+
+#define DIGITAL_PIN_CHECK_UNIQUE(i, _)                                                             \
+	((DT_FOREACH_PROP_ELEM_SEP_VARGS(                                                          \
+		 DT_PATH(zephyr_user), digital_pin_gpios, DIGITAL_PIN_EXISTS, (+),                 \
+		 DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), digital_pin_gpios, i)),       \
+		 DT_PHA_BY_IDX(DT_PATH(zephyr_user), digital_pin_gpios, i, pin))) == 1)
+
+#if !LISTIFY(DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios), DIGITAL_PIN_CHECK_UNIQUE, (&&))
+#error "digital_pin_gpios has duplicate definition"
+#endif
+
+#undef DIGITAL_PIN_CHECK_UNIQUE
+
 #define DN_ENUMS(n, p, i) D##i = i
 
 /*
