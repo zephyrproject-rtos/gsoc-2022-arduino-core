@@ -11,6 +11,4 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/kernel.h>
 
-#define LED_BUILTIN 22
-
 #endif

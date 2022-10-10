@@ -11,4 +11,3 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/device.h>
 
-#define LED_BUILTIN 13
