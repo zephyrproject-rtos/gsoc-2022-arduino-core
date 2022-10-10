@@ -29,7 +29,8 @@
 				    <&arduino_mkr_header 18 0>, /* D18 / A4 / I2C-SDA */
 				    <&arduino_mkr_header 19 0>, /* D19 / A5 / I2C-SCL */
 				    <&arduino_mkr_header 20 0>,
-				    <&arduino_mkr_header 21 0>;
+				    <&arduino_mkr_header 21 0>,
+				    <&portb 8 0>;
 
 		pwms =	<&tcc0 2 255>,
 			<&tcc0 3 255>;

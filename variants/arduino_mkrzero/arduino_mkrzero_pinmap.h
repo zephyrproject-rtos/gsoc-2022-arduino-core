@@ -9,4 +9,3 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/i2c.h>
 
-#define LED_BUILTIN 22
