@@ -8,6 +8,108 @@
 
 namespace {
 
+/*
+ * Calculate GPIO ports/pins number statically from devicetree configuration
+ */
+
+template <class N, class Head> constexpr const N sum_of_list(const N sum, const Head &head)
+{
+  return sum + head;
+}
+
+template <class N, class Head, class... Tail>
+constexpr const N sum_of_list(const N sum, const Head &head, const Tail &...tail)
+{
+  return sum_of_list(sum + head, tail...);
+}
+
+template <class N, class Head> constexpr const N max_in_list(const N max, const Head &head)
+{
+  return (max >= head) ? max : head;
+}
+
+template <class N, class Head, class... Tail>
+constexpr const N max_in_list(const N max, const Head &head, const Tail &...tail)
+{
+  return max_in_list((max >= head) ? max : head, tail...);
+}
+
+template <class Query, class Head>
+constexpr const size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
+             const Query &query, const Head &head)
+{
+  return ((found == ((size_t)-1)) && (query == head) && (idx == at)) ? 1 : 0;
+}
+
+template <class Query, class Head, class... Tail>
+constexpr const size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
+             const Query &query, const Head &head,
+             const Tail &...tail)
+{
+  return ((found == ((size_t)-1)) && (query == head) && (idx == at))
+           ? 1
+           : is_first_appearance(idx + 1, at, (query == head ? idx : found), query,
+               tail...);
+}
+
+#define GET_DEVICE_VARGS(n, p, i, _) DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i))
+#define FIRST_APPEARANCE(n, p, i)                                                                  \
+  is_first_appearance(0, i, ((size_t)-1), DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i)),       \
+          DT_FOREACH_PROP_ELEM_SEP_VARGS(n, p, GET_DEVICE_VARGS, (, ), 0))
+const int port_num =
+  sum_of_list(0, DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios,
+            FIRST_APPEARANCE, (, )));
+
+#define GPIO_NGPIOS(n, p, i) DT_PROP(DT_GPIO_CTLR_BY_IDX(n, p, i), ngpios)
+const int max_ngpios = max_in_list(
+  0, DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios, GPIO_NGPIOS, (, )));
+
+/*
+ * GPIO callback implementation
+ */
+
+struct gpio_port_callback {
+  struct gpio_callback callback;
+  voidFuncPtr handlers[max_ngpios];
+  gpio_port_pins_t pins;
+  const struct device *dev;
+} port_callback[port_num] = {0};
+
+struct gpio_port_callback *find_gpio_port_callback(const struct device *dev)
+{
+  for (size_t i = 0; i < ARRAY_SIZE(port_callback); i++) {
+    if (port_callback[i].dev == dev) {
+      return &port_callback[i];
+    }
+    if (port_callback[i].dev == nullptr) {
+      port_callback[i].dev = dev;
+      return &port_callback[i];
+    }
+  }
+
+  return nullptr;
+}
+
+void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func)
+{
+  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+
+  if (pcb) {
+    pcb->handlers[BIT(arduino_pins[pinNumber].pin)] = func;
+  }
+}
+
+void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uint32_t pins)
+{
+  struct gpio_port_callback *pcb = (struct gpio_port_callback *)cb;
+
+  for (uint32_t i = 0; i < max_ngpios; i++) {
+    if (pins & BIT(i)) {
+      pcb->handlers[BIT(i)]();
+    }
+  }
+}
+
 #ifdef CONFIG_PWM
 
 #define PWM_DT_SPEC(n,p,i) PWM_DT_SPEC_GET_BY_IDX(n, i),
@@ -181,3 +283,42 @@ int analogRead(pin_size_t pinNumber)
 }
 
 #endif
+
+void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinStatus)
+{
+  struct gpio_port_callback *pcb;
+  gpio_flags_t intmode = 0;
+
+  if (!callback) {
+    return;
+  }
+
+  if (pinStatus == LOW) {
+    intmode |= GPIO_INT_LEVEL_LOW;
+  } else if (pinStatus == HIGH) {
+    intmode |= GPIO_INT_LEVEL_HIGH;
+  } else if (pinStatus == CHANGE) {
+    intmode |= GPIO_INT_EDGE_BOTH;
+  } else if (pinStatus == FALLING) {
+    intmode |= GPIO_INT_EDGE_FALLING;
+  } else if (pinStatus == RISING) {
+    intmode |= GPIO_INT_EDGE_RISING;
+  } else {
+    return;
+  }
+
+  pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+  __ASSERT(pcb != nullptr, "gpio_port_callback not found");
+
+  pcb->pins |= BIT(arduino_pins[pinNumber].pin);
+  setInterruptHandler(pinNumber, callback);
+
+  gpio_pin_interrupt_configure(arduino_pins[pinNumber].port, arduino_pins[pinNumber].pin, intmode);
+  gpio_init_callback(&pcb->callback, handleGpioCallback, pcb->pins);
+  gpio_add_callback(arduino_pins[pinNumber].port, &pcb->callback);
+}
+
+void detachInterrupt(pin_size_t pinNumber)
+{
+  setInterruptHandler(pinNumber, nullptr);
+}
