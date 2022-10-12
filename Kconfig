@@ -13,6 +13,7 @@ config ARDUINO_API
 	imply NEWLIB_LIBC_FLOAT_PRINTF
 	imply CBPRINTF_FP_SUPPORT
 	imply RING_BUFFER
+	select UART_INTERRUPT_DRIVEN
 	default n
 
 if ARDUINO_API
@@ -21,5 +22,9 @@ config QEMU_ICOUNT
 	bool "QEMU icount mode"
 	default n
 	depends on QEMU_TARGET
+
+config ARDUINO_API_SERIAL_BUFFER_SIZE
+	int "Buffer size for Arduino Serial API"
+	default 64
 
 endif

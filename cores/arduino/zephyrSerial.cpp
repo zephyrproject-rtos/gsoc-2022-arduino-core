@@ -4,70 +4,205 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/uart.h>
+
+#include <api/HardwareSerial.h>
 #include <zephyrSerial.h>
 
-size_t arduino::ZephyrSerial::begin(unsigned long int baudrate){
-    return 0;
+namespace
+{
+
+enum uart_config_parity conf_parity(uint16_t conf)
+{
+	switch (conf & SERIAL_PARITY_MASK) {
+	case SERIAL_PARITY_EVEN:
+		return UART_CFG_PARITY_EVEN;
+	case SERIAL_PARITY_ODD:
+		return UART_CFG_PARITY_ODD;
+	default:
+		return UART_CFG_PARITY_NONE;
+	}
 }
 
-size_t arduino::ZephyrSerial::print_char(char ch, bool lf){
-    printk(lf ? "%c\n" : "%c", ch);
-    return lf ? 2 : 1;
+enum uart_config_stop_bits conf_stop_bits(uint16_t conf)
+{
+	switch (conf & SERIAL_STOP_BIT_MASK) {
+	case SERIAL_STOP_BIT_1_5:
+		return UART_CFG_STOP_BITS_1_5;
+	case SERIAL_STOP_BIT_2:
+		return UART_CFG_STOP_BITS_2;
+	default:
+		return UART_CFG_STOP_BITS_1;
+	}
 }
 
-size_t arduino::ZephyrSerial::print_str(const char* ptr, bool lf) {
-    printk(lf ? "%s\n" : "%s", ptr);
-    return lf ? strlen(ptr)+1 : strlen(ptr);
+enum uart_config_data_bits conf_data_bits(uint16_t conf)
+{
+	switch (conf & SERIAL_DATA_MASK) {
+	case SERIAL_DATA_5:
+		return UART_CFG_DATA_BITS_5;
+	case SERIAL_DATA_6:
+		return UART_CFG_DATA_BITS_6;
+	case SERIAL_DATA_7:
+		return UART_CFG_DATA_BITS_7;
+	default:
+		return UART_CFG_DATA_BITS_8;
+	}
 }
 
-size_t arduino::ZephyrSerial::print(char ch){
-    return print_char(ch, false);
+} // anonymous namespace
+
+void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf)
+{
+	struct uart_config config = {
+		.baudrate = baud,
+		.parity = conf_parity(conf),
+		.stop_bits = conf_stop_bits(conf),
+		.data_bits = conf_data_bits(conf),
+		.flow_ctrl = UART_CFG_FLOW_CTRL_NONE,
+	};
+
+	uart_configure(uart, &config);
+	uart_irq_callback_user_data_set(uart, arduino::ZephyrSerial::IrqDispatch, this);
+	uart_irq_rx_enable(uart);
 }
 
-size_t arduino::ZephyrSerial::print(const int val) {
-    printk("%d",val);
-    return sizeof(int);
+void arduino::ZephyrSerial::IrqHandler()
+{
+	uint8_t buf[8];
+	int length;
+	int ret = 0;
+
+	if (!uart_irq_update(uart)) {
+		return;
+	}
+
+	if (ring_buf_size_get(&tx.ringbuf) == 0) {
+		uart_irq_tx_disable(uart);
+	}
+
+	k_sem_take(&rx.sem, K_NO_WAIT);
+	while (uart_irq_rx_ready(uart) && ((length = uart_fifo_read(uart, buf, sizeof(buf))) > 0)) {
+		length = min(sizeof(buf), static_cast<size_t>(length));
+		ret = ring_buf_put(&rx.ringbuf, &buf[0], length);
+
+		if (ret < 0) {
+			break;
+		}
+	}
+	k_sem_give(&rx.sem);
+
+	k_sem_take(&tx.sem, K_NO_WAIT);
+	while (uart_irq_tx_ready(uart) && ((length = ring_buf_size_get(&tx.ringbuf)) > 0)) {
+		length = min(sizeof(buf), static_cast<size_t>(length));
+		ring_buf_peek(&tx.ringbuf, &buf[0], length);
+
+		ret = uart_fifo_fill(uart, &buf[0], length);
+		if (ret < 0) {
+			break;
+		} else {
+			ring_buf_get(&tx.ringbuf, &buf[0], ret);
+		}
+	}
+	k_sem_give(&tx.sem);
 }
 
-size_t arduino::ZephyrSerial::print(double d) {
-    printk("%.2f",d);
-    return sizeof(double);
+void arduino::ZephyrSerial::IrqDispatch(const struct device *dev, void *data)
+{
+	reinterpret_cast<ZephyrSerial *>(data)->IrqHandler();
 }
 
-size_t arduino::ZephyrSerial::print(const int val, const int base) {
-    if (base == 2) {   /* Todo: print Binary */
-        printk("%d", val);
-    }   else if (base == 16) {  /* print Hex value */
-        printk("%x",val);
-    }   else if (base == 8) {   /* Todo: print octal value */
-        printk("%d", val);
-    }   else if (base == 10) {  /* print decimal value */
-        printk("%d", val);
-    }   else {
-        return EINVAL;
-    }
+int arduino::ZephyrSerial::available()
+{
+	int ret;
 
-    return 1;   /* temporarily return 1 byte, but change this to
-                 * return strlen(buffer);
-                 * when we implement octal and binary
-                 */
+	k_sem_take(&rx.sem, K_FOREVER);
+	ret = ring_buf_size_get(&rx.ringbuf);
+	k_sem_give(&rx.sem);
+
+	return ret;
 }
 
-size_t arduino::ZephyrSerial::println(char ch){
-    return print_char(ch, true);
+int arduino::ZephyrSerial::peek()
+{
+	uint8_t data;
+
+	k_sem_take(&rx.sem, K_FOREVER);
+	ring_buf_peek(&rx.ringbuf, &data, 1);
+	k_sem_give(&rx.sem);
+
+	return data;
 }
 
-size_t arduino::ZephyrSerial::print(const char* ptr) {
-    return print_str(ptr, false);
+int arduino::ZephyrSerial::read()
+{
+	uint8_t data;
+
+	k_sem_take(&rx.sem, K_FOREVER);
+	ring_buf_get(&rx.ringbuf, &data, 1);
+	k_sem_give(&rx.sem);
+
+	return data;
 }
 
-size_t arduino::ZephyrSerial::println(const char* ptr){
-    return print_str(ptr, true);
+size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
+{
+	int ret;
+
+	k_sem_take(&tx.sem, K_FOREVER);
+	ret = ring_buf_put(&tx.ringbuf, buffer, size);
+	k_sem_give(&tx.sem);
+
+	if (ret < 0) {
+		return 0;
+	}
+
+	uart_irq_tx_enable(uart);
+
+	return ret;
 }
 
-size_t arduino::ZephyrSerial::println(void){
-    printk("\n");
-    return 0;
-}
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
+arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), serials, 0)));
+#if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
+#define ARDUINO_SERIAL_DEFINED_0 1
 
-arduino::ZephyrSerial Serial;
+#define DECL_SERIAL_0(n, p, i)
+#define DECL_SERIAL_N(n, p, i)                                                                     \
+	arduino::ZephyrSerial Serial##i(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(n, p, i)));
+#define DECLARE_SERIAL_N(n, p, i)                                                                  \
+	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (DECL_SERIAL_0(n, p, i)), (DECL_SERIAL_N(n, p, i)))
+
+#define CALL_EVENT_0(n, p, i)
+#define CALL_EVENT_N(n, p, i) if (_CONCAT(Serial, i).available()) _CONCAT(_CONCAT(serial, i), Event)();
+#define CALL_SERIALEVENT_N(n, p, i)                                                               \
+	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (CALL_EVENT_0(n, p, i)), (CALL_EVENT_N(n, p, i)));
+
+#define DECL_EVENT_0(n, p, i)
+#define DECL_EVENT_N(n, p, i) __attribute__((weak)) void serial##i##Event() { }
+#define DECLARE_SERIALEVENT_N(n, p, i)                                                                   \
+	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (DECL_EVENT_0(n, p, i)), (DECL_EVENT_N(n, p, i)));
+
+DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_SERIAL_N)
+#endif // PROP_LEN(serials) > 1
+#elif DT_NODE_EXISTS(DT_NODELABEL(arduino_serial))
+/* If serials node is not defined, tries to use arduino_serial */
+arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_NODELABEL(arduino_serial)));
+#else
+arduino::ZephyrSerialStub Serial;
+#endif
+
+
+__attribute__((weak)) void serialEvent() { }
+#if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
+DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_SERIALEVENT_N)
+#endif
+
+void arduino::serialEventRun(void)
+{
+	if (Serial.available()) serialEvent();
+#if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, CALL_SERIALEVENT_N)
+#endif
+}

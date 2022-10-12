@@ -11,6 +11,7 @@ int main(void) {
 
   for (;;) {
     loop();
+    if (arduino::serialEventRun) arduino::serialEventRun();
   }
 
   return 0;
