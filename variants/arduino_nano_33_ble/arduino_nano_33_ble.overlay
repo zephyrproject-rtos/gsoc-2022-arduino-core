@@ -41,6 +41,8 @@
 				<&adc 4>,
 				<&adc 1>;
 		io-channel-pins = <14 15 16 17 18 19 20 21>;
+
+		serials = <&uart0>;
 	};
 };
 
