@@ -86,7 +86,7 @@
 	#size-cells = <0>;
 
 	channel@0 {
-		reg = <0>;
+		reg = <0x0>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -95,7 +95,7 @@
 	};
 
 	channel@4 {
-		reg = <4>;
+		reg = <0x4>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -104,7 +104,7 @@
 	};
 
 	channel@5 {
-		reg = <5>;
+		reg = <0x5>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -113,7 +113,7 @@
 	};
 
 	channel@6 {
-		reg = <6>;
+		reg = <0x6>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -122,7 +122,7 @@
 	};
 
 	channel@7 {
-		reg = <7>;
+		reg = <0x7>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -130,8 +130,8 @@
 		zephyr,input-positive = <7>;
 	};
 
-	channel@10 {
-		reg = <10>;
+	channel@a {
+		reg = <0xa>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
@@ -139,8 +139,8 @@
 		zephyr,input-positive = <10>;
 	};
 
-	channel@11 {
-		reg = <11>;
+	channel@b {
+		reg = <0xb>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
