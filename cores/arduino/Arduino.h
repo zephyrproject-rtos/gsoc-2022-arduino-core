@@ -12,4 +12,5 @@
 #include <zephyr/kernel.h>
 
 #include <variants.h>
+#include <zephyrPrint.h>
 #include <zephyrSerial.h>
