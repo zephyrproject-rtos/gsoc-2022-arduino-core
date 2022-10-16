@@ -83,6 +83,31 @@ uses [the Arduino header definitions](https://github.com/zephyrproject-rtos/zeph
 };
 ```
 
+### Configure Serial devices
+
+The `serials` node defines the Serial devices to use.
+It instantiate the `Serial` with the UART device that contained in the node.
+Also instantiate as `Serial1`, `Serial2`, .. `SerialN` with the devices that is
+after the second in the case of the array contains plural devices.
+
+If the `serials` node is not defined, Use the node labeled `arduino-serial`.
+Boards with Arduino-shield style connectors usually label `arduino-serial` for
+UART port exposed in header or frequently used UART port.
+
+If even 'arduino_serial' does not define, it uses the stub implementation
+that redirects to printk().
+
+The following example instantiates `Serial` and `Serial1` with each `uart0` and `uart1`.
+
+```
+/ {
+       zephyr,user {
+               serials = <&uart0, &uart1>;
+       };
+};
+```
+
+
 ### Overlays from scratch
 
 You can see in the example above that there is no mapping for `LED0` in the
