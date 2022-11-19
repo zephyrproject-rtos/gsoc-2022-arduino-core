@@ -24,13 +24,27 @@
 				    <&arduino_header 5 0>,
 				    <&gpio0 13 GPIO_ACTIVE_LOW>;
 
+		pwm-pin-gpios =     <&gpio0 13 GPIO_ACTIVE_LOW>,
+				    <&arduino_header 9 0>,
+				    <&arduino_header 11 0>,
+				    <&arduino_header 12 0>,
+				    <&arduino_header 15 0>,
+				    <&arduino_header 16 0>,
+				    <&arduino_header 17 0>;
+
+		adc-pin-gpios =	    <&arduino_header 0 0>,
+				    <&arduino_header 1 0>,
+				    <&arduino_header 2 0>,
+				    <&arduino_header 3 0>,
+				    <&arduino_header 4 0>,
+				    <&arduino_header 5 0>;
+
 		pwms =	<&pwm0 1 255 PWM_POLARITY_NORMAL>,
 			<&pwm0 2 255 PWM_POLARITY_NORMAL>,
 			<&pwm0 3 255 PWM_POLARITY_NORMAL>,
 			<&pwm1 0 255 PWM_POLARITY_NORMAL>,
 			<&pwm1 1 255 PWM_POLARITY_NORMAL>,
 			<&pwm1 2 255 PWM_POLARITY_NORMAL>;
-		pwm-pins = <22 3 5 6 9 10 11>;
 
 		io-channels =	<&arduino_adc 0>,
 				<&arduino_adc 1>,
@@ -38,7 +52,6 @@
 				<&arduino_adc 3>,
 				<&arduino_adc 4>,
 				<&arduino_adc 5>;
-		io-channel-pins = <16 17 18 19 20 21>;
 	};
 };
 

@@ -23,6 +23,25 @@
 				    <&arduino_nano_header 20 0>,
 				    <&arduino_nano_header 21 0>;
 
+		pwm-pin-gpios =	    <&arduino_nano_header 3 0>,
+				    <&arduino_nano_header 5 0>,
+				    <&arduino_nano_header 6 0>,
+				    <&arduino_nano_header 13 0>,
+				    <&arduino_nano_header 9 0>,
+				    <&arduino_nano_header 10 0>,
+				    <&arduino_nano_header 11 0>;
+
+		adc-pin-gpios =	    <&arduino_nano_header 14 0>,
+				    <&arduino_nano_header 15 0>,
+				    <&arduino_nano_header 16 0>,
+				    <&arduino_nano_header 17 0>,
+				    <&arduino_nano_header 18 0>,
+				    <&arduino_nano_header 19 0>,
+				    <&arduino_nano_header 20 0>,
+				    <&arduino_nano_header 21 0>;
+
+		builtin-led-gpios = <&arduino_nano_header 13 0>;
+
 		pwms =	<&pwm1 1 255 PWM_POLARITY_NORMAL>,
 			<&pwm1 2 255 PWM_POLARITY_NORMAL>,
 			<&pwm1 3 255 PWM_POLARITY_NORMAL>,
@@ -30,7 +49,6 @@
 			<&pwm2 1 255 PWM_POLARITY_NORMAL>,
 			<&pwm2 2 255 PWM_POLARITY_NORMAL>,
 			<&pwm2 3 255 PWM_POLARITY_NORMAL>;
-		pwm-pins = <3 5 6 13 9 10 11>;
 
 		io-channels =	<&adc 2>,
 				<&adc 3>,
@@ -40,12 +58,9 @@
 				<&adc 0>,
 				<&adc 4>,
 				<&adc 1>;
-		io-channel-pins = <14 15 16 17 18 19 20 21>;
 
 		serials = <&uart0>;
 		i2cs = <&arduino_nano_i2c>;
-
-		builtin-led-gpios = <&arduino_nano_header 13 0>;
 	};
 };
 
