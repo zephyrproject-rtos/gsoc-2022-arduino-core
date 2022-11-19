@@ -25,6 +25,24 @@
 				    <&arduino_nano_header 20 0>,
 				    <&arduino_nano_header 21 0>;
 
+		pwm-pin-gpios =	    <&arduino_nano_header 6 0>,
+				    <&arduino_nano_header 5 0>,
+				    <&arduino_nano_header 17 0>,
+				    <&arduino_nano_header 12 0>,
+				    <&arduino_nano_header 2 0>,
+				    <&arduino_nano_header 3 0>,
+				    <&arduino_nano_header 9 0>,
+				    <&arduino_nano_header 10 0>;
+
+		adc-pin-gpios =     <&arduino_nano_header 14 0>,
+				    <&arduino_nano_header 15 0>,
+				    <&arduino_nano_header 16 0>,
+				    <&arduino_nano_header 17 0>,
+				    <&arduino_nano_header 18 0>,
+				    <&arduino_nano_header 19 0>,
+				    <&arduino_nano_header 20 0>,
+				    <&arduino_nano_header 21 0>;
+
 		pwms =	<&tcc0 0 255>,
 			<&tcc0 1 255>,
 			<&tcc0 2 255>,
@@ -33,7 +51,6 @@
 			<&tcc0 5 255>,
 			<&tcc0 6 255>,
 			<&tcc0 7 255>;
-		pwm-pins = <6 5 17 12 2 3 9 10>;
 
 		io-channels =	<&adc 0>,
 				<&adc 10>,
@@ -42,7 +59,6 @@
 				<&adc 5>,
 				<&adc 6>,
 				<&adc 7>;
-		io-channel-pins = <14 15 16 17 18 19 20 21>;
 
 		serials = <&sercom5>;
 		i2cs = <&arduino_nano_i2c>;
