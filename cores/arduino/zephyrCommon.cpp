@@ -113,14 +113,17 @@ void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uin
 #ifdef CONFIG_PWM
 
 #define PWM_DT_SPEC(n,p,i) PWM_DT_SPEC_GET_BY_IDX(n, i),
-#define PWM_PINS(n,p,i) DT_PROP_BY_IDX(n, p, i),
+#define PWM_PINS(n, p, i) \
+	DIGITAL_PIN_GPIOS_FIND_PIN( \
+                DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), p, i)),        \
+                DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 
 const struct pwm_dt_spec arduino_pwm[] =
 	{ DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwms, PWM_DT_SPEC) };
 
 /* pwm-pins node provides a mapping digital pin numbers to pwm channels */
 const pin_size_t arduino_pwm_pins[] =
-	{ DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwm_pins, PWM_PINS) };
+	{ DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwm_pin_gpios, PWM_PINS) };
 
 size_t pwm_pin_index(pin_size_t pinNumber) {
   for(size_t i=0; i<ARRAY_SIZE(arduino_pwm_pins); i++) {
@@ -136,7 +139,10 @@ size_t pwm_pin_index(pin_size_t pinNumber) {
 #ifdef CONFIG_ADC
 
 #define ADC_DT_SPEC(n,p,i) ADC_DT_SPEC_GET_BY_IDX(n, i),
-#define ADC_PINS(n,p,i) DT_PROP_BY_IDX(n, p, i),
+#define ADC_PINS(n, p, i) \
+	DIGITAL_PIN_GPIOS_FIND_PIN( \
+                DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), p, i)),        \
+                DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 #define ADC_CH_CFG(n,p,i) arduino_adc[i].channel_cfg,
 
 const struct adc_dt_spec arduino_adc[] =
@@ -144,7 +150,7 @@ const struct adc_dt_spec arduino_adc[] =
 
 /* io-channel-pins node provides a mapping digital pin numbers to adc channels */
 const pin_size_t arduino_analog_pins[] =
-  { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channel_pins, ADC_PINS) };
+  { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS) };
 
 struct adc_channel_cfg channel_cfg[ARRAY_SIZE(arduino_analog_pins)] =
   { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_CH_CFG) };
