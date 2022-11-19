@@ -96,8 +96,10 @@ const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 
 #ifdef CONFIG_ADC
 
-#define AN_ENUMS(n, p, i) A ## i = DT_PROP_BY_IDX(n, p, i),
+#define AN_ENUMS(n, p, i) A ## i = DIGITAL_PIN_GPIOS_FIND_PIN( \
+		DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), p, i)),        \
+		DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
-				       io_channel_pins, AN_ENUMS) };
+				       adc_pin_gpios, AN_ENUMS) };
 
 #endif
