@@ -49,10 +49,15 @@ variants/
 
 ### DeviceTree Overlay files for Arduino boards
 
-This module requires that your Arduino header pins be mapped in the DeviceTree
-to 'digital-pin-gpios' array that child of a `zephyr,user` node. Follow the
-examples in the variants directory to create an overlay file and a header file
-for your board.
+The Arduino API requires pin mapping definitions to use Arduino-style pin numbers
+(pin numbers printed on the board, not GPIO numbers).
+The pin-mapping node is under the `zephyr,user` node of DTS.
+`digital-pin-gpios` defines digital input/output pins that is D0, D1, ..,
+`adc-pin-gpios` defines analog input pins that is A0, A1, ... .
+`pwm-pin-gpios` defines PWM pins.
+Each pin specifies in the form of a GPIO cell.
+Usually, it is in the form of `<[port] [pin-number] [flag]>`.
+You can also use the Arduino header node definition here.
 
 ### Overlays using previously-defined Arduino headers
 
