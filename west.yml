@@ -1,0 +1,19 @@
+# Copyright (c) 2022 Dhruva Gole <goledhruva@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+
+# NOTE: This is created to be used for CI/CD workflow. So use it only
+# if you are in the zephyrproject directory or else things may break.
+
+manifest:
+  self:
+    path: modules/lib/Arduino-Zephyr-API
+
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      remote: zephyrproject-rtos
+      revision: main
+      import: true
