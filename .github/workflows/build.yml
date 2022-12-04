@@ -6,14 +6,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: zephyrprojectrtos/ci:latest
+      options: '--entrypoint /bin/bash'
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
+      COMMIT_RANGE: ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+      BASE_REF: ${{ github.base_ref }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          path: Arduino-Zephyr-API
-
       - name: Initialize
         working-directory: Arduino-Zephyr-API
         run: |
@@ -23,6 +21,14 @@ jobs:
           sed '/WCharacter.h/ s/./\/\/ &/' ArduinoCore-API/api/ArduinoAPI.h > ArduinoCore-API/api/tmpArduinoAPI.h
           mv ArduinoCore-API/api/tmpArduinoAPI.h ArduinoCore-API/api/ArduinoAPI.h
           cp -r ArduinoCore-API/api modules/lib/Arduino-Zephyr-API/cores/arduino/.
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: modules/lib/Arduino-Zephyr-API
 
       - name: Build fade
         working-directory: Arduino-Zephyr-API
