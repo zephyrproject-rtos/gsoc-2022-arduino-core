@@ -1,10 +1,8 @@
-# GSoC 2022 Project
+# GSoC 2022 Project: Arduino Core API module for Zephyr
 
 ![](https://dhruvag2000.github.io/Blog-GSoC22/assets/images/website_header.png)
 
-## Arduino Core API module for zephyr
-
-Arduino Core API module for zephyr leverages the power of Zephyr under an Arduino-C++ style abtraction layer thus helping zephyr new-comers to start using it without worrying about learning about new APIs and libraries. See the project documentation folder for detailed documentation on these topics:
+The **Arduino Core API** module for zephyr leverages the power of Zephyr under an Arduino-C++ style abtraction layer thus helping zephyr new-comers to start using it without worrying about learning about new APIs and libraries. See the project documentation folder for detailed documentation on these topics:
 
 * [Using external Arduino Libraries](/documentation/arduino_libs.md)
 * [Adding custom boards/ variants](/documentation/variants.md)
@@ -45,11 +43,11 @@ __NOTE:__ You can skip this step as well if you ran ``install.sh``.
 * While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. The include of that file needs to be deleted from `cores/arduino/api/ArduinoAPI.h` (it is unused in this port.) We are looking into resolving the issue.
 
 **Maintainers**:
+- [DhruvaG2000](https://github.com/DhruvaG2000)
+- [soburi](https://github.com/soburi)
 - [szczys](https://github.com/szczys)
-- [beriberikix](https://github.com/beriberikix) 
+- [beriberikix](https://github.com/beriberikix)
 - [alvarowolfx](https://github.com/alvarowolfx)
-
-**Contributor**: [DhruvaG2000](https://github.com/DhruvaG2000)
 
 ## License
 Please note that the current license is Apache 2. Previously it was LGPL 2.1 but after careful review it was determined that no LGPL code or derivates was used and the more permissive license was chosen.
