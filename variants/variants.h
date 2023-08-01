@@ -14,6 +14,9 @@
 #ifdef CONFIG_BOARD_NRF52840DK_NRF52840
 #include "nrf52840dk_nrf52840_pinmap.h"
 #endif /* CONFIG_BOARD_NRF52840DK_NRF52840 */
+#ifdef CONFIG_BOARD_NRF9160DK_NRF9160
+#include "nrf9160dk_nrf9160_pinmap.h"
+#endif /* CONFIG_BOARD_NRF9160DK_NRF9160 */
 #ifdef CONFIG_BOARD_ARDUINO_MKRZERO
 #include "arduino_mkrzero_pinmap.h"
 #endif // CONFIG_BOARD_ARDUINO_MKRZERO
