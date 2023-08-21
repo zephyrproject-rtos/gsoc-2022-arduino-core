@@ -186,7 +186,7 @@ arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user
 
 DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_SERIAL_N)
 #endif // PROP_LEN(serials) > 1
-#elif DT_NODE_EXISTS(DT_NODELABEL(arduino_serial))
+#elif DT_NODE_HAS_STATUS(DT_NODELABEL(arduino_serial), okay)
 /* If serials node is not defined, tries to use arduino_serial */
 arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_NODELABEL(arduino_serial)));
 #else
