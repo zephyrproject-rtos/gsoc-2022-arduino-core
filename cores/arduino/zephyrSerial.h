@@ -92,7 +92,7 @@ DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_EXTERN_SERIAL_N)
 #undef EXTERN_SERIAL_N
 #undef SERIAL_DEFINED_0
 #endif
-#elif DT_NODE_EXISTS(DT_NODELABEL(arduino_serial))
+#elif DT_NODE_HAS_STATUS(DT_NODELABEL(arduino_serial), okay)
 extern arduino::ZephyrSerial Serial;
 #else
 extern arduino::ZephyrSerialStub Serial;
