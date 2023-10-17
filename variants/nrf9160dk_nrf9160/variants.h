@@ -7,10 +7,6 @@
 #ifndef INCLUDE_NRF1960DK_NRF1960_PINMAP_H
 #define INCLUDE_NRF1960DK_NRF1960_PINMAP_H
 
-#include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/i2c.h>
-#include <zephyr/kernel.h>
-
 #define NRF9160DK_LED_1         D2          // P0.02
 #define NRF9160DK_LED_2         D3          // P0.03
 #define NRF9160DK_LED_3         D4          // P0.04

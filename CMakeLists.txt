@@ -2,7 +2,7 @@
 
 if (CONFIG_ARDUINO_API)
 add_subdirectory(cores)
-add_subdirectory(variants)
 add_subdirectory(libraries)
+zephyr_include_directories(variants/${BOARD})
 endif()
 
