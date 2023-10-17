@@ -6,9 +6,8 @@
 
 config ARDUINO_API
 	bool "ARDUINO_API"
-	imply CPLUSPLUS
+	imply CPP
 	imply GPIO
-	imply CPLUSPLUS
 	imply I2C
 	imply NEWLIB_LIBC_FLOAT_PRINTF
 	imply CBPRINTF_FP_SUPPORT
