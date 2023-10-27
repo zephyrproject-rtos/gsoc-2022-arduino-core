@@ -14,6 +14,7 @@
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/i2c.h>
 
+#if 0
 #define DIGITAL_PIN_EXISTS(n, p, i, dev, num)                                                      \
 	(((dev == DT_REG_ADDR(DT_PHANDLE_BY_IDX(n, p, i))) &&                                      \
 	  (num == DT_PHA_BY_IDX(n, p, i, pin)))                                                    \
@@ -89,6 +90,8 @@ enum digitalPins {
 
 const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
+
+#endif
 
 #ifdef CONFIG_ADC
 

@@ -8,6 +8,7 @@
 
 namespace {
 
+#if 0
 /*
  * Calculate GPIO ports/pins number statically from devicetree configuration
  */
@@ -109,6 +110,7 @@ void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uin
     }
   }
 }
+#endif
 
 #ifdef CONFIG_PWM
 
@@ -172,6 +174,7 @@ void yield(void) {
   k_yield();
 }
 
+#if 0
 /*
  *  The ACTIVE_HIGH flag is set so that A low physical
  *  level on the pin will be interpreted as value 0.
@@ -200,6 +203,7 @@ void digitalWrite(pin_size_t pinNumber, PinStatus status) {
 PinStatus digitalRead(pin_size_t pinNumber) {
   return (gpio_pin_get_dt(&arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
+#endif
 
 void delay(unsigned long ms) { k_sleep(K_MSEC(ms)); }
 
@@ -290,6 +294,7 @@ int analogRead(pin_size_t pinNumber)
 
 #endif
 
+#if 0
 void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinStatus)
 {
   struct gpio_port_callback *pcb;
@@ -328,3 +333,4 @@ void detachInterrupt(pin_size_t pinNumber)
 {
   setInterruptHandler(pinNumber, nullptr);
 }
+#endif
