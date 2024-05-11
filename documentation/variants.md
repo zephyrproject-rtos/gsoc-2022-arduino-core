@@ -9,6 +9,7 @@ Once completed, continue here by adding a variant for your custom board.
 - [X] Arduino Nano ble sense 33
 - [X] Arduino Nano ble 33
 - [X] Arduino Nano 33 iot
+- [X] Beagleconnect Freedom
 
 ## Planned Support: (TODO)
 - [ ] Particle Xenon
