@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2024 Ayush Singh <ayush@beagleboard.org>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+ / {
+	zephyr,user {
+		digital-pin-gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;	/* 2.4GHz TX/RX */
+		builtin-led-gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;	/*  2.4GHz TX/RX  */
+		serials = <&uart0 &uart1>;
+		i2cs = <&i2c0>;
+	};
+ };
