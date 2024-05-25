@@ -26,4 +26,8 @@ config ARDUINO_API_SERIAL_BUFFER_SIZE
 	int "Buffer size for Arduino Serial API"
 	default 64
 
+config ARDUINO_ENTRY
+	bool "Provide arduino setup and loop entry points"
+	default y
+
 endif
