@@ -217,6 +217,10 @@ void analogWrite(pin_size_t pinNumber, int value)
 {
   size_t idx = pwm_pin_index(pinNumber);
 
+  if (!pwm_is_ready_dt(&arduino_pwm[idx])) {
+    return;
+  }
+
   if (idx >= ARRAY_SIZE(arduino_pwm) ) {
     return;
   }
@@ -231,8 +235,7 @@ void analogWrite(pin_size_t pinNumber, int value)
    * A duty ratio determines by the period value defined in dts
    * and the value arguments. So usually the period value sets as 255.
    */
-  (void)pwm_set_cycles(arduino_pwm[idx].dev, arduino_pwm[idx].channel,
-		       arduino_pwm[idx].period, value, arduino_pwm[idx].flags);
+  (void)pwm_set_pulse_dt(&arduino_pwm[idx], value);
 }
 
 #endif
