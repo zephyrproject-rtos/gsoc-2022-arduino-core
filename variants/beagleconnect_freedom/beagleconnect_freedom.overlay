@@ -39,6 +39,16 @@
 	pwms = <&pwm0 0 255 PWM_POLARITY_NORMAL>,
 			   <&pwm1 0 255 PWM_POLARITY_NORMAL>;
 
+	adc-pin-gpios =
+			    <&gpio0 23 GPIO_ACTIVE_HIGH>, /* D15 - MB1 AN - A0 */
+			    <&gpio0 24 GPIO_ACTIVE_HIGH>, /* D16 - MB2 AN - A1 */
+			    <&gpio0 26 GPIO_ACTIVE_HIGH>, /* D11 - MB1/2 SDA - A2 */
+			    <&gpio0 25 GPIO_ACTIVE_HIGH>, /* D12 - MB1/2 SCL - A3 */
+			    <&gpio0 27 GPIO_ACTIVE_HIGH>, /* D7  - MB2 CS - A4 */
+			    <&gpio0 28 GPIO_ACTIVE_HIGH>; /* D3  - MB1 CS - A5 */
+	
+	io-channels = <&adc0 0x09>, <&adc0 0x0a>, <&adc0 0x0b>, <&adc0 0x0c>, <&adc0 0x0d>, <&adc0 0x0e>;
+
  	adc-pin-gpios =
  			    <&gpio0 23 GPIO_ACTIVE_HIGH>, /* D15 - MB1 AN - A0 */
  			    <&gpio0 24 GPIO_ACTIVE_HIGH>, /* D16 - MB2 AN - A1 */
@@ -86,4 +96,65 @@
 	status = "okay";
 	pinctrl-0 = <&pwm1_default>;
 	pinctrl-names = "default";
+};
+
+&adc0 {
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	
+	/* MB1 AN */
+	channel@9 {
+		reg = <9>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	/* MB2 AN */
+	channel@a {
+		reg = <10>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	/* MB1/2 SCL */
+	channel@b {
+		reg = <11>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	/* MB1/2 SDA */
+	channel@c {
+		reg = <12>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	/* MB2 CS */
+	channel@d {
+		reg = <13>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	/* MB1 CS */
+	channel@e {
+		reg = <14>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
 };
