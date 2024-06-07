@@ -331,3 +331,21 @@ void detachInterrupt(pin_size_t pinNumber)
 {
   setInterruptHandler(pinNumber, nullptr);
 }
+
+#ifndef CONFIG_MINIMAL_LIBC_RAND
+
+#include <stdlib.h>
+
+void randomSeed(unsigned long seed) {
+	srand(seed);
+}
+
+long random(long min, long max) {
+	return rand() % (max - min) + min;
+}
+
+long random(long max) {
+	return rand() % max;
+}
+
+#endif
