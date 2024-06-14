@@ -19,6 +19,12 @@
 #define SPE 6
 #define SPIE 7
 
+/* Count the number of GPIOs for limit of number of interrupts */
+#define INTERRUPT_HELPER(n, p, i) 1
+#define INTERRUPT_COUNT                                                        \
+  DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios,            \
+                           INTERRUPT_HELPER, (+))
+
 namespace arduino {
 class ZephyrSPI : public HardwareSPI {
 public:
@@ -43,7 +49,9 @@ public:
 
 private:
   const struct device *spi_dev;
-	struct spi_config config;
+  struct spi_config config;
+  int interrupt[INTERRUPT_COUNT];
+  size_t interrupt_pos = 0;
 };
 
 } // namespace arduino
