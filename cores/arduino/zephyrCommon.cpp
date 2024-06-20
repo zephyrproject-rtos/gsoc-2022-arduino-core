@@ -7,6 +7,9 @@
 #include <Arduino.h>
 #include "zephyrInternal.h"
 
+static const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
+	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
+
 namespace {
 
 /*

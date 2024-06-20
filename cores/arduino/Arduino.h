@@ -87,9 +87,6 @@ enum digitalPins {
 	NUM_OF_DIGITAL_PINS
 };
 
-const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
-	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
-
 #ifdef CONFIG_ADC
 
 #define AN_ENUMS(n, p, i) A ## i = DIGITAL_PIN_GPIOS_FIND_PIN( \
@@ -101,5 +98,7 @@ enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
 #endif
 
 #include <variants.h>
+#ifdef __cplusplus
 #include <zephyrPrint.h>
 #include <zephyrSerial.h>
+#endif // __cplusplus
