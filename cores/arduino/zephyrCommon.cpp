@@ -5,6 +5,7 @@
  */
 
 #include <Arduino.h>
+#include "zephyrInternal.h"
 
 static const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
@@ -71,9 +72,14 @@ const int max_ngpios = max_in_list(
  * GPIO callback implementation
  */
 
+struct arduino_callback {
+  voidFuncPtr handler;
+  bool enabled;
+};
+
 struct gpio_port_callback {
   struct gpio_callback callback;
-  voidFuncPtr handlers[max_ngpios];
+  struct arduino_callback handlers[max_ngpios];
   gpio_port_pins_t pins;
   const struct device *dev;
 } port_callback[port_num] = {0};
@@ -98,7 +104,7 @@ void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func)
   struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
 
   if (pcb) {
-    pcb->handlers[BIT(arduino_pins[pinNumber].pin)] = func;
+    pcb->handlers[BIT(arduino_pins[pinNumber].pin)].handler = func;
   }
 }
 
@@ -107,8 +113,8 @@ void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uin
   struct gpio_port_callback *pcb = (struct gpio_port_callback *)cb;
 
   for (uint32_t i = 0; i < max_ngpios; i++) {
-    if (pins & BIT(i)) {
-      pcb->handlers[BIT(i)]();
+    if (pins & BIT(i) && pcb->handlers[BIT(i)].enabled) {
+      pcb->handlers[BIT(i)].handler();
     }
   }
 }
@@ -324,6 +330,7 @@ void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinSt
 
   pcb->pins |= BIT(arduino_pins[pinNumber].pin);
   setInterruptHandler(pinNumber, callback);
+  enableInterrupt(pinNumber);
 
   gpio_pin_interrupt_configure(arduino_pins[pinNumber].port, arduino_pins[pinNumber].pin, intmode);
   gpio_init_callback(&pcb->callback, handleGpioCallback, pcb->pins);
@@ -333,6 +340,7 @@ void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinSt
 void detachInterrupt(pin_size_t pinNumber)
 {
   setInterruptHandler(pinNumber, nullptr);
+  disableInterrupt(pinNumber);
 }
 
 #ifndef CONFIG_MINIMAL_LIBC_RAND
@@ -396,3 +404,19 @@ cleanup:
 }
 
 #endif // CONFIG_GPIO_GET_DIRECTION
+
+void enableInterrupt(pin_size_t pinNumber) {
+  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+
+  if (pcb) {
+    pcb->handlers[BIT(arduino_pins[pinNumber].pin)].enabled = true;
+  }
+}
+
+void disableInterrupt(pin_size_t pinNumber) {
+  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+
+  if (pcb) {
+    pcb->handlers[BIT(arduino_pins[pinNumber].pin)].enabled = false;
+  }
+}
