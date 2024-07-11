@@ -22,10 +22,6 @@ else
 	printf '%s\n' "API Folder already exists, skipping clone...";
 fi
 
-printf '%s\n' "Commenting out WCharacter.h because it fails to build properly";
-sed '/WCharacter.h/ s/./\/\/ &/' ~/.ArduinoCore-API/api/ArduinoAPI.h > ~/.ArduinoCore-API/api/tmpArduinoAPI.h ;
-mv ~/.ArduinoCore-API/api/tmpArduinoAPI.h ~/.ArduinoCore-API/api/ArduinoAPI.h ;
-
 printf '%s\n' "Linking...";
 ln -sf ~/.ArduinoCore-API/api cores/arduino/. ;
 
