@@ -40,8 +40,6 @@ The `cores` folder can be found at `~/zephyrproject/modules/lib/Arduino-Zephyr-A
 
 __NOTE:__ You can skip this step as well if you ran ``install.sh``.
 
-* While compiling with the ArduinoCore-API `WCharacter.h` produces many errors. The include of that file needs to be deleted from `cores/arduino/api/ArduinoAPI.h` (it is unused in this port.) We are looking into resolving the issue.
-
 **Maintainers**:
 - [DhruvaG2000](https://github.com/DhruvaG2000)
 - [soburi](https://github.com/soburi)
