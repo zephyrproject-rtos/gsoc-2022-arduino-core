@@ -20,8 +20,6 @@ jobs:
           west init -m https://github.com/zephyrproject-rtos/gsoc-2022-arduino-core.git
           west update
           git clone https://github.com/arduino/ArduinoCore-API.git ArduinoCore-API
-          sed '/WCharacter.h/ s/./\/\/ &/' ArduinoCore-API/api/ArduinoAPI.h > ArduinoCore-API/api/tmpArduinoAPI.h
-          mv ArduinoCore-API/api/tmpArduinoAPI.h ArduinoCore-API/api/ArduinoAPI.h
           cp -r ArduinoCore-API/api modules/lib/Arduino-Zephyr-API/cores/arduino/.
 
       - name: Build fade
@@ -33,6 +31,11 @@ jobs:
         working-directory: Arduino-Zephyr-API
         run: |
           west build -p -b arduino_nano_33_ble_sense samples/i2cdemo
+
+      - name: Build adc
+        working-directory: Arduino-Zephyr-API
+        run: |
+          west build -p -b beagleconnect_freedom samples/analog_input
 
       - name: Archive firmware
         uses: actions/upload-artifact@v2
