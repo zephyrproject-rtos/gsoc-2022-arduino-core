@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-config ARDUINO_API
-	bool "ARDUINO_API"
+config ARDUINO_CORE
+	bool "ARDUINO_CORE"
 	imply CPP
 	imply GPIO
 	imply I2C
@@ -13,16 +13,21 @@ config ARDUINO_API
 	imply CBPRINTF_FP_SUPPORT
 	imply RING_BUFFER
 	select UART_INTERRUPT_DRIVEN
-	default n
+	select LLEXT
+	select MODULES
 
-if ARDUINO_API
+if ARDUINO_CORE
+
+choice LLEXT_BINARY_TYPE
+	default LLEXT_TYPE_ELF_RELOCATABLE
+endchoice
 
 config QEMU_ICOUNT
 	bool "QEMU icount mode"
 	default n
 	depends on QEMU_TARGET
 
-config ARDUINO_API_SERIAL_BUFFER_SIZE
+config ARDUINO_CORE_SERIAL_BUFFER_SIZE
 	int "Buffer size for Arduino Serial API"
 	default 64
 

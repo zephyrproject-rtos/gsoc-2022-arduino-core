@@ -6,7 +6,9 @@
 
 #include "Arduino.h"
 
-int main(void) {
+extern "C" {
+
+int arduino_main(void) {
   setup();
 
   for (;;) {
@@ -15,4 +17,6 @@ int main(void) {
   }
 
   return 0;
+}
+
 }
