@@ -121,5 +121,26 @@ void arduino::ZephyrSPI::begin() {}
 
 void arduino::ZephyrSPI::end() {}
 
-arduino::ZephyrSPI
-    SPI(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), spis, 0)));
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), spis)
+#if (DT_PROP_LEN(DT_PATH(zephyr_user), spis) > 1)
+#define ARDUINO_SPI_DEFINED_0 1
+#define DECL_SPI_0(n, p, i)   arduino::ZephyrSPI SPI(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(n, p, i)));
+#define DECL_SPI_N(n, p, i)   arduino::ZephyrSPI SPI##i(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(n, p, i)));
+#define DECLARE_SPI_N(n, p, i)                                                                     \
+	COND_CODE_1(ARDUINO_SPI_DEFINED_##i, (DECL_SPI_0(n, p, i)), (DECL_SPI_N(n, p, i)))
+
+/* Declare SPI, SPI1, SPI2, ... */
+DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), spis, DECLARE_SPI_N)
+
+#undef DECLARE_SPI_N
+#undef DECL_SPI_N
+#undef DECL_SPI_0
+#undef ARDUINO_SPI_DEFINED_0
+#else  // PROP_LEN(spis) > 1
+/* When PROP_LEN(spis) == 1, DT_FOREACH_PROP_ELEM work not correctly. */
+arduino::ZephyrSPI SPI(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), spis, 0)));
+#endif // HAS_PORP(spis)
+/* If spis node is not defined, tries to use arduino_spi */
+#elif DT_NODE_EXISTS(DT_NODELABEL(arduino_spi))
+arduino::ZephyrSPI SPI(DEVICE_DT_GET(DT_NODELABEL(arduino_spi)));
+#endif
