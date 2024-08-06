@@ -303,7 +303,6 @@ void analogReference(uint8_t mode)
    * the mode argument of analogReference().
    * Treat the value as equivalent to zephyr's adc_reference.
    */
-  size_t idx;
   for (size_t i=0; i<ARRAY_SIZE(channel_cfg); i++) {
     channel_cfg[i].reference = static_cast<adc_reference>(mode);
   }
