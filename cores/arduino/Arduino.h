@@ -97,6 +97,9 @@ enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
 
 #endif
 
+void interrupts(void);
+void noInterrupts(void);
+
 #include <variant.h>
 #ifdef __cplusplus
 #include <zephyrPrint.h>
