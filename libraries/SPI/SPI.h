@@ -56,7 +56,24 @@ private:
 
 } // namespace arduino
 
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), spis) && (DT_PROP_LEN(DT_PATH(zephyr_user), spis) > 1)
+#define ARDUINO_SPI_DEFINED_0 1
+#define DECL_EXTERN_SPI_0(i)  extern arduino::ZephyrSPI SPI
+#define DECL_EXTERN_SPI_N(i)  extern arduino::ZephyrSPI SPI##i
+#define DECLARE_EXTERN_SPI_N(n, p, i)                                                              \
+	COND_CODE_1(ARDUINO_SPI_DEFINED_##i, (DECL_EXTERN_SPI_0(i);), (DECL_EXTERN_SPI_N(i);))
+
+/* Declare SPI, SPI1, SPI2, ... */
+DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), spis, DECLARE_EXTERN_SPI_N)
+
+#undef DECLARE_EXTERN_SPI_N
+#undef DECL_EXTERN_SPI_N
+#undef DECL_EXTERN_SPI_0
+#undef ARDUINO_SPI_DEFINED_0
+#else
 extern arduino::ZephyrSPI SPI;
+#endif
+
 /* Serial Peripheral Control Register */
 extern uint8_t SPCR;
 
