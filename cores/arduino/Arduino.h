@@ -100,6 +100,8 @@ enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
 void interrupts(void);
 void noInterrupts(void);
 
+int digitalPinToInterrupt(pin_size_t pin);
+
 #include <variant.h>
 #ifdef __cplusplus
 #include <zephyrPrint.h>

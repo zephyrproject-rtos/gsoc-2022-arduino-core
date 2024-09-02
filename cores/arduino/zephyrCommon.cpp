@@ -480,3 +480,10 @@ void noInterrupts(void) {
     interrupts_disabled = true;
   }
 }
+
+int digitalPinToInterrupt(pin_size_t pin) {
+  struct gpio_port_callback *pcb =
+      find_gpio_port_callback(arduino_pins[pin].port);
+
+  return (pcb) ? pin : -1;
+}
