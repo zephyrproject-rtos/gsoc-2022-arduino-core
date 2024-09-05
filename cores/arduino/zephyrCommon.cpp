@@ -177,20 +177,6 @@ size_t analog_pin_index(pin_size_t pinNumber) {
 
 static unsigned int irq_key;
 static bool interrupts_disabled = false;
-
-void interrupts(void) {
-  if (interrupts_disabled) {
-    irq_unlock(irq_key);
-    interrupts_disabled = false;
-  }
-}
-
-void noInterrupts(void) {
-  if (!interrupts_disabled) {
-    irq_key = irq_lock();
-    interrupts_disabled = true;
-  }
-}
 }
 
 void yield(void) {
@@ -478,5 +464,19 @@ void disableInterrupt(pin_size_t pinNumber) {
 
   if (pcb) {
     pcb->handlers[BIT(arduino_pins[pinNumber].pin)].enabled = false;
+  }
+}
+
+void interrupts(void) {
+  if (interrupts_disabled) {
+    irq_unlock(irq_key);
+    interrupts_disabled = false;
+  }
+}
+
+void noInterrupts(void) {
+  if (!interrupts_disabled) {
+    irq_key = irq_lock();
+    interrupts_disabled = true;
   }
 }
