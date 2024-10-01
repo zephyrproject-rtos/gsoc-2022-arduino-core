@@ -14,6 +14,7 @@
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/dac.h>
 #include <zephyr/drivers/i2c.h>
+#include <math.h>
 
 #if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
 /* Note: DT_REG_ADDR needs an expanded argument or it will not work properly */
