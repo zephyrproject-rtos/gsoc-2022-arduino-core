@@ -109,5 +109,6 @@ int digitalPinToInterrupt(pin_size_t pin);
 #endif // LED_BUILTIN
 
 #ifdef __cplusplus
+#include <SerialUSB.h>
 #include <zephyrSerial.h>
 #endif // __cplusplus

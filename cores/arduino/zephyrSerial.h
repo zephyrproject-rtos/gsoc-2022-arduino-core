@@ -7,8 +7,6 @@
 #pragma once
 
 #include <zephyr/sys/ring_buffer.h>
-
-#include <Arduino.h>
 #include <api/HardwareSerial.h>
 
 namespace arduino {
@@ -38,7 +36,7 @@ public:
 	template <int SZ>
 	class ZephyrSerialBuffer
 	{
-	      friend arduino::ZephyrSerial;
+		friend arduino::ZephyrSerial;
 		struct ring_buf ringbuf;
 		uint8_t buffer[SZ];
 		struct k_sem sem;
@@ -53,10 +51,15 @@ public:
 	ZephyrSerial(const struct device *dev) : uart(dev) { }
 	void begin(unsigned long baudrate, uint16_t config);
 	void begin(unsigned long baudrate) { begin(baudrate, SERIAL_8N1); }
-	void flush() { }
+	void flush() {
+		while (ring_buf_size_get(&tx.ringbuf) > 0) {
+			k_yield();
+		}
+	}
 	void end() { }
 	size_t write(const uint8_t *buffer, size_t size);
 	size_t write(const uint8_t data) { return write(&data, 1); }
+	using Print::write; // pull in write(str) and write(buf, size) from Print
 	int available();
 	int peek();
 	int read();
@@ -65,6 +68,8 @@ public:
 	{
 		return true;
 	}
+
+	friend class SerialUSB_;
 
 protected:
 	void IrqHandler();
@@ -79,7 +84,10 @@ protected:
 }   // namespace arduino
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
+#if !DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+// If CDC USB, use that object as Serial (and SerialUSB)
 extern arduino::ZephyrSerial Serial;
+#endif
 #if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
 #define SERIAL_DEFINED_0		 1
 #define EXTERN_SERIAL_N(i)		 extern arduino::ZephyrSerial Serial##i;

@@ -9,6 +9,7 @@
 
 #include <api/HardwareSerial.h>
 #include <zephyrSerial.h>
+#include <Arduino.h>
 
 namespace
 {
@@ -164,7 +165,10 @@ size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
 }
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
+#if !DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+// If CDC USB, use that object as Serial (and SerialUSB)
 arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), serials, 0)));
+#endif
 #if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
 #define ARDUINO_SERIAL_DEFINED_0 1
 
