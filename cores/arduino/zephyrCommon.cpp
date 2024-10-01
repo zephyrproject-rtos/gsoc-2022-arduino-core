@@ -12,6 +12,8 @@ static const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 
 namespace {
 
+#if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
+
 /*
  * Calculate GPIO ports/pins number statically from devicetree configuration
  */
@@ -67,6 +69,13 @@ const int port_num =
 #define GPIO_NGPIOS(n, p, i) DT_PROP(DT_GPIO_CTLR_BY_IDX(n, p, i), ngpios)
 const int max_ngpios = max_in_list(
   0, DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios, GPIO_NGPIOS, (, )));
+
+#else
+
+const int port_num = 1;
+const int max_ngpios = 0;
+
+#endif
 
 /*
  * GPIO callback implementation
