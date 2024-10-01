@@ -5,6 +5,9 @@
  */
 
 #include "Arduino.h"
+#ifdef CONFIG_LLEXT
+#include <zephyr/llext/symbol.h>
+#endif
 
 int main(void) {
   setup();
@@ -16,3 +19,7 @@ int main(void) {
 
   return 0;
 }
+
+#ifdef CONFIG_LLEXT
+LL_EXTENSION_SYMBOL(main);
+#endif
