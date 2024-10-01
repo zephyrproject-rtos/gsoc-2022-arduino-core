@@ -45,13 +45,11 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
   int ret = i2c_read(i2c_dev, rxRingBuffer.buffer, len, address);
   if (ret != 0)
   {
-    printk("\n\nERR: i2c burst read fails\n\n\n");
     return 0;
   }
   ret = ring_buf_put(&rxRingBuffer.rb, rxRingBuffer.buffer, len);
   if (ret == 0)
   {
-    printk("\n\nERR: buff put fails\n\n\n");
     return 0;
   }
   return len;
@@ -80,7 +78,6 @@ int arduino::ZephyrI2C::read() {
   if (ring_buf_peek(&rxRingBuffer.rb, buf, 1) > 0) {
         int ret = ring_buf_get(&rxRingBuffer.rb, buf, 1);
         if (ret == 0) {
-          printk("\n\nERR: buff empty\n\n\n");
             return 0;
         }
 		return (int)buf[0];
@@ -89,7 +86,7 @@ int arduino::ZephyrI2C::read() {
 }
 
 int arduino::ZephyrI2C::available() { // TODO for ADS1115 
-  return !ring_buf_is_empty(&rxRingBuffer.rb);    // ret 0 if empty
+  return ring_buf_size_get(&rxRingBuffer.rb);    // ret 0 if empty
   }
 
 int arduino::ZephyrI2C::peek() {
@@ -121,7 +118,7 @@ DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), i2cs, DECLARE_WIRE_N)
 #undef DECL_WIRE_N
 #undef DECL_WIRE_0
 #undef ARDUINO_WIRE_DEFINED_0
-#else  // PROP_LEN(i2cs) > 1
+#elif (DT_PROP_LEN(DT_PATH(zephyr_user), i2cs) == 1)
 /* When PROP_LEN(i2cs) == 1, DT_FOREACH_PROP_ELEM work not correctly. */
 arduino::ZephyrI2C Wire(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), i2cs, 0)));
 #endif // HAS_PORP(i2cs)
