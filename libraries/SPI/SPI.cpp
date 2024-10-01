@@ -8,9 +8,6 @@
 #include "zephyrInternal.h"
 #include <zephyr/kernel.h>
 
-/* Serial Peripheral Control Register */
-uint8_t SPCR;
-
 arduino::ZephyrSPI::ZephyrSPI(const struct device *spi) : spi_dev(spi) {}
 
 uint8_t arduino::ZephyrSPI::transfer(uint8_t data) {
@@ -65,57 +62,48 @@ void arduino::ZephyrSPI::transfer(void *buf, size_t count) {
       .count = 1,
   };
 
-  ret = spi_write(spi_dev, &config, &tx_buf_set);
-  if (ret < 0) {
-    return;
-  }
+  uint8_t rx[count];
+  const struct spi_buf rx_buf = {.buf = &rx, .len = count};
+  const struct spi_buf_set rx_buf_set = {
+      .buffers = &rx_buf,
+      .count = 1,
+  };
 
-  ret = spi_read(spi_dev, &config, &tx_buf_set);
-  if (ret < 0) {
-    return;
-  }
+  spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
+  memcpy(buf, rx, count);
 }
 
 void arduino::ZephyrSPI::usingInterrupt(int interruptNumber) {
-  interrupt[interrupt_pos++] = interruptNumber;
 }
 
 void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
-  for (size_t i = 0; i < interrupt_pos; ++i) {
-    if (interrupt[i] == interruptNumber) {
-      memmove(&interrupt[i], &interrupt[i + 1], interrupt_pos - i - 1);
-      interrupt_pos--;
-      break;
-    }
-  }
 }
 
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
   memset(&config, 0, sizeof(config));
   config.frequency = settings.getClockFreq();
-  config.operation = ((settings.getBitOrder() ^ 1) << 4) |
-                     (settings.getDataMode() << 1) | ((SPCR >> MSTR) & 1) |
-                     SPI_WORD_SET(8);
-
-  detachInterrupt();
+  auto mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
+  switch (settings.getDataMode()) {
+    case SPI_MODE0:
+      mode = 0; break;
+    case SPI_MODE1:
+      mode = SPI_MODE_CPHA; break;
+    case SPI_MODE2:
+      mode = SPI_MODE_CPOL; break;
+    case SPI_MODE3:
+      mode = SPI_MODE_CPOL | SPI_MODE_CPHA; break;
+  }
+  config.operation = SPI_WORD_SET(8) | (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
 }
 
 void arduino::ZephyrSPI::endTransaction(void) {
   spi_release(spi_dev, &config);
-  attachInterrupt();
 }
 
-void arduino::ZephyrSPI::attachInterrupt() {
-  for (size_t i = 0; i < interrupt_pos; ++i) {
-    enableInterrupt(interrupt[i]);
-  }
-}
+void arduino::ZephyrSPI::attachInterrupt() {}
 
-void arduino::ZephyrSPI::detachInterrupt() {
-  for (size_t i = 0; i < interrupt_pos; ++i) {
-    disableInterrupt(interrupt[i]);
-  }
-}
+void arduino::ZephyrSPI::detachInterrupt() {}
+
 
 void arduino::ZephyrSPI::begin() {}
 

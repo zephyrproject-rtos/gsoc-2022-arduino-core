@@ -10,6 +10,9 @@
 #include <api/HardwareSPI.h>
 #include <zephyr/drivers/spi.h>
 
+#undef SPI
+#undef SPI1
+
 #define SPR0 0
 #define SPR1 1
 #define CPHA 2
@@ -75,7 +78,6 @@ extern arduino::ZephyrSPI SPI;
 #endif
 
 /* Serial Peripheral Control Register */
-extern uint8_t SPCR;
 
 using arduino::SPI_MODE0;
 using arduino::SPI_MODE1;
