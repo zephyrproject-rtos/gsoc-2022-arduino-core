@@ -10,7 +10,7 @@
 #endif
 
 int main(void) {
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) || DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
   Serial.begin(115200);
 #endif
   setup();
