@@ -13,6 +13,7 @@
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/i2c.h>
+#include <math.h>
 
 #if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
 #define DIGITAL_PIN_EXISTS(n, p, i, dev, num)                                                      \
@@ -111,4 +112,8 @@ int digitalPinToInterrupt(pin_size_t pin);
 #ifdef __cplusplus
 #include <SerialUSB.h>
 #include <zephyrSerial.h>
+
+// Allow namespace-less operations if Arduino.h is included
+using namespace arduino;
+
 #endif // __cplusplus
