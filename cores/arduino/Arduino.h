@@ -112,6 +112,8 @@ int digitalPinToInterrupt(pin_size_t pin);
 #ifdef __cplusplus
 #include <SerialUSB.h>
 #include <zephyrSerial.h>
+#include <strings.h>
+#include <api/itoa.h>
 
 // Allow namespace-less operations if Arduino.h is included
 using namespace arduino;
