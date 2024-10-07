@@ -53,15 +53,24 @@ static int loader(const struct shell *sh)
 		return 0;
 	}
 
-	int header_len = endptr - header + 2;
+	int header_len = 16;
 
+#if defined(CONFIG_LLEXT_STORAGE_WRITABLE)
 	uint8_t* sketch_buf = k_aligned_alloc(4096, sketch_buf_len);
+
+	if (!sketch_buf) {
+		printk("Unable to allocate %d bytes\n", sketch_buf_len);
+	}
 
 	rc = flash_area_read(fa, header_len, sketch_buf, sketch_buf_len);
 	if (rc) {
 		printk("Failed to read sketch area, rc %d\n", rc);
 		return rc;
 	}
+#else
+	uint32_t offset = FIXED_PARTITION_OFFSET(user_sketch);
+	uint8_t* sketch_buf = (uint8_t*)(offset+header_len);
+#endif
 
 	struct llext_buf_loader buf_loader = LLEXT_BUF_LOADER(sketch_buf, sketch_buf_len);
 	struct llext_loader *ldr = &buf_loader.loader;
