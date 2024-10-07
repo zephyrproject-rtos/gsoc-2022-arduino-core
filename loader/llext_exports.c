@@ -1,4 +1,5 @@
 #include <string.h>
+#include <strings.h>
 #include <zephyr/llext/symbol.h>
 #include <zephyr/usb/usb_device.h>
 #include <ctype.h>
@@ -14,6 +15,8 @@ EXPORT_SYMBOL(strrchr);
 EXPORT_SYMBOL(strstr);
 EXPORT_SYMBOL(strncmp);
 EXPORT_SYMBOL(strncpy);
+EXPORT_SYMBOL(strcasecmp);
+EXPORT_SYMBOL(strtoul);
 EXPORT_SYMBOL(strcmp);
 EXPORT_SYMBOL(strlen);
 EXPORT_SYMBOL(strchr);
@@ -56,6 +59,17 @@ FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
 #endif
 
+#if defined(CONFIG_BT)
+FORCE_EXPORT_SYM(bt_enable_raw);
+FORCE_EXPORT_SYM(bt_hci_raw_set_mode);
+FORCE_EXPORT_SYM(bt_send);
+FORCE_EXPORT_SYM(net_buf_get);
+FORCE_EXPORT_SYM(bt_buf_get_tx);
+FORCE_EXPORT_SYM(net_buf_simple_pull);
+FORCE_EXPORT_SYM(net_buf_simple_add_mem);
+FORCE_EXPORT_SYM(net_buf_simple_pull_mem);
+FORCE_EXPORT_SYM(net_buf_unref);
+#endif
 
 #if defined(CONFIG_NET_SOCKETS)
 FORCE_EXPORT_SYM(getaddrinfo);
