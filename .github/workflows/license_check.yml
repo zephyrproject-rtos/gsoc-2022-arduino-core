@@ -8,14 +8,14 @@ jobs:
     name: Scan code for licenses
     steps:
     - name: Checkout the code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Scan the code
       id: scancode
       uses: zephyrproject-rtos/action_scancode@v4
       with:
         directory-to-scan: 'scan/'
     - name: Artifact Upload
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: scancode
         path: ./artifacts
