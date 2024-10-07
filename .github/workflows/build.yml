@@ -38,7 +38,7 @@ jobs:
           west build -p -b beagleconnect_freedom samples/analog_input
 
       - name: Archive firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: Arduino-Zephyr-API/build/zephyr/zephyr.*
