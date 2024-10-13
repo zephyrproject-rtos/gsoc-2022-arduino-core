@@ -68,7 +68,9 @@ static int loader(const struct shell *sh)
 		return rc;
 	}
 #else
-	uint32_t offset = FIXED_PARTITION_OFFSET(user_sketch);
+	// Assuming the sketch is stored in the same flash device as the loader
+	// uint32_t offset =  DT_REG_ADDR(DT_CHOSEN(zephyr_flash)) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
+	uint32_t offset =  DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
 	uint8_t* sketch_buf = (uint8_t*)(offset+header_len);
 #endif
 
