@@ -15,6 +15,17 @@ LOG_MODULE_REGISTER(app);
 
 #include <stdlib.h>
 
+#ifdef CONFIG_USERSPACE
+K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
+struct k_thread llext_thread;
+
+void llext_entry(void *arg0, void *arg1, void *arg2)
+{
+	void (*fn)(struct llext_loader*, struct llext*) = arg0;
+	fn(arg1, arg2);
+}
+#endif /* CONFIG_USERSPACE */
+
 static int loader(const struct shell *sh)
 {
 	const struct flash_area *fa;
@@ -95,7 +106,44 @@ static int loader(const struct shell *sh)
 		return -ENOENT;
 	}
 
+#ifdef CONFIG_USERSPACE
+	/*
+	 * Due to the number of MPU regions on some parts with MPU (USERSPACE)
+	 * enabled we need to always call into the extension from a new dedicated
+	 * thread to avoid running out of MPU regions on some parts.
+	 *
+	 * This is part dependent behavior and certainly on MMU capable parts
+	 * this should not be needed! This test however is here to be generic
+	 * across as many parts as possible.
+	 */
+	struct k_mem_domain domain;
+
+	k_mem_domain_init(&domain, 0, NULL);
+
+#ifdef Z_LIBC_PARTITION_EXISTS
+	k_mem_domain_add_partition(&domain, &z_libc_partition);
+#endif
+
+	res = llext_add_domain(ext, &domain);
+	if (res == -ENOSPC) {
+		printk("Too many memory partitions for this particular hardware\n");
+		return -1;
+	}
+
+	k_thread_create(&llext_thread, llext_stack,
+			K_THREAD_STACK_SIZEOF(llext_stack),
+			&llext_entry, llext_bootstrap, ext, main_fn,
+			1, K_INHERIT_PERMS, K_FOREVER);
+
+	k_mem_domain_add_thread(&domain, &llext_thread);
+
+	k_thread_start(&llext_thread);
+	k_thread_join(&llext_thread, K_FOREVER);
+#else
+
 	llext_bootstrap(ext, main_fn, NULL);
+
+#endif
 
 	return 0;
 }
