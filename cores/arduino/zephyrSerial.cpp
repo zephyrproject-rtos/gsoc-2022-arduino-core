@@ -79,10 +79,6 @@ void arduino::ZephyrSerial::IrqHandler()
 		return;
 	}
 
-	if (ring_buf_size_get(&tx.ringbuf) == 0) {
-		uart_irq_tx_disable(uart);
-	}
-
 	k_sem_take(&rx.sem, K_NO_WAIT);
 	while (uart_irq_rx_ready(uart) && ((length = uart_fifo_read(uart, buf, sizeof(buf))) > 0)) {
 		length = min(sizeof(buf), static_cast<size_t>(length));
@@ -95,6 +91,11 @@ void arduino::ZephyrSerial::IrqHandler()
 	k_sem_give(&rx.sem);
 
 	k_sem_take(&tx.sem, K_NO_WAIT);
+
+	if (ring_buf_size_get(&tx.ringbuf) == 0) {
+		uart_irq_tx_disable(uart);
+	}
+
 	while (uart_irq_tx_ready(uart) && ((length = ring_buf_size_get(&tx.ringbuf)) > 0)) {
 		length = min(sizeof(buf), static_cast<size_t>(length));
 		ring_buf_peek(&tx.ringbuf, &buf[0], length);
@@ -149,19 +150,28 @@ int arduino::ZephyrSerial::read()
 
 size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
 {
-	int ret;
+	int idx = 0;
 
-	k_sem_take(&tx.sem, K_FOREVER);
-	ret = ring_buf_put(&tx.ringbuf, buffer, size);
-	k_sem_give(&tx.sem);
-
-	if (ret < 0) {
-		return 0;
+	while (1) {
+		k_sem_take(&tx.sem, K_FOREVER);
+		auto ret = ring_buf_put(&tx.ringbuf, &buffer[idx], size-idx);
+		k_sem_give(&tx.sem);
+		if (ret < 0) {
+			return 0;
+		}
+		idx += ret;
+		if (ret == 0) {
+			uart_irq_tx_enable(uart);
+			yield();
+		}
+		if (idx == size) {
+			break;
+		}
 	}
 
 	uart_irq_tx_enable(uart);
 
-	return ret;
+	return size;
 }
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
