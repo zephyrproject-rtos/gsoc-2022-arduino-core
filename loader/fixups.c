@@ -1,6 +1,5 @@
-#if CONFIG_BOARD_ARDUINO_NANO_33_BLE
-
 #include <cmsis_core.h>
+#include <zephyr/init.h>
 void disable_mpu_rasr_xn(void)
 {
 	uint32_t index;
@@ -21,6 +20,7 @@ void disable_mpu_rasr_xn(void)
 	}
 }
 
+#if defined(CONFIG_BOARD_ARDUINO_NANO_33_BLE)
 int disable_bootloader_mpu() {
 	// MPU was previously enabled in the bootloader
 	// https://github.com/bcmi-labs/zephyr/blob/31cb7dd00fd5bce4c69896b3b2ddf6259d0c0f2b/boards/arm/arduino_nano_33_ble/arduino_nano_33_ble_defconfig#L10C1-L10C15
@@ -32,5 +32,8 @@ int disable_bootloader_mpu() {
     return 0;
 }
 SYS_INIT(disable_bootloader_mpu, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+#endif
 
+#if defined (CONFIG_BOARD_ARDUINO_PORTENTA_H7)
+SYS_INIT(disable_mpu_rasr_xn, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 #endif
