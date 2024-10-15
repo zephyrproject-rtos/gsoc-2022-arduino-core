@@ -87,16 +87,3 @@ size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits)
 
 } // namespace zephyr
 } // namespace arduino
-
-/*
- * This is the default implementation.
- * It will be overridden by subclassese.
- */
-size_t arduino::Print::write(const uint8_t *buffer, size_t size)
-{
-  size_t i;
-  for (i=0; i<size && write(buffer[i]); i++) {
-  }
-
-  return i;
-}
