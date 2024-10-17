@@ -12,8 +12,18 @@ LOG_MODULE_REGISTER(app);
 #include <zephyr/llext/llext.h>
 #include <zephyr/llext/buf_loader.h>
 #include <zephyr/shell/shell.h>
+#include <zephyr/shell/shell_uart.h>
 
 #include <stdlib.h>
+#include <zephyr/drivers/uart/cdc_acm.h>
+#include <zephyr/drivers/uart.h>
+#include <zephyr/usb/usb_device.h>
+
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
+#endif
+
+static int enable_shell_usb(void);
 
 #ifdef CONFIG_USERSPACE
 K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
@@ -58,11 +68,23 @@ static int loader(const struct shell *sh)
 		return -EINVAL;
 	}
 
+#if CONFIG_SHELL
 	uint8_t debug = endptr[1];
 	if (debug != 0 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
-		// starts the shell
+		// disables default shell on UART
+		shell_uninit(shell_backend_uart_get_ptr(), NULL);
+		// enables USB and starts the shell
+		usb_enable(NULL);
+		int dtr;
+		do {
+			// wait for the serial port to open
+			uart_line_ctrl_get(usb_dev, UART_LINE_CTRL_DTR, &dtr);
+			k_sleep(K_MSEC(100));
+		} while (!dtr);
+		enable_shell_usb();
 		return 0;
 	}
+#endif
 
 	int header_len = 16;
 
@@ -150,6 +172,20 @@ static int loader(const struct shell *sh)
 
 #if CONFIG_SHELL
 SHELL_CMD_REGISTER(sketch, NULL, "Run sketch", loader);
+
+static int enable_shell_usb(void)
+{
+	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
+	uint32_t level =
+		(CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
+		CONFIG_LOG_MAX_LEVEL : CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL;
+	static const struct shell_backend_config_flags cfg_flags =
+					SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
+
+	shell_init(shell_backend_uart_get_ptr(), usb_dev, cfg_flags, log_backend, level);
+
+	return 0;
+}
 #endif
 
 int main(void)
@@ -157,4 +193,3 @@ int main(void)
 	loader(NULL);
 	return 0;
 }
-

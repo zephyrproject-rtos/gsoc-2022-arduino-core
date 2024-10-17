@@ -91,6 +91,7 @@ FORCE_EXPORT_SYM(cdc_acm_dte_rate_callback_set);
 #endif
 
 FORCE_EXPORT_SYM(k_timer_init);
+FORCE_EXPORT_SYM(k_fatal_halt);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
 
