@@ -1,6 +1,6 @@
 #include <cmsis_core.h>
 #include <zephyr/init.h>
-void disable_mpu_rasr_xn(void)
+int disable_mpu_rasr_xn(void)
 {
 	uint32_t index;
 	/* Kept the max index as 8(irrespective of soc) because the sram
@@ -18,6 +18,7 @@ void disable_mpu_rasr_xn(void)
 		}
 #endif /* CONFIG_ARMV8_M_BASELINE || CONFIG_ARMV8_M_MAINLINE */
 	}
+	return 0;
 }
 
 #if defined(CONFIG_BOARD_ARDUINO_NANO_33_BLE)
