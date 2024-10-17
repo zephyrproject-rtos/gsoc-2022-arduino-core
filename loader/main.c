@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "zephyr/sys/printk.h"
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app);
 
@@ -68,7 +69,7 @@ static int loader(const struct shell *sh)
 		return -EINVAL;
 	}
 
-#if CONFIG_SHELL
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL
 	uint8_t debug = endptr[1];
 	if (debug != 0 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
@@ -173,6 +174,7 @@ static int loader(const struct shell *sh)
 #if CONFIG_SHELL
 SHELL_CMD_REGISTER(sketch, NULL, "Run sketch", loader);
 
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
 static int enable_shell_usb(void)
 {
 	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
@@ -186,6 +188,7 @@ static int enable_shell_usb(void)
 
 	return 0;
 }
+#endif
 #endif
 
 int main(void)
