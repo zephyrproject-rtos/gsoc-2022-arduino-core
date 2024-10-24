@@ -35,6 +35,39 @@ int disable_bootloader_mpu() {
 SYS_INIT(disable_bootloader_mpu, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 #endif
 
-#if defined (CONFIG_BOARD_ARDUINO_PORTENTA_H7)
+#if defined(CONFIG_ARM_MPU)
 SYS_INIT(disable_mpu_rasr_xn, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+#endif
+
+#if defined(CONFIG_BOARD_ARDUINO_GIGA_R1) && defined(CONFIG_VIDEO)
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/clock_control.h>
+#include <zephyr/logging/log.h>
+
+int camera_ext_clock_enable(void)
+{
+	int ret;
+	uint32_t rate;
+	const struct device *cam_ext_clk_dev = DEVICE_DT_GET(DT_NODELABEL(pwmclock));
+
+	if (!device_is_ready(cam_ext_clk_dev)) {
+		return -ENODEV;
+	}
+
+	ret = clock_control_on(cam_ext_clk_dev, (clock_control_subsys_t)0);
+	if (ret < 0) {
+		return ret;
+	}
+
+	ret = clock_control_get_rate(cam_ext_clk_dev, (clock_control_subsys_t)0, &rate);
+	if (ret < 0) {
+		return ret;
+	}
+
+	return 0;
+}
+
+SYS_INIT(camera_ext_clock_enable, POST_KERNEL, CONFIG_CLOCK_CONTROL_PWM_INIT_PRIORITY);
+
 #endif

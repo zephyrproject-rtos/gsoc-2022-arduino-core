@@ -71,6 +71,12 @@ FORCE_EXPORT_SYM(net_buf_simple_pull_mem);
 FORCE_EXPORT_SYM(net_buf_unref);
 #endif
 
+#if defined(CONFIG_VIDEO)
+FORCE_EXPORT_SYM(video_buffer_aligned_alloc);
+FORCE_EXPORT_SYM(video_buffer_alloc);
+FORCE_EXPORT_SYM(video_buffer_release);
+#endif
+
 #if defined(CONFIG_NET_SOCKETS)
 FORCE_EXPORT_SYM(getaddrinfo);
 FORCE_EXPORT_SYM(socket);

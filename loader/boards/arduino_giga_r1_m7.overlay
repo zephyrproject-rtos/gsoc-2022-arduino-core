@@ -15,6 +15,73 @@
 
 &i2c4 {
 	status = "okay";
+	ov7670: ov7670@21 {
+		compatible = "ovti,ov7670";
+		reg = <0x21>;
+		reset-gpios = <&gpiod 4 GPIO_ACTIVE_LOW>;
+		pwdn-gpios = <&gpioa 1 GPIO_ACTIVE_LOW>;
+
+		port {
+			ov7670_ep_out: endpoint {
+				remote-endpoint = <&dcmi_ep_in>;
+			};
+		};
+	};
+};
+
+// XCLK as PWM from PJ9
+&timers1 {
+	status = "okay";
+	st,prescaler = <0>;
+
+	cam_clock_pwm: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim1_ch3_pj9>;
+		pinctrl-names = "default";
+	};
+};
+
+&cam_clock_pwm {
+	/* ...then use the pwmclock node to start the clock generation */
+	pwmclock: pwmclock {
+		status = "okay";
+		compatible = "pwm-clock";
+		clock-frequency = <0>;
+		#clock-cells = <1>;
+		pwms = <&cam_clock_pwm 3 PWM_HZ(6000000) PWM_POLARITY_NORMAL>;
+	};
+};
+
+&dmamux1 {
+	status = "okay";
+};
+
+&dma1 {
+	status = "okay";
+};
+
+&dcmi {
+	status = "okay";
+	sensor = <&ov7670>;
+	ext-sdram = <&sdram1>;
+	pinctrl-0 = <&dcmi_hsync_ph8 &dcmi_pixclk_pa6 &dcmi_vsync_pi5
+				&dcmi_d0_ph9 &dcmi_d1_ph10 &dcmi_d2_ph11 &dcmi_d3_pg11
+				&dcmi_d4_ph14 &dcmi_d5_pi4 &dcmi_d6_pi6 &dcmi_d7_pi7>;
+	pinctrl-names = "default";
+	bus-width = <8>;
+	hsync-active = <0>;
+	vsync-active = <0>;
+	pixelclk-active = <0>;
+	capture-rate = <1>;
+	dmas = <&dma1 0 75 (STM32_DMA_PERIPH_TO_MEMORY | STM32_DMA_PERIPH_NO_INC |
+			STM32_DMA_MEM_INC | STM32_DMA_PERIPH_8BITS | STM32_DMA_MEM_32BITS |
+			STM32_DMA_PRIORITY_HIGH) STM32_DMA_FIFO_1_4>;
+
+	port {
+		dcmi_ep_in: endpoint {
+			remote-endpoint = <&ov7670_ep_out>;
+		};
+	};
 };
 
 &spi1 {
@@ -23,7 +90,6 @@
 		     &spi1_miso_pg9 &spi1_mosi_pd7>;
 	pinctrl-names = "default";
 };
-
 
 &spi5 {
 	status = "okay";
@@ -37,7 +103,11 @@
 		&adc1_inp13_pc3
 		&adc1_inp12_pc2
 		&adc1_inp10_pc0
-		&adc1_inp16_pa0>;
+		&adc1_inp16_pa0
+		&adc1_inp18_pa4
+		&adc1_inp19_pa5
+		&adc1_inp0_pa0_c
+		&adc1_inp1_pa1_c>;
 	pinctrl-names = "default";
 	st,adc-clock-source = <SYNC>;
 	st,adc-prescaler = <4>;
@@ -74,33 +144,104 @@
 		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
 		zephyr,resolution = <12>;
 	};
-	channel@13 {
+	channel@d {
 		reg = <13>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
 		zephyr,resolution = <12>;
 	};
-	channel@12 {
+	channel@c {
 		reg = <12>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
 		zephyr,resolution = <12>;
 	};
-	channel@10 {
+	channel@a {
 		reg = <10>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
 		zephyr,resolution = <12>;
 	};
-	channel@16 {
+	channel@10 {
 		reg = <16>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
 		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
 		zephyr,resolution = <12>;
+	};
+	channel@12 {
+		reg = <18>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+	channel@13 {
+		reg = <19>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+	/* PA0_C and PA1_C */
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+};
+
+&adc3 {
+	pinctrl-0 = <&adc3_inp0_pc2_c
+		&adc3_inp1_pc3_c>;
+	pinctrl-names = "default";
+	st,adc-clock-source = <SYNC>;
+	st,adc-prescaler = <4>;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <12>;
+	};
+};
+
+/{
+	chosen {
+		zephyr,camera = &dcmi;
+	};
+
+	/* used to overcome problems with _C analog pins */
+	gpioz: gpio@deadbeef {
+		compatible = "vnd,gpio";
+		gpio-controller;
+		reg = <0xdeadbeef 0x1000>;
+		#gpio-cells = <0x2>;
+		status = "okay";
 	};
 };
 
@@ -122,7 +263,7 @@
 					#address-cells = <1>;
 					#size-cells = <1>;
 
-					user_sketch: partition@0 {
+					user_sketch: partition@e0000 {
 						reg = <0x0E0000 0x20000>;
 					};
 				};
@@ -134,38 +275,115 @@
 / {
 	zephyr,user {
 		digital-pin-gpios = <&arduino_header 6 0>,
-				    <&arduino_header 7 0>,
-				    <&arduino_header 8 0>,
-				    <&arduino_header 9 0>,
-				    <&arduino_header 10 0>,
-				    <&arduino_header 11 0>,
-				    <&arduino_header 12 0>,
-				    <&arduino_header 13 0>,
-				    <&arduino_header 14 0>,
-				    <&arduino_header 15 0>,
-				    <&arduino_header 16 0>,
-				    <&arduino_header 17 0>,
-				    <&arduino_header 18 0>,
-				    <&arduino_header 19 0>,
-				    <&arduino_header 20 0>,
-				    <&arduino_header 21 0>,
-				    <&arduino_header 0 0>,
-				    <&arduino_header 1 0>,
-				    <&arduino_header 2 0>,
-				    <&arduino_header 3 0>,
-				    <&arduino_header 4 0>,
-				    <&arduino_header 5 0>,
-					<&gpioc 0 0>,
-				    <&gpioa 0 0>,
-				    <&gpioi 12 GPIO_ACTIVE_LOW>,
-				    <&gpioj 13 GPIO_ACTIVE_LOW>,
-				    <&gpioe 3 GPIO_ACTIVE_LOW>;
+						<&arduino_header 7 0>,
+						<&arduino_header 8 0>,
+						<&arduino_header 9 0>,
+						<&arduino_header 10 0>,
+						<&arduino_header 11 0>,
+						<&arduino_header 12 0>,
+						<&arduino_header 13 0>,
+						<&arduino_header 14 0>,
+						<&arduino_header 15 0>,
+						<&arduino_header 16 0>,
+						<&arduino_header 17 0>,
+						<&arduino_header 18 0>,
+						<&arduino_header 19 0>,
+						<&gpiog 14 0>,				/* TX1 - 14 */
+						<&gpioc 7 0>,
+						<&gpioh 13 0>,
+						<&gpioi 9 0>,
+						<&gpiod 5 0>,
+						<&gpiod 6 0>,
+						<&gpiob 11 0>,
+						<&gpioh 4 0>,
+
+						<&gpioj 12 0>,				/* Big header - 22 */
+						<&gpiog 13 0>,
+						<&gpiog 12 0>,
+						<&gpioj 0 0>,
+						<&gpioj 14 0>,
+						<&gpioj 1 0>,
+						<&gpioj 15 0>,
+						<&gpioj 2 0>,
+						<&gpiok 3 0>,
+						<&gpioj 3 0>,
+						<&gpiok 4 0>,
+						<&gpioj 4 0>,
+						<&gpiok 5 0>,
+						<&gpioj 5 0>,
+						<&gpiok 6 0>,
+						<&gpioj 6 0>,
+						<&gpioj 7 0>,
+						<&gpioi 14 0>,
+						<&gpioe 6 0>,
+						<&gpiok 7 0>,
+						<&gpioi 15 0>,
+						<&gpioi 10 0>,
+						<&gpiog 10 0>,
+						<&gpioi 13 0>,
+						<&gpioh 15 0>,
+						<&gpiob 2 0>,
+						<&gpiok 0 0>,
+						<&gpioe 4 0>,
+						<&gpioi 11 0>,
+						<&gpioe 5 0>,
+						<&gpiok 2 0>,
+						<&gpiog 7 0>,
+
+						<&gpioi 5 0>,		/* CAM header - 54 */
+						<&gpioh 8 0>,
+						<&gpioa 6 0>,
+						<&gpioj 9 0>,
+						<&gpioi 7 0>,
+						<&gpioi 6 0>,
+						<&gpioi 4 0>,
+						<&gpioh 14 0>,
+						<&gpiog 11 0>,
+						<&gpioh 11 0>,
+						<&gpioh 10 0>,
+						<&gpioh 9 0>,
+						<&gpioa 1 0>,
+						<&gpiod 4 0>,
+
+						<&gpioc 6 0>,		/* DSI header - 68 */
+						<&gpioi 0 0>,
+						<&gpioi 1 0>,
+						<&gpioi 2 0>,
+						<&gpioi 3 0>,
+						<&gpioc 1 0>,
+						<&gpiob 12 0>,
+						<&gpiod 3 0>,
+
+						<&gpiob 6 0>,		/* SDA1 */
+						<&gpioh 12 0>,
+
+						<&gpioc 4 0>,
+						<&gpioc 5 0>,
+						<&gpiob 0 0>,
+						<&gpiob 1 0>,
+						<&gpioc 3 0>,
+						<&gpioc 2 0>,
+						<&gpioc 0 0>,			/* A6 */
+						<&gpioa 0 0>,
+						<&gpioz 0 0>,			/* analog only */
+						<&gpioz 1 0>,			/* analog only */
+						<&gpioz 2 0>,			/* analog only */
+						<&gpioz 3 0>,			/* analog only */
+						<&gpioa 4 0>,
+						<&gpioa 5 0>,
+						<&gpiob 5 0>,			/* CAN RX */
+						<&gpiob 13 0>,			/* CAN TX */
+
+						<&gpioi 12 GPIO_ACTIVE_LOW>,
+						<&gpioj 13 GPIO_ACTIVE_LOW>,
+						<&gpioe 3 GPIO_ACTIVE_LOW>;
 
 		builtin-led-gpios = <&gpioi 12 GPIO_ACTIVE_LOW>,
                         <&gpioj 13 GPIO_ACTIVE_LOW>,
                         <&gpioe 3 GPIO_ACTIVE_LOW>;
 
-		pwm-pin-gpios =	    <&arduino_header 6 0>,
+		pwm-pin-gpios =	    <&gpioj 9 0>,
+					<&arduino_header 6 0>,
 				    <&arduino_header 5 0>,
 				    <&arduino_header 17 0>,
 				    <&arduino_header 12 0>,
@@ -174,20 +392,26 @@
 				    <&arduino_header 9 0>,
 				    <&arduino_header 10 0>;
 
-		adc-pin-gpios =     <&arduino_header 0 0>,
-				    <&arduino_header 1 0>,
-				    <&arduino_header 2 0>,
-				    <&arduino_header 3 0>,
-				    <&arduino_header 4 0>,
-				    <&arduino_header 5 0>,
-				    <&gpioc 0 0>,
-				    <&gpioa 0 0>;
+		adc-pin-gpios =	<&gpioc 4 0>,
+					<&gpioc 5 0>,
+					<&gpiob 0 0>,
+					<&gpiob 1 0>,
+					<&gpioc 3 0>,
+					<&gpioc 2 0>,
+					<&gpioc 0 0>,			/* A6 */
+					<&gpioa 0 0>,
+					<&gpioz 0 0>,			/* analog only */
+					<&gpioz 1 0>,			/* analog only */
+					<&gpioz 2 0>,			/* analog only */
+					<&gpioz 3 0>,			/* analog only */
+					<&gpioa 4 0>,
+					<&gpioa 5 0>;
 
 		serials = <&cdc_acm_uart0>, <&usart1>, <&usart6>;
 		cdc-acm = <&cdc_acm_uart0>;
 		i2cs = <&i2c4>;
 		spis = <&spi1>, <&spi5>;
-		pwms = <>;
+		pwms = <&cam_clock_pwm 3 PWM_HZ(6000000) PWM_POLARITY_NORMAL>;
 
 		io-channels =	<&adc1 4>,
 				<&adc1 8>,
@@ -196,6 +420,12 @@
 				<&adc1 13>,
 				<&adc1 12>,
 				<&adc1 10>,
-				<&adc1 16>;
+				<&adc1 16>,
+				<&adc3 0>,
+				<&adc3 1>,
+				<&adc1 1>,
+				<&adc1 0>,
+				<&adc1 18>,
+				<&adc1 19>;
 	};
 };
