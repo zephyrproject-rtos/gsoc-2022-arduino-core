@@ -61,6 +61,7 @@ public:
 	size_t write(const uint8_t data) { return write(&data, 1); }
 	using Print::write; // pull in write(str) and write(buf, size) from Print
 	int available();
+  	int availableForWrite();
 	int peek();
 	int read();
 
