@@ -189,6 +189,16 @@ size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
 	return size;
 }
 
+void arduino::ZephyrSerial::flush() {
+	while (ring_buf_size_get(&tx.ringbuf) > 0) {
+		k_yield();
+	}
+	while (uart_irq_tx_complete(uart) == 0){
+		k_yield();
+	}
+}
+
+
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
 #if !DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
 // If CDC USB, use that object as Serial (and SerialUSB)
