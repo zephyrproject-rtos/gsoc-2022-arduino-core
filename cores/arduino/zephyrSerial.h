@@ -14,8 +14,8 @@ namespace arduino {
 class ZephyrSerialStub : public HardwareSerial
 {
 public:
-	void begin(unsigned long baudRate) { }
-	void begin(unsigned long baudrate, uint16_t config) { }
+	void begin(__attribute__((unused)) unsigned long baudRate) { }
+	void begin(__attribute__((unused)) unsigned long baudrate, __attribute__((unused)) uint16_t config) { }
 	void end() { }
 	int available() { return 0; }
 	int peek() { return 0; }
