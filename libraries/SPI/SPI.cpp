@@ -79,9 +79,13 @@ void arduino::ZephyrSPI::usingInterrupt(int interruptNumber) {
 void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
 }
 
+#ifndef SPI_MIN_CLOCK_FEQUENCY
+#define SPI_MIN_CLOCK_FEQUENCY 1000000
+#endif
+
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
   memset(&config, 0, sizeof(config));
-  config.frequency = settings.getClockFreq();
+  config.frequency = settings.getClockFreq() > SPI_MIN_CLOCK_FEQUENCY ? settings.getClockFreq() : SPI_MIN_CLOCK_FEQUENCY;
   auto mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
   switch (settings.getDataMode()) {
     case SPI_MODE0:
