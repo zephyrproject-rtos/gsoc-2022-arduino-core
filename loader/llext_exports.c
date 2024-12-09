@@ -35,6 +35,13 @@ EXPORT_SYMBOL(isspace);
 EXPORT_SYMBOL(isalnum);
 EXPORT_SYMBOL(tolower);
 EXPORT_SYMBOL(toupper);
+EXPORT_SYMBOL(isalpha);
+EXPORT_SYMBOL(iscntrl);
+EXPORT_SYMBOL(isdigit);
+EXPORT_SYMBOL(isgraph);
+EXPORT_SYMBOL(isprint);
+EXPORT_SYMBOL(isupper);
+EXPORT_SYMBOL(isxdigit);
 
 #if defined(CONFIG_USB_DEVICE_STACK)
 EXPORT_SYMBOL(usb_enable);
