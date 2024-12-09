@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <zephyr/kernel.h>
 
 #define FORCE_EXPORT_SYM(name) \
        extern void name(void); \
@@ -103,8 +104,8 @@ FORCE_EXPORT_SYM(inet_pton);
 FORCE_EXPORT_SYM(cdc_acm_dte_rate_callback_set);
 #endif
 
-FORCE_EXPORT_SYM(k_timer_init);
-FORCE_EXPORT_SYM(k_fatal_halt);
+EXPORT_SYMBOL(k_timer_init);
+EXPORT_SYMBOL(k_fatal_halt);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
 
