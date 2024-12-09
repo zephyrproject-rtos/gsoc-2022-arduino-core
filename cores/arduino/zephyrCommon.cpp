@@ -171,7 +171,7 @@ const struct adc_dt_spec arduino_adc[] =
 const pin_size_t arduino_analog_pins[] =
   { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS) };
 
-struct adc_channel_cfg channel_cfg[ARRAY_SIZE(arduino_analog_pins)] =
+struct adc_channel_cfg channel_cfg[] =
   { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_CH_CFG) };
 
 size_t analog_pin_index(pin_size_t pinNumber) {
