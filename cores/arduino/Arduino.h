@@ -114,6 +114,7 @@ int digitalPinToInterrupt(pin_size_t pin);
 #include <zephyrSerial.h>
 #include <strings.h>
 #include <api/itoa.h>
+#include <time_macros.h>
 
 // Allow namespace-less operations if Arduino.h is included
 using namespace arduino;
