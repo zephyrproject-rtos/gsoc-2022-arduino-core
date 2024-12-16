@@ -65,6 +65,7 @@ FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 
 #if defined(CONFIG_NET_MGMT_EVENT)
 FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
+FORCE_EXPORT_SYM(net_mgmt_event_wait_on_iface);
 #endif
 
 #if defined(CONFIG_BT)
