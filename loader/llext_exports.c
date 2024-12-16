@@ -64,8 +64,14 @@ FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 #endif
 
 #if defined(CONFIG_NET_MGMT_EVENT)
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_CONNECT);
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_IFACE_STATUS);
 FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
 FORCE_EXPORT_SYM(net_mgmt_event_wait_on_iface);
+#endif
+
+#if defined(CONFIG_WIFI)
+FORCE_EXPORT_SYM(net_if_get_wifi_sta);
 #endif
 
 #if defined(CONFIG_BT)
