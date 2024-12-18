@@ -14,15 +14,14 @@ extern "C" int __cxa_atexit(void (*func) (void *), void * arg, void * dso_handle
 }
 
 namespace std {
-  [[gnu::weak, noreturn]] void terminate() {
-    abort();
+  void __throw_length_error(const char* __s __attribute__((unused))) {}
+};
+
+extern "C" int strcmp(const char* s1, const char* s2) {
+  while(*s1 && (*s1 == *s2))
+  {
+    s1++;
+    s2++;
   }
-}
-
-void __cxa_pure_virtual(void) {
-  std::terminate();
-}
-
-void __cxa_deleted_virtual(void) {
-  std::terminate();
+  return *(const unsigned char*)s1 - *(const unsigned char*)s2;
 }
