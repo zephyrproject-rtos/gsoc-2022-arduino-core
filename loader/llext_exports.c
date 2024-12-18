@@ -21,8 +21,10 @@ EXPORT_SYMBOL(strtoul);
 EXPORT_SYMBOL(strcmp);
 EXPORT_SYMBOL(strlen);
 EXPORT_SYMBOL(strchr);
+EXPORT_SYMBOL(strcat);
 EXPORT_SYMBOL(memmove);
 
+EXPORT_SYMBOL(k_malloc);
 EXPORT_SYMBOL(malloc);
 EXPORT_SYMBOL(realloc);
 EXPORT_SYMBOL(calloc);
@@ -54,6 +56,8 @@ EXPORT_SYMBOL(z_log_msg_runtime_vcreate);
 #if defined(CONFIG_NETWORKING)
 FORCE_EXPORT_SYM(net_if_foreach);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
+FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
+FORCE_EXPORT_SYM(net_if_ipv4_maddr_join);
 #endif
 
 #if defined(CONFIG_NET_DHCPV4)
@@ -64,14 +68,14 @@ FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 #endif
 
 #if defined(CONFIG_NET_MGMT_EVENT)
-FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_CONNECT);
-FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_IFACE_STATUS);
 FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
 FORCE_EXPORT_SYM(net_mgmt_event_wait_on_iface);
 #endif
 
 #if defined(CONFIG_WIFI)
 FORCE_EXPORT_SYM(net_if_get_wifi_sta);
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_CONNECT);
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_IFACE_STATUS);
 #endif
 
 #if defined(CONFIG_BT)
@@ -105,6 +109,8 @@ FORCE_EXPORT_SYM(bind);
 FORCE_EXPORT_SYM(listen);
 EXPORT_SYMBOL(exit);
 FORCE_EXPORT_SYM(inet_pton);
+FORCE_EXPORT_SYM(sendto);
+FORCE_EXPORT_SYM(recvfrom);
 #endif
 
 #if defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT)
