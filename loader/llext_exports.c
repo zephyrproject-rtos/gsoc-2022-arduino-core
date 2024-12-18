@@ -72,6 +72,10 @@ FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
 FORCE_EXPORT_SYM(net_mgmt_event_wait_on_iface);
 #endif
 
+#if defined(CONFIG_MBEDTLS)
+FORCE_EXPORT_SYM(tls_credential_add);
+#endif
+
 #if defined(CONFIG_WIFI)
 FORCE_EXPORT_SYM(net_if_get_wifi_sta);
 FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_CONNECT);
@@ -111,6 +115,7 @@ EXPORT_SYMBOL(exit);
 FORCE_EXPORT_SYM(inet_pton);
 FORCE_EXPORT_SYM(sendto);
 FORCE_EXPORT_SYM(recvfrom);
+FORCE_EXPORT_SYM(setsockopt);
 #endif
 
 #if defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT)
