@@ -46,7 +46,7 @@ uint16_t arduino::ZephyrSPI::transfer16(uint16_t data) {
       .count = 1,
   };
 
-  ret = spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
+  ret = spi_transceive(spi_dev, &config16, &tx_buf_set, &rx_buf_set);
   if (ret < 0) {
     return 0;
   }
@@ -85,7 +85,10 @@ void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
 
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
   memset(&config, 0, sizeof(config));
+  memset(&config16, 0, sizeof(config16));
   config.frequency = settings.getClockFreq() > SPI_MIN_CLOCK_FEQUENCY ? settings.getClockFreq() : SPI_MIN_CLOCK_FEQUENCY;
+  config16.frequency = config.frequency;
+
   auto mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
   switch (settings.getDataMode()) {
     case SPI_MODE0:
@@ -98,6 +101,7 @@ void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
       mode = SPI_MODE_CPOL | SPI_MODE_CPHA; break;
   }
   config.operation = SPI_WORD_SET(8) | (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
+  config16.operation = SPI_WORD_SET(16) | (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
 }
 
 void arduino::ZephyrSPI::endTransaction(void) {
@@ -109,7 +113,10 @@ void arduino::ZephyrSPI::attachInterrupt() {}
 void arduino::ZephyrSPI::detachInterrupt() {}
 
 
-void arduino::ZephyrSPI::begin() {}
+void arduino::ZephyrSPI::begin() {
+  beginTransaction(SPISettings());
+  endTransaction();
+}
 
 void arduino::ZephyrSPI::end() {}
 

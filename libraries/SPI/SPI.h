@@ -50,9 +50,10 @@ public:
   virtual void begin();
   virtual void end();
 
-private:
+protected:
   const struct device *spi_dev;
   struct spi_config config;
+  struct spi_config config16;
   int interrupt[INTERRUPT_COUNT];
   size_t interrupt_pos = 0;
 };
