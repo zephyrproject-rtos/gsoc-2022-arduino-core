@@ -21,7 +21,28 @@ void arduino::ZephyrI2C::begin(uint8_t slaveAddr) {
 
 void arduino::ZephyrI2C::end() {}
 
-void arduino::ZephyrI2C::setClock(uint32_t freq) {}
+void arduino::ZephyrI2C::setClock(uint32_t freq) {
+    uint8_t speed = 	I2C_SPEED_STANDARD;
+	if(freq >  0x06u ) {
+		if(freq == 100000) {
+		  speed = I2C_SPEED_STANDARD;
+		} else if(freq == 400000) {
+		  speed = I2C_SPEED_FAST;
+		} else if(freq == 1000000) {
+		  speed = I2C_SPEED_FAST_PLUS;
+		} else {
+		  speed = I2C_SPEED_STANDARD;
+		}
+	} else {
+		speed = (uint8_t) freq;
+	}
+	uint32_t i2c_cfg = I2C_MODE_CONTROLLER |
+					I2C_SPEED_SET(speed);
+
+	if (i2c_configure(i2c_dev, i2c_cfg)) {
+		//Serial.println("Failed to configure i2c interface.");
+	}
+}
 
 void arduino::ZephyrI2C::beginTransmission(uint8_t address) { // TODO for ADS1115
   _address = address;
