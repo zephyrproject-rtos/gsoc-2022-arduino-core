@@ -170,3 +170,4 @@ FORCE_EXPORT_SYM(__aeabi_dcmpeq);
 FORCE_EXPORT_SYM(__aeabi_d2iz);
 FORCE_EXPORT_SYM(__aeabi_f2d);
 FORCE_EXPORT_SYM(__aeabi_idivmod);
+FORCE_EXPORT_SYM(__aeabi_ldivmod);
