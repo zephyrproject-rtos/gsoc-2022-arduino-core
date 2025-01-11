@@ -32,6 +32,7 @@ EXPORT_SYMBOL(free);
 EXPORT_SYMBOL(rand);
 EXPORT_SYMBOL(srand);
 
+EXPORT_SYMBOL(atoi);
 EXPORT_SYMBOL(atof);
 EXPORT_SYMBOL(atol);
 EXPORT_SYMBOL(isspace);
@@ -44,7 +45,9 @@ EXPORT_SYMBOL(isdigit);
 EXPORT_SYMBOL(isgraph);
 EXPORT_SYMBOL(isprint);
 EXPORT_SYMBOL(isupper);
+EXPORT_SYMBOL(islower);
 EXPORT_SYMBOL(isxdigit);
+
 
 #if defined(CONFIG_USB_DEVICE_STACK)
 EXPORT_SYMBOL(usb_enable);
@@ -124,6 +127,7 @@ FORCE_EXPORT_SYM(cdc_acm_dte_rate_callback_set);
 
 EXPORT_SYMBOL(k_timer_init);
 EXPORT_SYMBOL(k_fatal_halt);
+EXPORT_SYMBOL(k_work_schedule);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
 
@@ -138,7 +142,7 @@ EXPORT_SYMBOL(printf);
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
 EXPORT_SYMBOL(cbvprintf);
-
+;
 FORCE_EXPORT_SYM(abort);
 #if defined(CONFIG_RING_BUFFER)
 FORCE_EXPORT_SYM(ring_buf_get);
@@ -171,3 +175,5 @@ FORCE_EXPORT_SYM(__aeabi_d2iz);
 FORCE_EXPORT_SYM(__aeabi_f2d);
 FORCE_EXPORT_SYM(__aeabi_idivmod);
 FORCE_EXPORT_SYM(__aeabi_ldivmod);
+FORCE_EXPORT_SYM(__aeabi_ul2f);
+FORCE_EXPORT_SYM(__cxa_pure_virtual);
