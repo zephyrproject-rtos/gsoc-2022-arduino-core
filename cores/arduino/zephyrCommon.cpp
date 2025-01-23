@@ -184,6 +184,28 @@ size_t analog_pin_index(pin_size_t pinNumber) {
 
 #endif //CONFIG_ADC
 
+#ifdef CONFIG_DAC
+
+#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), dac))
+
+#define DAC_NODE DT_PHANDLE(DT_PATH(zephyr_user), dac)
+#define DAC_RESOLUTION DT_PROP(DT_PATH(zephyr_user), dac_resolution)
+static const struct device *const dac_dev = DEVICE_DT_GET(DAC_NODE);
+
+#define DAC_CHANNEL_DEFINE(n, p, i) \
+  { \
+    .channel_id = DT_PROP_BY_IDX(n, p, i), \
+    .resolution = DAC_RESOLUTION, \
+    .buffered = true, \
+  },
+
+static const struct dac_channel_cfg dac_ch_cfg[] =
+  { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_CHANNEL_DEFINE) };
+
+#endif
+
+#endif //CONFIG_DAC
+
 static unsigned int irq_key;
 static bool interrupts_disabled = false;
 }  // namespace
@@ -307,6 +329,16 @@ unsigned long millis(void) {
   return k_uptime_get_32();
 }
 
+#if defined(CONFIG_DAC) || defined(CONFIG_PWM)
+static int _analog_write_resolution = 8;
+void analogWriteResolution(int bits) {
+    _analog_write_resolution = bits;
+}
+int analogWriteResolution() {
+  return _analog_write_resolution;
+}
+#endif
+
 #ifdef CONFIG_PWM
 
 void analogWrite(pin_size_t pinNumber, int value)
@@ -320,6 +352,8 @@ void analogWrite(pin_size_t pinNumber, int value)
   if (!pwm_is_ready_dt(&arduino_pwm[idx])) {
     return;
   }
+
+  value = map(value, 0, 1 << _analog_write_resolution, 0, arduino_pwm[idx].period);
 
   if (((uint32_t)value) > arduino_pwm[idx].period) {
     value = arduino_pwm[idx].period;
@@ -335,6 +369,21 @@ void analogWrite(pin_size_t pinNumber, int value)
 }
 
 #endif
+
+#ifdef CONFIG_DAC
+void analogWrite(enum dacPins dacName, int value)
+{
+  if (dacName >= NUM_OF_DACS) {
+    return;
+  }
+
+  dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
+
+  const int max_dac_value = 1U << dac_ch_cfg[dacName].resolution;
+  dac_write_value(dac_dev, dac_ch_cfg[dacName].channel_id, map(value, 0, 1 << _analog_write_resolution, 0, max_dac_value));
+}
+#endif
+
 
 #ifdef CONFIG_ADC
 

@@ -12,6 +12,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/pwm.h>
 #include <zephyr/drivers/adc.h>
+#include <zephyr/drivers/dac.h>
 #include <zephyr/drivers/i2c.h>
 #include <math.h>
 
@@ -98,10 +99,29 @@ enum analogPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user),
 
 #endif
 
+#ifdef CONFIG_DAC
+
+#undef DAC0
+#undef DAC1
+#undef DAC2
+#undef DAC3
+#define DAC_ENUMS(n, p, i) DAC ## i = i,
+enum dacPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_ENUMS) NUM_OF_DACS };
+
+#endif
+
 void interrupts(void);
 void noInterrupts(void);
 
 int digitalPinToInterrupt(pin_size_t pin);
+
+#define digitalPinToPort(x) (x)
+#define digitalPinToBitMask(x) (x)
+#define portOutputRegister(x) (x)
+#define portInputRegister(x) (x)
+
+void analogReadResolution(int bits);
+void analogWriteResolution(int bits);
 
 #include <variant.h>
 
@@ -115,6 +135,7 @@ int digitalPinToInterrupt(pin_size_t pin);
 #include <strings.h>
 #include <api/itoa.h>
 #include <time_macros.h>
+#include <overloads.h>
 
 // Allow namespace-less operations if Arduino.h is included
 using namespace arduino;
