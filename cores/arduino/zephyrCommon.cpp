@@ -164,7 +164,7 @@ size_t pwm_pin_index(pin_size_t pinNumber) {
                 DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 #define ADC_CH_CFG(n,p,i) arduino_adc[i].channel_cfg,
 
-const struct adc_dt_spec arduino_adc[] =
+static const struct adc_dt_spec arduino_adc[] =
   { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_DT_SPEC) };
 
 /* io-channel-pins node provides a mapping digital pin numbers to adc channels */
