@@ -31,6 +31,6 @@ private:
 };
 }  // namespace arduino
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM)
 extern arduino::SerialUSB_ Serial;
 #endif

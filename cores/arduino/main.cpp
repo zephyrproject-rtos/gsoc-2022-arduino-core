@@ -10,14 +10,16 @@
 #endif
 
 int main(void) {
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) || DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
+#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM)
   Serial.begin(115200);
 #endif
   setup();
 
   for (;;) {
     loop();
+  #if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM) || DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
     if (arduino::serialEventRun) arduino::serialEventRun();
+  #endif
   }
 
   return 0;

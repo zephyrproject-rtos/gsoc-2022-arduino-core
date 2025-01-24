@@ -4,23 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Make PluggableUSB link happy
-#include "api/PluggableUSB.h"
-
-static uint8_t _epBuffer[1];
-void* epBuffer(unsigned int n) {
-    return &_epBuffer[n];
-};
-
-arduino::PluggableUSB_::PluggableUSB_() {}
-
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/uart.h>
 #include <zephyr/drivers/uart/cdc_acm.h>
 #include <zephyr/usb/usb_device.h>
 #include <SerialUSB.h>
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM)
 const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 
 void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param) {

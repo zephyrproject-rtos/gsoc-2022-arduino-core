@@ -81,7 +81,7 @@ protected:
 }   // namespace arduino
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
-#if !DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
+#if !(DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM)
 // If CDC USB, use that object as Serial (and SerialUSB)
 extern arduino::ZephyrSerial Serial;
 #endif
