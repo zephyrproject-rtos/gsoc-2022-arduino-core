@@ -103,6 +103,11 @@ FORCE_EXPORT_SYM(video_buffer_alloc);
 FORCE_EXPORT_SYM(video_buffer_release);
 #endif
 
+#if defined(CONFIG_SHARED_MULTI_HEAP)
+FORCE_EXPORT_SYM(shared_multi_heap_aligned_alloc);
+FORCE_EXPORT_SYM(shared_multi_heap_free);
+#endif
+
 #if defined(CONFIG_NET_SOCKETS)
 FORCE_EXPORT_SYM(getaddrinfo);
 FORCE_EXPORT_SYM(socket);

@@ -71,3 +71,51 @@ int camera_ext_clock_enable(void)
 SYS_INIT(camera_ext_clock_enable, POST_KERNEL, CONFIG_CLOCK_CONTROL_PWM_INIT_PRIORITY);
 
 #endif
+
+#if defined(CONFIG_SHARED_MULTI_HEAP)
+#include <zephyr/kernel.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/multi_heap/shared_multi_heap.h>
+
+struct memory_region_t {
+	uintptr_t dt_addr;
+	size_t dt_size;
+	const char *dt_name;
+};
+
+#define _BUILD_MEM_REGION(node_id)      \
+	{ .dt_addr = DT_REG_ADDR(node_id),  \
+      .dt_size = DT_REG_SIZE(node_id),  \
+      .dt_name = DT_PROP(node_id, zephyr_memory_region) \
+    },
+
+int smh_init(void)
+{
+    int ret = 0;
+    ret = shared_multi_heap_pool_init();
+    if (ret != 0) {
+        return ret;
+    }
+
+    const struct memory_region_t regions[] = {
+        DT_FOREACH_STATUS_OKAY(zephyr_memory_region, _BUILD_MEM_REGION)
+    };
+
+    for (size_t i=0; i<ARRAY_SIZE(regions); i++) {
+        if (!strncmp("SDRAM", regions[i].dt_name, 5)) {
+            struct shared_multi_heap_region smh_sdram = {
+                .addr = regions[i].dt_addr,
+                .size = regions[i].dt_size,
+                .attr = SMH_REG_ATTR_EXTERNAL,
+            };
+            ret = shared_multi_heap_add(&smh_sdram, NULL);
+            if (ret != 0) {
+                return ret;
+            }
+        }
+    }
+	return 0;
+}
+
+SYS_INIT(smh_init, POST_KERNEL, CONFIG_CLOCK_CONTROL_PWM_INIT_PRIORITY);
+#endif
