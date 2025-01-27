@@ -399,10 +399,24 @@ void analogReference(uint8_t mode)
   }
 }
 
+// Note: We can not update the arduino_adc structure as it is read only...
+static int read_resolution = 10;
+
+void analogReadResolution(int bits)
+{
+  read_resolution = bits;
+}
+
+int analogReadResolution()
+{
+  return read_resolution;
+}
+
+
 int analogRead(pin_size_t pinNumber)
 {
   int err;
-  int16_t buf;
+  uint16_t buf;
   struct adc_sequence seq = { .buffer = &buf, .buffer_size = sizeof(buf) };
   size_t idx = analog_pin_index(pinNumber);
 
@@ -432,7 +446,13 @@ int analogRead(pin_size_t pinNumber)
     return err;
   }
 
-  return buf;
+  /*
+   * If necessary map the return value to the
+   * number of bits the user has asked for
+   */
+  if (read_resolution == seq.resolution) return buf;
+  if (read_resolution < seq.resolution)  return buf >> (seq.resolution - read_resolution);
+  return buf << (read_resolution - seq.resolution) ;
 }
 
 #endif
