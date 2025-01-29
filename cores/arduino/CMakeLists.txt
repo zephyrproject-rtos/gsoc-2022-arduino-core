@@ -21,6 +21,7 @@ endif()
 
 if(DEFINED CONFIG_ARDUINO_ENTRY)
 zephyr_sources(main.cpp)
+zephyr_sources(threads.cpp)
 endif()
 
 endif()
