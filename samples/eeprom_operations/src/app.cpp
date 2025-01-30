@@ -4,15 +4,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 #include <Arduino.h>
 #include "EEPROM.h" 
 
 void setup() {
+
+  int data = 1234;  // Example data to store
+  int read_data = 0;
+
   /* Initialize serial communication */
   Serial.begin(115200);
   while (!Serial) {
-
     ; /* Wait for serial port to connect (needed for boards with native USB) */
   }
   Serial.println("Serial communication initialized");
@@ -25,7 +27,6 @@ void setup() {
   Serial.println("NVS initialized");
 
   /* Write data to EEPROM */
-  int data = 1234;  // Example data to store
   if (EEPROM.write_data(1, &data, sizeof(data)) < 0) { 
     Serial.println("Failed to write data");
   } else {
@@ -33,7 +34,6 @@ void setup() {
   }
 
   /* Read data from EEPROM */
-  int read_data = 0;
   if (EEPROM.read_data(1, &read_data, sizeof(read_data)) > 0) { 
     Serial.print("Data read: ");
     Serial.println(read_data);
