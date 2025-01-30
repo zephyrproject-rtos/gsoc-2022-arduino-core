@@ -1,7 +1,5 @@
 .. _eeprom_operations:
 
-.. _eeprom_operations:
-
 EEPROM Operations
 #################
 
