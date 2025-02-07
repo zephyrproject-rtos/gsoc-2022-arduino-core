@@ -152,9 +152,9 @@ EXPORT_SYMBOL(cbvprintf);
 ;
 FORCE_EXPORT_SYM(abort);
 #if defined(CONFIG_RING_BUFFER)
-FORCE_EXPORT_SYM(ring_buf_get);
-FORCE_EXPORT_SYM(ring_buf_peek);
-FORCE_EXPORT_SYM(ring_buf_put);
+EXPORT_SYMBOL(ring_buf_get);
+EXPORT_SYMBOL(ring_buf_peek);
+EXPORT_SYMBOL(ring_buf_put);
 #endif
 EXPORT_SYMBOL(sys_clock_cycle_get_32);
 FORCE_EXPORT_SYM(__aeabi_dcmpun);
