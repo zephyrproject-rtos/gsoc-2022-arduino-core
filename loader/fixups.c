@@ -101,3 +101,47 @@ int smh_init(void) {
 
 SYS_INIT(smh_init, POST_KERNEL, CONFIG_CLOCK_CONTROL_PWM_INIT_PRIORITY);
 #endif
+
+#if defined(CONFIG_BOARD_ARDUINO_PORTENTA_C33)
+#include <zephyr/kernel.h>
+#include <zephyr/storage/flash_map.h>
+
+int maybe_flash_bootloader(void)
+{
+	// memcmp the first 256bytes of "embedded bootloader" and address 0x0
+	// if they are different, flash the bootloader
+	const uint8_t embedded_bootloader[] = {
+		#include "c33_bl_patch/c33_bl.bin.inc"
+	};
+
+	const struct flash_area *fa;
+	int rc;
+
+	rc = flash_area_open(FIXED_PARTITION_ID(mcuboot), &fa);
+	if (rc) {
+		printk("Failed to open flash area, rc %d\n", rc);
+		return rc;
+	}
+
+	uint8_t flash_bootloader[256];
+	flash_area_read(fa, 0, flash_bootloader, 256);
+
+	if (memcmp(embedded_bootloader, flash_bootloader, 256) != 0) {
+		// flash the bootloader
+		rc = flash_area_erase(fa, 0, fa->fa_size);
+		if (rc) {
+			printk("Failed to erase flash area, rc %d\n", rc);
+			return rc;
+		}
+		flash_area_write(fa, 0, embedded_bootloader, sizeof(embedded_bootloader));
+		if (rc) {
+			printk("Failed to write flash area, rc %d\n", rc);
+			return rc;
+		}
+	}
+	return 0;
+}
+
+SYS_INIT(maybe_flash_bootloader, POST_KERNEL, CONFIG_FILE_SYSTEM_INIT_PRIORITY);
+
+#endif
