@@ -69,7 +69,7 @@ static int loader(const struct shell *sh)
 		return -EINVAL;
 	}
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
 	uint8_t debug = endptr[1];
 	if (debug != 0 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
