@@ -7,6 +7,7 @@
 #pragma once
 
 #include <zephyr/sys/ring_buffer.h>
+#include <zephyr/kernel.h>
 #include <api/HardwareSerial.h>
 
 namespace arduino {
