@@ -8,7 +8,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
 project(app LANGUAGES C CXX)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/blobs/CMakeLists.txt)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/blobs)
 
 FILE(GLOB app_sources *.c)
 target_sources(app PRIVATE ${app_sources})

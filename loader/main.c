@@ -26,8 +26,9 @@ const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zep
 
 static int enable_shell_usb(void);
 
-#ifdef CONFIG_USERSPACE
 K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
+
+#ifdef CONFIG_USERSPACE
 struct k_thread llext_thread;
 
 void llext_entry(void *arg0, void *arg1, void *arg2)
@@ -48,6 +49,8 @@ static int loader(const struct shell *sh)
 		printk("Failed to open flash area, rc %d\n", rc);
 		return rc;
 	}
+
+	uint32_t offset =  DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
 
 	char header[16];
 	rc = flash_area_read(fa, 0, header, sizeof(header));
@@ -71,7 +74,7 @@ static int loader(const struct shell *sh)
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
 	uint8_t debug = endptr[1];
-	if (debug != 0 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
+	if (debug == 1 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
 		shell_uninit(shell_backend_uart_get_ptr(), NULL);
 		// enables USB and starts the shell
@@ -89,6 +92,26 @@ static int loader(const struct shell *sh)
 
 	int header_len = 16;
 
+	uint8_t linked = endptr[2];
+	if (linked) {
+		#if CONFIG_MPU
+		barrier_dmem_fence_full();
+		#endif
+		#if CONFIG_DCACHE
+		barrier_dsync_fence_full();
+		#endif
+		#if CONFIG_ICACHE
+		barrier_isync_fence_full();
+		#endif
+		memset(llext_stack, 0, CONFIG_MAIN_STACK_SIZE);
+		void (*entry_point)(k_thread_stack_t * stack, size_t stack_size) = (void (*)(k_thread_stack_t * stack, size_t stack_size))(offset+header_len+1);
+		entry_point(llext_stack, K_THREAD_STACK_SIZEOF(llext_stack));
+		// should never reach here
+		for (;;) {
+			k_sleep(K_FOREVER);
+		}
+	}
+
 #if defined(CONFIG_LLEXT_STORAGE_WRITABLE)
 	uint8_t* sketch_buf = k_aligned_alloc(4096, sketch_buf_len);
 
@@ -103,11 +126,10 @@ static int loader(const struct shell *sh)
 	}
 #else
 	// Assuming the sketch is stored in the same flash device as the loader
-	// uint32_t offset =  DT_REG_ADDR(DT_CHOSEN(zephyr_flash)) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
-	uint32_t offset =  DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
 	uint8_t* sketch_buf = (uint8_t*)(offset+header_len);
 #endif
 
+#ifdef CONFIG_LLEXT
 	struct llext_buf_loader buf_loader = LLEXT_BUF_LOADER(sketch_buf, sketch_buf_len);
 	struct llext_loader *ldr = &buf_loader.loader;
 
@@ -128,6 +150,7 @@ static int loader(const struct shell *sh)
 		printk("Failed to find main function\n");
 		return -ENOENT;
 	}
+#endif
 
 #ifdef CONFIG_USERSPACE
 	/*
@@ -164,7 +187,9 @@ static int loader(const struct shell *sh)
 	k_thread_join(&llext_thread, K_FOREVER);
 #else
 
+#ifdef CONFIG_LLEXT
 	llext_bootstrap(ext, main_fn, NULL);
+#endif
 
 #endif
 

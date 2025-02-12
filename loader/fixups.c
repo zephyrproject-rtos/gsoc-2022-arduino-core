@@ -102,7 +102,7 @@ int smh_init(void) {
 SYS_INIT(smh_init, POST_KERNEL, CONFIG_CLOCK_CONTROL_PWM_INIT_PRIORITY);
 #endif
 
-#if defined(CONFIG_BOARD_ARDUINO_PORTENTA_C33)
+#if defined(CONFIG_BOARD_ARDUINO_PORTENTA_C33) && defined(CONFIG_LLEXT)
 #include <zephyr/kernel.h>
 #include <zephyr/storage/flash_map.h>
 
