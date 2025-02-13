@@ -26,9 +26,8 @@ const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zep
 
 static int enable_shell_usb(void);
 
-K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
-
 #ifdef CONFIG_USERSPACE
+K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
 struct k_thread llext_thread;
 
 void llext_entry(void *arg0, void *arg1, void *arg2)
@@ -103,9 +102,9 @@ static int loader(const struct shell *sh)
 		#if CONFIG_ICACHE
 		barrier_isync_fence_full();
 		#endif
-		memset(llext_stack, 0, CONFIG_MAIN_STACK_SIZE);
-		void (*entry_point)(k_thread_stack_t * stack, size_t stack_size) = (void (*)(k_thread_stack_t * stack, size_t stack_size))(offset+header_len+1);
-		entry_point(llext_stack, K_THREAD_STACK_SIZEOF(llext_stack));
+		extern struct k_heap llext_heap;
+		void (*entry_point)(struct k_heap * heap, size_t heap_size) = (void (*)(struct k_heap * stack, size_t stack_size))(offset+header_len+1);
+		entry_point(&llext_heap, llext_heap.heap.init_bytes);
 		// should never reach here
 		for (;;) {
 			k_sleep(K_FOREVER);

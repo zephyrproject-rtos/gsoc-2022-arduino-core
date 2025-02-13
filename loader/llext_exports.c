@@ -60,6 +60,7 @@ EXPORT_SYMBOL(z_log_msg_runtime_vcreate);
 
 #if defined(CONFIG_NETWORKING)
 FORCE_EXPORT_SYM(net_if_foreach);
+FORCE_EXPORT_SYM(net_if_down);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_join);
