@@ -205,7 +205,7 @@ void arduino::ZephyrSerial::flush() {
 #endif
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), serials)
-#if !(DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_USB_CDC_ACM)
+#if !(DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && (CONFIG_USB_CDC_ACM || CONFIG_USBD_CDC_ACM_CLASS))
 // If CDC USB, use that object as Serial (and SerialUSB)
 arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), serials, FIRST_UART_INDEX)));
 #endif

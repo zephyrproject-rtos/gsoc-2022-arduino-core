@@ -35,3 +35,23 @@ config ARDUINO_ENTRY
 	default y
 
 endif
+
+if USB_DEVICE_STACK_NEXT
+
+config USB_DEVICE_PRODUCT
+	string "USB Device Product"
+	default "Arduino Generic board"
+
+config USB_DEVICE_MANUFACTURER
+	string "USB Device Manufacturer"
+	default "Arduino"
+
+config USB_DEVICE_VID
+	hex "USB Device Vendor ID"
+	default 0x2341
+
+config USB_DEVICE_PID
+	hex "USB Device Product ID"
+	default 0x0001
+
+endif
