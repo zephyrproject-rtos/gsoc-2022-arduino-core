@@ -133,6 +133,20 @@ FORCE_EXPORT_SYM(setsockopt);
 FORCE_EXPORT_SYM(cdc_acm_dte_rate_callback_set);
 #endif
 
+#if defined(CONFIG_USB_DEVICE_STACK_NEXT)
+FORCE_EXPORT_SYM(usbd_init);
+FORCE_EXPORT_SYM(usbd_add_descriptor);
+FORCE_EXPORT_SYM(usbd_device_set_bcd_usb);
+FORCE_EXPORT_SYM(usbd_msg_register_cb);
+FORCE_EXPORT_SYM(usbd_device_set_code_triple);
+FORCE_EXPORT_SYM(usbd_register_all_classes);
+FORCE_EXPORT_SYM(usbd_add_configuration);
+FORCE_EXPORT_SYM(usbd_caps_speed);
+FORCE_EXPORT_SYM(usbd_can_detect_vbus);
+FORCE_EXPORT_SYM(usbd_enable);
+FORCE_EXPORT_SYM(usbd_disable);
+#endif
+
 EXPORT_SYMBOL(k_timer_init);
 EXPORT_SYMBOL(k_fatal_halt);
 EXPORT_SYMBOL(k_work_schedule);
