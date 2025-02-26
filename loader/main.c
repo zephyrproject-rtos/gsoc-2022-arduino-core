@@ -22,6 +22,16 @@ LOG_MODULE_REGISTER(app);
 
 #define HEADER_LEN 16
 
+struct sketch_header_v1 {
+	uint8_t ver;    // @ 0x07
+	uint32_t len;   // @ 0x08
+	uint16_t magic; // @ 0x0c
+	uint8_t flags;  // @ 0x0e
+} __attribute__ ((packed));
+
+#define SKETCH_FLAG_DEBUG       0x01
+#define SKETCH_FLAG_LINKED      0x02
+
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
 const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 #endif
@@ -66,17 +76,17 @@ static int loader(const struct shell *sh)
 		return -ENOENT;
 	}
 
-	char *endptr;
-	size_t sketch_buf_len = strtoul(header, &endptr, 10);
-	// make sure number got parsed correctly"
-	if (header == endptr) {
-		printk("Failed to parse sketch size\n");
+	struct sketch_header_v1 *sketch_hdr = (struct sketch_header_v1 *)(header + 7);
+	if (sketch_hdr->ver != 0x1 || sketch_hdr->magic != 0x2341) {
+		printk("Invalid sketch header\n");
 		return -EINVAL;
 	}
 
+	size_t sketch_buf_len = sketch_hdr->len;
+
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
-	uint8_t debug = endptr[1];
-	if (debug == 1 && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
+	int debug = sketch_hdr->flags & SKETCH_FLAG_DEBUG;
+	if (debug && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
 		shell_uninit(shell_backend_uart_get_ptr(), NULL);
 		// enables USB and starts the shell
@@ -92,8 +102,7 @@ static int loader(const struct shell *sh)
 	}
 #endif
 
-	uint8_t linked = endptr[2];
-	if (linked) {
+	if (sketch_hdr->flags & SKETCH_FLAG_LINKED) {
 		#ifdef CONFIG_BOARD_ARDUINO_PORTENTA_C33
 		#if CONFIG_MPU
 		barrier_dmem_fence_full();
@@ -130,7 +139,7 @@ static int loader(const struct shell *sh)
 	}
 #else
 	// Assuming the sketch is stored in the same flash device as the loader
-	uint8_t* sketch_buf = (uint8_t*)(base_addr + HEADER_LEN);
+	uint8_t* sketch_buf = (uint8_t*)base_addr;
 #endif
 
 #ifdef CONFIG_LLEXT
