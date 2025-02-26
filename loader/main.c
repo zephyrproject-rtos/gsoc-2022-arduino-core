@@ -20,6 +20,8 @@ LOG_MODULE_REGISTER(app);
 #include <zephyr/drivers/uart.h>
 #include <zephyr/usb/usb_device.h>
 
+#define HEADER_LEN 16
+
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
 const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 #endif
@@ -49,9 +51,10 @@ static int loader(const struct shell *sh)
 		return rc;
 	}
 
-	uint32_t offset =  DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
+	uintptr_t base_addr = DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) +
+			      DT_REG_ADDR(DT_NODELABEL(user_sketch));
 
-	char header[16];
+	char header[HEADER_LEN];
 	rc = flash_area_read(fa, 0, header, sizeof(header));
 	if (rc) {
 		printk("Failed to read header, rc %d\n", rc);
@@ -89,10 +92,9 @@ static int loader(const struct shell *sh)
 	}
 #endif
 
-	int header_len = 16;
-
 	uint8_t linked = endptr[2];
 	if (linked) {
+		#ifdef CONFIG_BOARD_ARDUINO_PORTENTA_C33
 		#if CONFIG_MPU
 		barrier_dmem_fence_full();
 		#endif
@@ -102,8 +104,11 @@ static int loader(const struct shell *sh)
 		#if CONFIG_ICACHE
 		barrier_isync_fence_full();
 		#endif
+		#endif
+
 		extern struct k_heap llext_heap;
-		void (*entry_point)(struct k_heap * heap, size_t heap_size) = (void (*)(struct k_heap * stack, size_t stack_size))(offset+header_len+1);
+		typedef void (*entry_point_t)(struct k_heap *heap, size_t heap_size);
+		entry_point_t entry_point = (entry_point_t)(base_addr + HEADER_LEN + 1);
 		entry_point(&llext_heap, llext_heap.heap.init_bytes);
 		// should never reach here
 		for (;;) {
@@ -125,7 +130,7 @@ static int loader(const struct shell *sh)
 	}
 #else
 	// Assuming the sketch is stored in the same flash device as the loader
-	uint8_t* sketch_buf = (uint8_t*)(offset+header_len);
+	uint8_t* sketch_buf = (uint8_t*)(base_addr + HEADER_LEN);
 #endif
 
 #ifdef CONFIG_LLEXT
