@@ -10,7 +10,7 @@
 #include <zephyr/usb/usb_device.h>
 #include <SerialUSB.h>
 
-#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm))
+#if ((DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)) && (CONFIG_USB_CDC_ACM || CONFIG_USBD_CDC_ACM_CLASS))
 const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 
 void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param) {
