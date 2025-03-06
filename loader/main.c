@@ -132,7 +132,7 @@ static int loader(const struct shell *sh)
 		printk("Unable to allocate %d bytes\n", sketch_buf_len);
 	}
 
-	rc = flash_area_read(fa, header_len, sketch_buf, sketch_buf_len);
+	rc = flash_area_read(fa, HEADER_LEN, sketch_buf, sketch_buf_len);
 	if (rc) {
 		printk("Failed to read sketch area, rc %d\n", rc);
 		return rc;
