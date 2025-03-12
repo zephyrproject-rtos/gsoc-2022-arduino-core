@@ -17,11 +17,11 @@
 #include <math.h>
 
 #if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
+/* Note: DT_REG_ADDR needs an expanded argument or it will not work properly */
+#define DIGITAL_PIN_MATCHES(dev_pha, pin, dev, num)                                                \
+	(((dev == DT_REG_ADDR(dev_pha)) && (num == pin)) ? 1 : 0)
 #define DIGITAL_PIN_EXISTS(n, p, i, dev, num)                                                      \
-	(((dev == DT_REG_ADDR(DT_PHANDLE_BY_IDX(n, p, i))) &&                                      \
-	  (num == DT_PHA_BY_IDX(n, p, i, pin)))                                                    \
-		 ? 1                                                                               \
-		 : 0)
+	DIGITAL_PIN_MATCHES(DT_PHANDLE_BY_IDX(n, p, i), DT_PHA_BY_IDX(n, p, i, pin), dev, num)
 
 /* Check all pins are defined only once */
 #define DIGITAL_PIN_CHECK_UNIQUE(i, _)                                                             \
