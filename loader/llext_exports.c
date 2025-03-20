@@ -92,7 +92,6 @@ FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_IFACE_STATUS);
 FORCE_EXPORT_SYM(bt_enable_raw);
 FORCE_EXPORT_SYM(bt_hci_raw_set_mode);
 FORCE_EXPORT_SYM(bt_send);
-FORCE_EXPORT_SYM(net_buf_get);
 FORCE_EXPORT_SYM(bt_buf_get_tx);
 FORCE_EXPORT_SYM(net_buf_simple_pull);
 FORCE_EXPORT_SYM(net_buf_simple_add_mem);
