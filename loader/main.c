@@ -32,11 +32,26 @@ struct sketch_header_v1 {
 #define SKETCH_FLAG_DEBUG       0x01
 #define SKETCH_FLAG_LINKED      0x02
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
-const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
-#endif
+#define TARGET_HAS_USB_CDC_SHELL \
+	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
 
-static int enable_shell_usb(void);
+#if TARGET_HAS_USB_CDC_SHELL
+const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
+
+static int enable_shell_usb(void)
+{
+	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
+	uint32_t level =
+		(CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
+		CONFIG_LOG_MAX_LEVEL : CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL;
+	static const struct shell_backend_config_flags cfg_flags =
+					SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
+
+	shell_init(shell_backend_uart_get_ptr(), usb_dev, cfg_flags, log_backend, level);
+
+	return 0;
+}
+#endif
 
 #ifdef CONFIG_USERSPACE
 K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
@@ -84,7 +99,7 @@ static int loader(const struct shell *sh)
 
 	size_t sketch_buf_len = sketch_hdr->len;
 
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
+#if TARGET_HAS_USB_CDC_SHELL
 	int debug = sketch_hdr->flags & SKETCH_FLAG_DEBUG;
 	if (debug && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
@@ -211,22 +226,6 @@ static int loader(const struct shell *sh)
 
 #if CONFIG_SHELL
 SHELL_CMD_REGISTER(sketch, NULL, "Run sketch", loader);
-
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm)
-static int enable_shell_usb(void)
-{
-	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
-	uint32_t level =
-		(CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
-		CONFIG_LOG_MAX_LEVEL : CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL;
-	static const struct shell_backend_config_flags cfg_flags =
-					SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
-
-	shell_init(shell_backend_uart_get_ptr(), usb_dev, cfg_flags, log_backend, level);
-
-	return 0;
-}
-#endif
 #endif
 
 int main(void)
