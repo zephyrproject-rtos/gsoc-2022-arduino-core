@@ -86,11 +86,6 @@ static int loader(const struct shell *sh)
 		return rc;
 	}
 
-	if (!header[0] || header[0] == 0xff) {
-		printk("No sketch found\n");
-		return -ENOENT;
-	}
-
 	struct sketch_header_v1 *sketch_hdr = (struct sketch_header_v1 *)(header + 7);
 	if (sketch_hdr->ver != 0x1 || sketch_hdr->magic != 0x2341) {
 		printk("Invalid sketch header\n");
