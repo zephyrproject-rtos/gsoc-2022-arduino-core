@@ -64,6 +64,11 @@ FORCE_EXPORT_SYM(net_if_down);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_join);
+FORCE_EXPORT_SYM(net_if_lookup_by_dev);
+#endif
+
+#if defined(CONFIG_NET_L2_ETHERNET)
+FORCE_EXPORT_SYM(_net_l2_ETHERNET);
 #endif
 
 #if defined(CONFIG_NET_DHCPV4)
