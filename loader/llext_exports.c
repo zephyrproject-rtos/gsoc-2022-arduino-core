@@ -76,10 +76,13 @@ FORCE_EXPORT_SYM(_net_l2_ETHERNET);
 
 #if defined(CONFIG_NET_DHCPV4)
 FORCE_EXPORT_SYM(net_dhcpv4_start);
-FORCE_EXPORT_SYM(net_dhcpv4_server_start);
 #if defined(CONFIG_NET_DHCPV4_OPTION_CALLBACKS)
 FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 #endif
+#endif
+
+#if defined(CONFIG_NET_DHCPV4_SERVER)
+FORCE_EXPORT_SYM(net_dhcpv4_server_start);
 #endif
 
 #if defined(CONFIG_NET_MGMT_EVENT)
