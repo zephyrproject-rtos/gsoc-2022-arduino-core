@@ -64,6 +64,9 @@ FORCE_EXPORT_SYM(net_if_down);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_join);
+FORCE_EXPORT_SYM(net_if_ipv4_set_gw);
+FORCE_EXPORT_SYM(net_if_ipv4_addr_add);
+FORCE_EXPORT_SYM(net_if_ipv4_set_netmask_by_addr);
 FORCE_EXPORT_SYM(net_if_lookup_by_dev);
 #endif
 
@@ -73,6 +76,7 @@ FORCE_EXPORT_SYM(_net_l2_ETHERNET);
 
 #if defined(CONFIG_NET_DHCPV4)
 FORCE_EXPORT_SYM(net_dhcpv4_start);
+FORCE_EXPORT_SYM(net_dhcpv4_server_start);
 #if defined(CONFIG_NET_DHCPV4_OPTION_CALLBACKS)
 FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 #endif
@@ -89,8 +93,10 @@ FORCE_EXPORT_SYM(tls_credential_add);
 
 #if defined(CONFIG_WIFI)
 FORCE_EXPORT_SYM(net_if_get_wifi_sta);
+FORCE_EXPORT_SYM(net_if_get_wifi_sap);
 FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_CONNECT);
 FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_IFACE_STATUS);
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_WIFI_AP_ENABLE);
 #endif
 
 #if defined(CONFIG_BT)
@@ -106,6 +112,7 @@ FORCE_EXPORT_SYM(net_buf_unref);
 
 #if defined(CONFIG_STACK_CANARIES)
 FORCE_EXPORT_SYM(__stack_chk_guard);
+FORCE_EXPORT_SYM(__stack_chk_fail);
 #endif
 
 #if defined(CONFIG_VIDEO)
