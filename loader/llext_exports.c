@@ -99,6 +99,10 @@ FORCE_EXPORT_SYM(net_buf_simple_pull_mem);
 FORCE_EXPORT_SYM(net_buf_unref);
 #endif
 
+#if defined(CONFIG_STACK_CANARIES)
+FORCE_EXPORT_SYM(__stack_chk_guard);
+#endif
+
 #if defined(CONFIG_VIDEO)
 FORCE_EXPORT_SYM(video_buffer_aligned_alloc);
 FORCE_EXPORT_SYM(video_buffer_alloc);
