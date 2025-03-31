@@ -48,6 +48,8 @@ EXPORT_SYMBOL(isupper);
 EXPORT_SYMBOL(islower);
 EXPORT_SYMBOL(isxdigit);
 
+EXPORT_SYMBOL(atan2);
+
 EXPORT_SYMBOL(k_sched_lock);
 EXPORT_SYMBOL(k_sched_unlock);
 
