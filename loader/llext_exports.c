@@ -167,6 +167,10 @@ FORCE_EXPORT_SYM(usbd_enable);
 FORCE_EXPORT_SYM(usbd_disable);
 #endif
 
+#if defined(CONFIG_SHARED_MULTI_HEAP)
+FORCE_EXPORT_SYM(shared_multi_heap_alloc);
+#endif
+
 EXPORT_SYMBOL(k_timer_init);
 EXPORT_SYMBOL(k_fatal_halt);
 EXPORT_SYMBOL(k_work_schedule);
