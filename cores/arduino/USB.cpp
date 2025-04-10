@@ -14,6 +14,7 @@
 const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 
 void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param) {
+    (void)param; // unused
     if (cb_status == USB_DC_CONFIGURED) {
 
     }
@@ -34,6 +35,7 @@ void arduino::SerialUSB_::_baudChangeHandler()
 
 static void _baudChangeHandler(const struct device *dev, uint32_t rate)
 {
+    (void)dev; // unused
     if (rate == 1200) {
         usb_disable();
         _on_1200_bps();

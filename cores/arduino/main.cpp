@@ -70,6 +70,8 @@ static void __libc_init_array (void)
 }
 
 extern "C" __attribute__((section(".entry_point"), used)) void entry_point(struct k_heap* stack, size_t stack_size) {
+  (void)stack; (void)stack_size; // unused
+
   // copy .data in the right place
   // .bss should already be in the right place
   // call constructors
@@ -85,11 +87,9 @@ extern "C" __attribute__((section(".entry_point"), used)) void entry_point(struc
 
   //__asm volatile ("cpsie i");
 
-  const size_t alignment = 4096;
   printk("System Heap end: %p\n", &__heap_end);
   printk("System Heap start: %p\n", &__heap_start);
   printk("Sketch Heap start: %p, size %p\n", &kheap_llext_heap, &kheap_llext_heap_size);
-  // __heap_start = (__heap_start + (alignment - 1)) & ~(alignment - 1);
 
   memcpy(&_sdata, &_sidata, (&_edata - &_sdata) * sizeof(uint32_t));
   memset(&_sbss, 0, &_ebss - &_sbss);

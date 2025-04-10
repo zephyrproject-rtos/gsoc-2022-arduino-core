@@ -18,37 +18,37 @@ namespace {
  * Calculate GPIO ports/pins number statically from devicetree configuration
  */
 
-template <class N, class Head> constexpr const N sum_of_list(const N sum, const Head &head)
+template <class N, class Head> constexpr N sum_of_list(const N sum, const Head &head)
 {
   return sum + head;
 }
 
 template <class N, class Head, class... Tail>
-constexpr const N sum_of_list(const N sum, const Head &head, const Tail &...tail)
+constexpr N sum_of_list(const N sum, const Head &head, const Tail &...tail)
 {
   return sum_of_list(sum + head, tail...);
 }
 
-template <class N, class Head> constexpr const N max_in_list(const N max, const Head &head)
+template <class N, class Head> constexpr N max_in_list(const N max, const Head &head)
 {
   return (max >= head) ? max : head;
 }
 
 template <class N, class Head, class... Tail>
-constexpr const N max_in_list(const N max, const Head &head, const Tail &...tail)
+constexpr N max_in_list(const N max, const Head &head, const Tail &...tail)
 {
   return max_in_list((max >= head) ? max : head, tail...);
 }
 
 template <class Query, class Head>
-constexpr const size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
+constexpr size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
              const Query &query, const Head &head)
 {
   return ((found == ((size_t)-1)) && (query == head) && (idx == at)) ? 1 : 0;
 }
 
 template <class Query, class Head, class... Tail>
-constexpr const size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
+constexpr size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
              const Query &query, const Head &head,
              const Tail &...tail)
 {
@@ -119,6 +119,7 @@ void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func)
 
 void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uint32_t pins)
 {
+  (void)port; // unused
   struct gpio_port_callback *pcb = (struct gpio_port_callback *)cb;
 
   for (uint32_t i = 0; i < max_ngpios; i++) {

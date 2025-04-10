@@ -116,6 +116,7 @@ void arduino::ZephyrSerial::IrqHandler()
 
 void arduino::ZephyrSerial::IrqDispatch(const struct device *dev, void *data)
 {
+	(void)dev; // unused
 	reinterpret_cast<ZephyrSerial *>(data)->IrqHandler();
 }
 
@@ -165,7 +166,7 @@ int arduino::ZephyrSerial::read()
 
 size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
 {
-	int idx = 0;
+	size_t idx = 0;
 
 	while (1) {
 		k_sem_take(&tx.sem, K_FOREVER);

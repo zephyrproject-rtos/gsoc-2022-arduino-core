@@ -46,14 +46,17 @@ void * operator new[](std::size_t size) {
 
 #if __cplusplus >= 201703L
 void* operator new(std::size_t count, std::align_val_t al) {
+  (void)al; // unused
   return operator new(count);
 }
 
 void* operator new[](std::size_t count, std::align_val_t al) {
+  (void)al; // unused
   return operator new(count);
 }
 
 void * operator new(std::size_t size, std::align_val_t al, const std::nothrow_t tag) noexcept {
+  (void)al; (void)tag; // unused
 #if defined(NEW_TERMINATES_ON_FAILURE)
   // Cannot call throwing operator new as standard suggests, so call
   // new_helper directly then
@@ -64,6 +67,7 @@ void * operator new(std::size_t size, std::align_val_t al, const std::nothrow_t 
 }
 
 void * operator new[](std::size_t size, std::align_val_t al, const std::nothrow_t& tag) noexcept {
+  (void)al; (void)tag; // unused
 #if defined(NEW_TERMINATES_ON_FAILURE)
   // Cannot call throwing operator new[] as standard suggests, so call
   // malloc directly then
@@ -75,6 +79,7 @@ void * operator new[](std::size_t size, std::align_val_t al, const std::nothrow_
 #endif
 
 void * operator new(std::size_t size, const std::nothrow_t tag) noexcept {
+  (void)tag; // unused
 #if defined(NEW_TERMINATES_ON_FAILURE)
   // Cannot call throwing operator new as standard suggests, so call
   // new_helper directly then
@@ -84,6 +89,7 @@ void * operator new(std::size_t size, const std::nothrow_t tag) noexcept {
 #endif
 }
 void * operator new[](std::size_t size, const std::nothrow_t& tag) noexcept {
+  (void)tag; // unused
 #if defined(NEW_TERMINATES_ON_FAILURE)
   // Cannot call throwing operator new[] as standard suggests, so call
   // malloc directly then
@@ -111,17 +117,21 @@ void operator delete[](void * ptr) noexcept {
 
 #if __cplusplus >= 201402L
 void operator delete(void* ptr, std::size_t size) noexcept {
+  (void)size; // unused
   operator delete(ptr);
 }
 void operator delete[](void * ptr, std::size_t size) noexcept {
+  (void)size; // unused
   operator delete[](ptr);
 }
 #endif // __cplusplus >= 201402L
 
 void operator delete(void* ptr, const std::nothrow_t& tag) noexcept {
+  (void)tag; // unused
   operator delete(ptr);
 }
 void operator delete[](void* ptr, const std::nothrow_t& tag) noexcept {
+  (void)tag; // unused
   operator delete[](ptr);
 }
 
