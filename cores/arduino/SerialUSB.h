@@ -18,6 +18,8 @@ public:
 	void begin(unsigned long baudrate) { begin(baudrate, SERIAL_8N1); }
 
 	operator bool() override;
+	size_t write(const uint8_t *buffer, size_t size) override;
+	void flush() override;
 
 protected:
 	uint32_t dtr = 0;

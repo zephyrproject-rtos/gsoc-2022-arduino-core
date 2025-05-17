@@ -124,5 +124,16 @@ arduino::SerialUSB_::operator bool() {
     return dtr;
 }
 
+
+size_t  arduino::SerialUSB_::write(const uint8_t *buffer, size_t size) {
+    if (!Serial) return 0;
+    return arduino::ZephyrSerial::write(buffer, size);
+}
+
+void arduino::SerialUSB_::flush() {
+    if (!Serial) return;
+    arduino::ZephyrSerial::flush();
+}
+
 arduino::SerialUSB_ Serial(usb_dev);
 #endif
