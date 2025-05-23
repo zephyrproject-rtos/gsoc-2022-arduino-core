@@ -118,6 +118,9 @@ FORCE_EXPORT_SYM(net_buf_simple_pull);
 FORCE_EXPORT_SYM(net_buf_simple_add_mem);
 FORCE_EXPORT_SYM(net_buf_simple_pull_mem);
 FORCE_EXPORT_SYM(net_buf_unref);
+#if defined(CONFIG_BT_HCI_SETUP)
+FORCE_EXPORT_SYM(bt_h4_vnd_setup);
+#endif
 #endif
 
 #if defined(CONFIG_STACK_CANARIES)
