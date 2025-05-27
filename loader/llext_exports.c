@@ -138,6 +138,7 @@ FORCE_EXPORT_SYM(shared_multi_heap_free);
 
 #if defined(CONFIG_NET_SOCKETS)
 FORCE_EXPORT_SYM(getaddrinfo);
+FORCE_EXPORT_SYM(freeaddrinfo)
 FORCE_EXPORT_SYM(socket);
 FORCE_EXPORT_SYM(connect);
 FORCE_EXPORT_SYM(send);
