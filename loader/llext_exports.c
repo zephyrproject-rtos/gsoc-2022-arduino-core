@@ -230,6 +230,8 @@ FORCE_EXPORT_SYM(__aeabi_uidivmod);
 FORCE_EXPORT_SYM(__aeabi_dcmpeq);
 FORCE_EXPORT_SYM(__aeabi_d2iz);
 FORCE_EXPORT_SYM(__aeabi_f2d);
+FORCE_EXPORT_SYM(__aeabi_ul2d);
+FORCE_EXPORT_SYM(__aeabi_l2f);
 FORCE_EXPORT_SYM(__aeabi_idivmod);
 FORCE_EXPORT_SYM(__aeabi_ldivmod);
 FORCE_EXPORT_SYM(__aeabi_ul2f);
