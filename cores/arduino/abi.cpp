@@ -12,9 +12,15 @@ extern "C" int __cxa_atexit(void (*func) (void *), void * arg, void * dso_handle
   (void)func; (void)arg; (void)dso_handle; // unused
   return 0;
 }
+extern "C" int atexit(void (*func)(void)) {
+  (void)func;
+  return 0;
+}
 
 namespace std {
   void __throw_length_error(const char* __s __attribute__((unused))) {}
+  void __throw_bad_alloc() {}
+  void __throw_bad_function_call() {}
 };
 
 extern "C" int strcmp(const char* s1, const char* s2) {
