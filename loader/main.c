@@ -64,6 +64,9 @@ void llext_entry(void *arg0, void *arg1, void *arg2)
 }
 #endif /* CONFIG_USERSPACE */
 
+__attribute__((retain)) const uintptr_t sketch_base_addr = DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) +
+			      DT_REG_ADDR(DT_NODELABEL(user_sketch));
+
 static int loader(const struct shell *sh)
 {
 	const struct flash_area *fa;
