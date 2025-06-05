@@ -141,6 +141,9 @@ FORCE_EXPORT_SYM(video_buffer_alloc);
 FORCE_EXPORT_SYM(video_buffer_release);
 FORCE_EXPORT_SYM(video_set_ctrl);
 #endif
+#if defined(CONFIG_INPUT)
+FORCE_EXPORT_SYM(zephyr_input_register_callback);
+#endif
 
 #if defined(CONFIG_SHARED_MULTI_HEAP)
 FORCE_EXPORT_SYM(shared_multi_heap_aligned_alloc);

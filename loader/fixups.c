@@ -50,6 +50,27 @@ int enable_bkp_access(void)
 SYS_INIT(enable_bkp_access, POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 #endif
 
+#if defined(CONFIG_INPUT)
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/input/input.h>
+typedef void (*zephyr_input_callback_t)(struct input_event *evt, void *user_data);
+
+static zephyr_input_callback_t zephyr_input_cb = NULL;
+
+void zephyr_input_register_callback(zephyr_input_callback_t cb) {
+	zephyr_input_cb = cb;
+}
+
+static void zephyr_input_callback(struct input_event *evt, void *user_data) {
+	if (zephyr_input_cb) {
+		zephyr_input_cb(evt, user_data);
+    }
+}
+
+INPUT_CALLBACK_DEFINE(NULL, zephyr_input_callback, NULL);
+#endif
+
 #if defined(CONFIG_BOARD_ARDUINO_GIGA_R1) && defined(CONFIG_VIDEO)
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
