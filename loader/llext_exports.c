@@ -129,6 +129,7 @@ FORCE_EXPORT_SYM(__stack_chk_fail);
 FORCE_EXPORT_SYM(video_buffer_aligned_alloc);
 FORCE_EXPORT_SYM(video_buffer_alloc);
 FORCE_EXPORT_SYM(video_buffer_release);
+FORCE_EXPORT_SYM(video_set_ctrl);
 #endif
 
 #if defined(CONFIG_SHARED_MULTI_HEAP)
