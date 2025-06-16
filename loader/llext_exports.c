@@ -236,4 +236,7 @@ FORCE_EXPORT_SYM(__aeabi_idivmod);
 FORCE_EXPORT_SYM(__aeabi_ldivmod);
 FORCE_EXPORT_SYM(__aeabi_ul2f);
 FORCE_EXPORT_SYM(__aeabi_dcmpge);
+
+#if defined (CONFIG_CPP)
 FORCE_EXPORT_SYM(__cxa_pure_virtual);
+#endif
