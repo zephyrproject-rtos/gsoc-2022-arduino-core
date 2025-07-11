@@ -152,23 +152,19 @@ static void timer_irq_handler_fn(const struct device *counter_dev, void *user_da
                 turnLed(i_isr, false);
                 break;
             case 1:
-                turnLed(i_isr, counter % 31 == 0);
-                break;
-            case 2:
                 turnLed(i_isr, counter % 23 == 0);
                 break;
-            case 3:
+            case 2:
                 turnLed(i_isr, counter % 15 == 0);
                 break;
-            case 4:
-                turnLed(i_isr, counter % 9 == 0);
-                break;
-            case 5:
+            case 3:
                 turnLed(i_isr, counter % 5 == 0);
                 break;
-            case 6:
+            case 4:
                 turnLed(i_isr, counter % 3 == 0);
                 break;
+            case 5:
+            case 6:
             case 7:
                 turnLed(i_isr, true);
                 break;
@@ -210,22 +206,19 @@ void matrixBegin() {
     if (err) {
         printk("Failed to set counter_set_top_value");
     }
+}
 
-    //uint32_t buf[4] = {0x38E22, 0x8A09375D, 0x824A288E, 0x38000000};
-    /*
-    uint32_t buf[4] = {
-        0b00000000000000011100011100010001,
-        0b01000101000001001001101110101110,
-        0b11000001001001010001010001000111,
-        0b00011100000000000000000000000000};
-    */
-    uint32_t buf[4] = {
-        0b01111111000000100000100000010000,
-        0b01000000100000100000010001010000,
-        0b00100001100000011111111000000000,
-        0b00110000000000000000000000000000};
-    for (int i = 0; i < 4 ; i++) {
-        buf[i] = reverse(buf[i]);
+void matrixEnd() {
+    const struct device *const counter_dev = DEVICE_DT_GET(TIMER);
+    counter_stop(counter_dev);
+}
+
+
+void matrixPlay(uint8_t* buf, uint32_t len) {
+    int i = 0;
+    while (i < (len / 104)) {
+		matrixGrayscaleWrite(&buf[i*104]);
+		i++;
+		k_msleep(16);
     }
-    //matrixWrite(buf);
 }
