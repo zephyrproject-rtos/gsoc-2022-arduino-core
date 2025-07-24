@@ -63,12 +63,13 @@ uint8_t arduino::ZephyrI2C::endTransmission(void) { // TODO for ADS1115
 
 size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
                                        bool stopBit) {
-  int ret = i2c_read(i2c_dev, rxRingBuffer.buffer, len, address);
+  uint8_t buf[len];
+  int ret = i2c_read(i2c_dev, buf, len, address);
   if (ret != 0)
   {
     return 0;
   }
-  ret = ring_buf_put(&rxRingBuffer.rb, rxRingBuffer.buffer, len);
+  ret = ring_buf_put(&rxRingBuffer.rb, buf, len);
   if (ret == 0)
   {
     return 0;
@@ -96,19 +97,19 @@ size_t arduino::ZephyrI2C::write(const uint8_t *buffer, size_t size) {
 
 int arduino::ZephyrI2C::read() {
   uint8_t buf[1];
-  if (ring_buf_peek(&rxRingBuffer.rb, buf, 1) > 0) {
+  if (ring_buf_size_get(&rxRingBuffer.rb)) {
         int ret = ring_buf_get(&rxRingBuffer.rb, buf, 1);
         if (ret == 0) {
-            return 0;
+            return -1;
         }
 		return (int)buf[0];
   }
-  return EXIT_FAILURE;
+  return -1;
 }
 
-int arduino::ZephyrI2C::available() { // TODO for ADS1115 
-  return ring_buf_size_get(&rxRingBuffer.rb);    // ret 0 if empty
-  }
+int arduino::ZephyrI2C::available() {
+  return ring_buf_size_get(&rxRingBuffer.rb);
+}
 
 int arduino::ZephyrI2C::peek() {
   uint8_t buf[1];
