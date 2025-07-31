@@ -66,9 +66,12 @@ EXPORT_SYMBOL(usb_disable);
 
 EXPORT_SYMBOL(z_log_msg_runtime_vcreate);
 
+FORCE_EXPORT_SYM(log_dynamic_sketch)
+
 #if defined(CONFIG_NETWORKING)
 FORCE_EXPORT_SYM(net_if_foreach);
 FORCE_EXPORT_SYM(net_if_down);
+FORCE_EXPORT_SYM(net_if_up);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
 #if defined(CONFIG_NET_IPV4)
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
@@ -82,6 +85,7 @@ FORCE_EXPORT_SYM(net_if_lookup_by_dev);
 
 #if defined(CONFIG_NET_L2_ETHERNET)
 FORCE_EXPORT_SYM(_net_l2_ETHERNET);
+FORCE_EXPORT_SYM(net_mgmt_NET_REQUEST_ETHERNET_SET_MAC_ADDRESS);
 #endif
 
 #if defined(CONFIG_NET_DHCPV4)
