@@ -255,3 +255,19 @@ FORCE_EXPORT_SYM(__aeabi_dcmpge);
 #if defined (CONFIG_CPP)
 FORCE_EXPORT_SYM(__cxa_pure_virtual);
 #endif
+
+#if defined(CONFIG_BOARD_ARDUINO_UNO_Q)
+FORCE_EXPORT_SYM(matrixBegin);
+FORCE_EXPORT_SYM(matrixWrite);
+FORCE_EXPORT_SYM(matrixPlay);
+FORCE_EXPORT_SYM(matrixGrayscaleWrite);
+FORCE_EXPORT_SYM(matrixSetGrayscaleBits);
+FORCE_EXPORT_SYM(matrixEnd);
+#endif
+
+#if defined(CONFIG_FLASH)
+FORCE_EXPORT_SYM(flash_area_open);
+FORCE_EXPORT_SYM(flash_area_read);
+FORCE_EXPORT_SYM(flash_area_write);
+FORCE_EXPORT_SYM(flash_area_erase);
+#endif

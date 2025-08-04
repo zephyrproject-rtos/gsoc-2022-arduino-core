@@ -108,6 +108,11 @@ static int loader(const struct shell *sh) {
 		return rc;
 	}
 
+#if defined(CONFIG_BOARD_ARDUINO_UNO_Q)
+	void matrixBegin(void);
+	matrixBegin();
+#endif
+
 	struct sketch_header_v1 *sketch_hdr = (struct sketch_header_v1 *)(header + 7);
 	if (sketch_hdr->ver != 0x1 || sketch_hdr->magic != 0x2341) {
 		printk("Invalid sketch header\n");
