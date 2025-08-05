@@ -173,6 +173,8 @@ FORCE_EXPORT_SYM(inet_pton);
 FORCE_EXPORT_SYM(sendto);
 FORCE_EXPORT_SYM(recvfrom);
 FORCE_EXPORT_SYM(setsockopt);
+FORCE_EXPORT_SYM(getpeername);
+FORCE_EXPORT_SYM(inet_ntop);
 #endif
 
 #if defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT)
