@@ -39,6 +39,17 @@ SYS_INIT(disable_bootloader_mpu, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAU
 SYS_INIT(disable_mpu_rasr_xn, PRE_KERNEL_1, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 #endif
 
+#if defined(CONFIG_SOC_STM32H747XX_M7)
+int enable_bkp_access(void)
+{
+	/* Enable access to the backup domain */
+	// HAL_PWR_EnableBkUpAccess();
+	SET_BIT(PWR->CR1, PWR_CR1_DBP);
+	return 0;
+}
+SYS_INIT(enable_bkp_access, POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
+#endif
+
 #if defined(CONFIG_BOARD_ARDUINO_GIGA_R1) && defined(CONFIG_VIDEO)
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
