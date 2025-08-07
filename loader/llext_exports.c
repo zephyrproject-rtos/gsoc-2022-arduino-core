@@ -125,6 +125,9 @@ FORCE_EXPORT_SYM(bt_h4_vnd_setup);
 FORCE_EXPORT_SYM(brcm_patchram_buf);
 FORCE_EXPORT_SYM(brcm_patch_ram_length);
 #endif
+#if defined(CONFIG_BT_LL_SW_SPLIT)
+FORCE_EXPORT_SYM(bt_ctlr_set_public_addr);
+#endif
 #endif
 
 #if defined(CONFIG_STACK_CANARIES)
