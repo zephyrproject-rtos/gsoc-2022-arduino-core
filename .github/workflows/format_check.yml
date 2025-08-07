@@ -1,0 +1,62 @@
+name: 'Format Check'
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '**/*.c'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+    branches:
+      - 'main'
+    paths:
+      - '**/*.c'
+      - '**/*.cpp'
+      - '**/*.h'
+      - '**/*.hpp'
+
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - check: 'cores/arduino/'
+            exclude: 'cores/arduino/api/'
+          - check: 'loader/'
+            exclude: 'loader/llext_exports\.c$'
+          - check: 'libraries/'
+            exclude: 'examples'
+            exclude: 'extras'
+            exclude: 'ea_malloc'
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          persist-credentials: false
+
+      - name: Run clang-format check
+        uses: jidicula/clang-format-action@v4.15.0
+        with:
+          clang-format-version: '19'
+          check-path: ${{ matrix.path['check'] }}
+          exclude-regex: ${{ matrix.path['exclude'] }}
