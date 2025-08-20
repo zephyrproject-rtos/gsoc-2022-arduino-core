@@ -177,7 +177,7 @@ size_t analog_pin_index(pin_size_t pinNumber) {
 
 static unsigned int irq_key;
 static bool interrupts_disabled = false;
-}
+}  // namespace
 
 void yield(void) {
   k_yield();
