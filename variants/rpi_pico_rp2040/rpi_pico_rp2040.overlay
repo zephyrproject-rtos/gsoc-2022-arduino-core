@@ -78,6 +78,7 @@
 				<&adc 1>,
 				<&adc 2>;
 
+		gpio-ports = <&gpio0>;
 		serials = <&pico_serial>;
 		i2cs = <&pico_i2c0>;
 		spis = <&pico_spi>;

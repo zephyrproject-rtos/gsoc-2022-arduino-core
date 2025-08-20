@@ -30,6 +30,8 @@
 				<&boosterpack_header 31 0>,	/* GPIO_24 */
 				<&boosterpack_header 32 0>;	/* GPIO_23 */
 		builtin-led-gpios = <&boosterpack_header 10 0>;	/*  GREEN_LED  */
+
+		gpio-ports = <&gpioa0>, <&gpioa1>, <&gpioa2>, <&gpioa3>;
 		serials = <&boosterpack_serial>;
 		i2cs = <&boosterpack_i2c>;
 	};

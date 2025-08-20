@@ -90,6 +90,20 @@ uses [the Arduino header definitions](https://github.com/zephyrproject-rtos/zeph
 };
 ```
 
+### Configure GPIO devices
+
+The `gpios` node lists the GPIO ports to use.
+Pin numbers will be assigned sequentially starting from 0 to the GPIOs of the ports specified here.
+For example, if gpio0 and gpio1, each with 16 outputs, are specified, pin 1 of gpio1 will be assigned 17.
+
+```
+/ {
+       zephyr,user {
+               gpios = <&gpio0>, <&gpio1>;
+       };
+};
+```
+
 ### Configure Serial devices
 
 The `serials` node defines the Serial devices to use.

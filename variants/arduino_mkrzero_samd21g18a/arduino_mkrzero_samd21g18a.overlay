@@ -54,6 +54,7 @@
 				<&adc 6>,
 				<&adc 7>;
 
+		gpio-ports = <&porta>, <&portb>;
 		serials = <&sercom5>;
 		i2cs = <&sercom0>;
 	};

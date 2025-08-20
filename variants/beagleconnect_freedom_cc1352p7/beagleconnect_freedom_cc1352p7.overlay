@@ -58,6 +58,8 @@
  			    <&gpio0 28 GPIO_ACTIVE_HIGH>; /* D3  - MB1 CS - A5 */
 
  	builtin-led-gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;	/*  2.4GHz TX/RX  */
+
+	gpio-ports = <&gpio0>;
  	serials = <&uart0 &uart1>;
  	i2cs = <&i2c0>;
 	spis = <&spi0>;

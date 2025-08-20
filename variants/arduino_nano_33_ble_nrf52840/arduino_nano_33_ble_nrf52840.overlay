@@ -59,6 +59,7 @@
 				<&adc 4>,
 				<&adc 1>;
 
+		gpio-ports = <&gpio0>, <&gpio1>;
 		serials = <&uart0>;
 		i2cs = <&arduino_nano_i2c>;
 	};

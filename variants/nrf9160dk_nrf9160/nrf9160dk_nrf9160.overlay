@@ -57,6 +57,8 @@
 			<&arduino_adc 3>,
 			<&arduino_adc 4>,
 			<&arduino_adc 5>;
+
+		gpio-ports = <&gpio0>;
 	};
 };
 
