@@ -87,26 +87,15 @@ constexpr int max_ngpios = max_in_list(
  * GPIO callback implementation
  */
 
-struct arduino_callback {
-  voidFuncPtr handler;
-  bool enabled;
-};
-
 struct gpio_port_callback {
   struct gpio_callback callback;
-  struct arduino_callback handlers[max_ngpios];
-  gpio_port_pins_t pins;
-  const struct device *dev;
+  voidFuncPtr handlers[max_ngpios];
 } port_callback[ARRAY_SIZE(gpios)];
 
 struct gpio_port_callback *find_gpio_port_callback(const struct device *dev)
 {
-  for (size_t i = 0; i < ARRAY_SIZE(port_callback); i++) {
-    if (port_callback[i].dev == dev) {
-      return &port_callback[i];
-    }
-    if (port_callback[i].dev == nullptr) {
-      port_callback[i].dev = dev;
+  for (size_t i = 0; i < ARRAY_SIZE(gpios); i++) {
+    if (dev == gpios[i]) {
       return &port_callback[i];
     }
   }
@@ -114,22 +103,20 @@ struct gpio_port_callback *find_gpio_port_callback(const struct device *dev)
   return nullptr;
 }
 
-void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func)
-{
+void set_interrupt_handler(pin_size_t pinNumber, voidFuncPtr func) {
   struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[local_gpio_pin(pinNumber)].handler = func;
+    pcb->handlers[local_gpio_pin(pinNumber)] = func;
   }
 }
 
-void handleGpioCallback(const struct device *port, struct gpio_callback *cb, uint32_t pins)
-{
-  struct gpio_port_callback *pcb = (struct gpio_port_callback *)cb;
+void handle_gpio_callback(const struct device *port, struct gpio_callback *cb, uint32_t pins) {
+  struct gpio_port_callback *pcb = CONTAINER_OF(cb, struct gpio_port_callback, callback);
 
   for (uint32_t i = 0; i < max_ngpios; i++) {
-    if (pins & BIT(i) && pcb->handlers[i].enabled) {
-      pcb->handlers[i].handler();
+    if (pins & BIT(i) && pcb->handlers[i]) {
+      pcb->handlers[i]();
     }
   }
 }
@@ -247,8 +234,7 @@ void tone_expiry_cb(struct k_timer *timer) {
   }
 }
 
-void tone(pin_size_t pinNumber, unsigned int frequency,
-          unsigned long duration) {
+void tone(pin_size_t pinNumber, unsigned int frequency, unsigned long duration) {
   struct k_timer *timer;
   k_timeout_t timeout;
 
@@ -409,19 +395,22 @@ void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinSt
   pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
   __ASSERT(pcb != nullptr, "gpio_port_callback not found");
 
-  pcb->pins |= BIT(local_gpio_pin(pinNumber));
-  setInterruptHandler(pinNumber, callback);
-  enableInterrupt(pinNumber);
+  set_interrupt_handler(pinNumber, callback);
 
+  if (pcb->callback.handler == NULL) {
+    gpio_init_callback(&pcb->callback, handle_gpio_callback, 0);
+    gpio_add_callback(local_gpio_port(pinNumber), &pcb->callback);
+  }
+
+  enableInterrupt(pinNumber);
   gpio_pin_interrupt_configure(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), intmode);
-  gpio_init_callback(&pcb->callback, handleGpioCallback, pcb->pins);
-  gpio_add_callback(local_gpio_port(pinNumber), &pcb->callback);
 }
 
 void detachInterrupt(pin_size_t pinNumber)
 {
-  setInterruptHandler(pinNumber, nullptr);
+  gpio_pin_interrupt_configure(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), 0);
   disableInterrupt(pinNumber);
+  set_interrupt_handler(pinNumber, nullptr);
 }
 
 #ifndef CONFIG_MINIMAL_LIBC_RAND
@@ -483,7 +472,7 @@ void enableInterrupt(pin_size_t pinNumber) {
   struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[local_gpio_pin(pinNumber)].enabled = true;
+    pcb->callback.pin_mask |= BIT(local_gpio_pin(pinNumber));
   }
 }
 
@@ -491,7 +480,7 @@ void disableInterrupt(pin_size_t pinNumber) {
   struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[local_gpio_pin(pinNumber)].enabled = false;
+    pcb->callback.pin_mask &= ~BIT(local_gpio_pin(pinNumber));
   }
 }
 
