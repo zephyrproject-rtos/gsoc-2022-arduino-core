@@ -257,7 +257,9 @@ void noTone(pin_size_t pinNumber) {
   gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
 }
 
-void delay(unsigned long ms) { k_sleep(K_MSEC(ms)); }
+void delay(unsigned long ms) {
+  k_sleep(K_MSEC(ms));
+}
 
 void delayMicroseconds(unsigned int us) {
   k_busy_wait(us);
@@ -267,7 +269,9 @@ unsigned long micros(void) {
   return k_cyc_to_us_floor32(k_cycle_get_32());
 }
 
-unsigned long millis(void) { return k_uptime_get_32(); }
+unsigned long millis(void) {
+  return k_uptime_get_32();
+}
 
 #ifdef CONFIG_PWM
 
