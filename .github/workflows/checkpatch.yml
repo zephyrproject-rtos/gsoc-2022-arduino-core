@@ -27,4 +27,6 @@ jobs:
         fetch-depth: ${{ env.PR_FETCH_DEPTH }}
     - name: Run checkpatch review
       uses: webispy/checkpatch-action@v9
+      env:
+        CHECKPATCH_COMMAND:  perl ./zephyr/scripts/checkpatch.pl
 
