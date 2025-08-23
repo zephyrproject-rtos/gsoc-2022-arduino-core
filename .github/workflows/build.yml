@@ -25,17 +25,17 @@ jobs:
       - name: Build fade
         working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b arduino_nano_33_ble_sense samples/fade
+          west build -p -b arduino_nano_33_ble/nrf52840/sense samples/fade
 
       - name: Build i2cdemo
         working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b arduino_nano_33_ble_sense samples/i2cdemo
+          west build -p -b arduino_nano_33_ble/nrf52840/sense samples/i2cdemo
 
       - name: Build adc
         working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b beagleconnect_freedom samples/analog_input
+          west build -p -b beagleconnect_freedom/cc1352p7 samples/analog_input
 
       - name: Archive firmware
         uses: actions/upload-artifact@v4
