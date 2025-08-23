@@ -15,12 +15,13 @@ jobs:
           path: Arduino-Zephyr-API
 
       - name: Initialize
-        working-directory: Arduino-Zephyr-API
         run: |
-          west init -m https://github.com/zephyrproject-rtos/gsoc-2022-arduino-core.git
+          west init -l Arduino-Zephyr-API/
           west update
           git clone https://github.com/arduino/ArduinoCore-API.git ArduinoCore-API
-          cp -r ArduinoCore-API/api modules/lib/Arduino-Zephyr-API/cores/arduino/.
+          mkdir -p modules/lib
+          ln -s Arduino-Zephyr-API modules/lib/
+          cp -rfp ArduinoCore-API/api Arduino-Zephyr-API/cores/arduino/
 
       - name: Build fade
         working-directory: Arduino-Zephyr-API
