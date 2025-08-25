@@ -70,11 +70,13 @@ EXPORT_SYMBOL(z_log_msg_runtime_vcreate);
 FORCE_EXPORT_SYM(net_if_foreach);
 FORCE_EXPORT_SYM(net_if_down);
 FORCE_EXPORT_SYM(net_if_get_by_iface);
+#if defined(CONFIG_NET_IPV4)
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_add);
 FORCE_EXPORT_SYM(net_if_ipv4_maddr_join);
 FORCE_EXPORT_SYM(net_if_ipv4_set_gw);
 FORCE_EXPORT_SYM(net_if_ipv4_addr_add);
 FORCE_EXPORT_SYM(net_if_ipv4_set_netmask_by_addr);
+#endif
 FORCE_EXPORT_SYM(net_if_lookup_by_dev);
 #endif
 
