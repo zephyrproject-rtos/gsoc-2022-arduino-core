@@ -377,7 +377,7 @@ void analogWrite(enum dacPins dacName, int value) {
 
 #ifdef CONFIG_ADC
 
-void analogReference(uint8_t mode) {
+void __attribute__((weak)) analogReference(uint8_t mode) {
 	/*
 	 * The Arduino API not clearly defined what means of
 	 * the mode argument of analogReference().
