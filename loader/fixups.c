@@ -186,23 +186,63 @@ SYS_INIT(maybe_flash_bootloader, POST_KERNEL, CONFIG_FILE_SYSTEM_INIT_PRIORITY);
 #include <stm32_ll_adc.h>
 #include <zephyr/devicetree.h>
 
-static int enable_adc_reference(void) {
+int analog_reference(uint8_t reference) {
 	uint8_t init_status;
-	/* VREF+ is not connected to VDDA by default */
-	/* Use 2.5V as reference (instead of 3.3V) for internal channels
-	 * calculation
-	 */
-	__HAL_RCC_SYSCFG_CLK_ENABLE();
+	/* VREF+ is connected to VDDA by default */
+	const struct gpio_dt_spec spec =
+		GPIO_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), analog_switch_gpios, 0);
 
-	/* VREF_OUT2 = 2.5 V */
-	HAL_SYSCFG_VREFBUF_VoltageScalingConfig(SYSCFG_VREFBUF_VOLTAGE_SCALE1);
+	gpio_pin_configure_dt(&spec, GPIO_OUTPUT);
+
+	__HAL_RCC_SYSCFG_CLK_ENABLE();
+	__HAL_RCC_VREF_CLK_ENABLE();
+
+	HAL_SYSCFG_VREFBUF_HighImpedanceConfig(SYSCFG_VREFBUF_HIGH_IMPEDANCE_ENABLE);
+	HAL_SYSCFG_DisableVREFBUF();
+
+	if (reference == AR_DEFAULT) {
+		/* VREF+ is connected to VDDA */
+		gpio_pin_set_dt(&spec, 0);
+		return;
+	}
+
+	gpio_pin_set_dt(&spec, 1);
+
+	if (reference == AR_EXTERNAL) {
+		return 0;
+	}
+
+	uint32_t voltageScaling = SYSCFG_VREFBUF_VOLTAGE_SCALE3;
+	switch (reference) {
+	case AR_INTERNAL2V5:
+		voltageScaling = SYSCFG_VREFBUF_VOLTAGE_SCALE3;
+		break;
+	case AR_INTERNAL2V05:
+		voltageScaling = SYSCFG_VREFBUF_VOLTAGE_SCALE2;
+		break;
+	case AR_INTERNAL1V8:
+		voltageScaling = SYSCFG_VREFBUF_VOLTAGE_SCALE1;
+		break;
+	case AR_INTERNAL1V5:
+		voltageScaling = SYSCFG_VREFBUF_VOLTAGE_SCALE0;
+		break;
+	}
+
+	HAL_SYSCFG_VREFBUF_VoltageScalingConfig(voltageScaling);
+	HAL_SYSCFG_EnableVREFBUF();
 	HAL_SYSCFG_VREFBUF_HighImpedanceConfig(SYSCFG_VREFBUF_HIGH_IMPEDANCE_DISABLE);
 
-	init_status = HAL_SYSCFG_EnableVREFBUF();
 	__ASSERT(init_status == HAL_OK, "ADC Conversion value may be incorrect");
 
 	return init_status;
 }
 
-SYS_INIT(enable_adc_reference, POST_KERNEL, 0);
+EXPORT_SYMBOL(analog_reference);
+
+int disable_vrefbuf() {
+	// This is the safe HW configuration
+	analog_reference(AR_DEFAULT);
+}
+
+SYS_INIT(disable_vrefbuf, POST_KERNEL, 0);
 #endif
