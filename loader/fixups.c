@@ -57,15 +57,17 @@ SYS_INIT(enable_bkp_access, POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT);
 #include <zephyr/input/input.h>
 typedef void (*zephyr_input_callback_t)(struct input_event *evt, void *user_data);
 
-static zephyr_input_callback_t zephyr_input_cb = NULL;
+static zephyr_input_callback_t zephyr_input_cb_func = NULL;
+static void *zephyr_input_cb_data = NULL;
 
-void zephyr_input_register_callback(zephyr_input_callback_t cb) {
-	zephyr_input_cb = cb;
+void zephyr_input_register_callback(zephyr_input_callback_t cb, void *user_data) {
+	zephyr_input_cb_func = cb;
+	zephyr_input_cb_data = user_data;
 }
 
 static void zephyr_input_callback(struct input_event *evt, void *user_data) {
-	if (zephyr_input_cb) {
-		zephyr_input_cb(evt, user_data);
+	if (zephyr_input_cb_func) {
+		zephyr_input_cb_func(evt, zephyr_input_cb_data);
 	}
 }
 
