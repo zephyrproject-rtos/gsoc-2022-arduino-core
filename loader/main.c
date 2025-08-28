@@ -27,25 +27,24 @@ struct sketch_header_v1 {
 	uint32_t len;   // @ 0x08
 	uint16_t magic; // @ 0x0c
 	uint8_t flags;  // @ 0x0e
-} __attribute__ ((packed));
+} __attribute__((packed));
 
-#define SKETCH_FLAG_DEBUG       0x01
-#define SKETCH_FLAG_LINKED      0x02
+#define SKETCH_FLAG_DEBUG  0x01
+#define SKETCH_FLAG_LINKED 0x02
 
-#define TARGET_HAS_USB_CDC_SHELL \
-	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL && CONFIG_USB_DEVICE_STACK
+#define TARGET_HAS_USB_CDC_SHELL                                                                   \
+	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL &&CONFIG_USB_DEVICE_STACK
 
 #if TARGET_HAS_USB_CDC_SHELL
-const struct device *const usb_dev = DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
+const struct device *const usb_dev =
+	DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 
-static int enable_shell_usb(void)
-{
+static int enable_shell_usb(void) {
 	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
-	uint32_t level =
-		(CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
-		CONFIG_LOG_MAX_LEVEL : CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL;
-	static const struct shell_backend_config_flags cfg_flags =
-					SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
+	uint32_t level = (CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
+						 CONFIG_LOG_MAX_LEVEL :
+						 CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL;
+	static const struct shell_backend_config_flags cfg_flags = SHELL_DEFAULT_BACKEND_CONFIG_FLAGS;
 
 	shell_init(shell_backend_uart_get_ptr(), usb_dev, cfg_flags, log_backend, level);
 
@@ -57,19 +56,17 @@ static int enable_shell_usb(void)
 K_THREAD_STACK_DEFINE(llext_stack, CONFIG_MAIN_STACK_SIZE);
 struct k_thread llext_thread;
 
-void llext_entry(void *arg0, void *arg1, void *arg2)
-{
-	void (*fn)(struct llext_loader*, struct llext*) = arg0;
+void llext_entry(void *arg0, void *arg1, void *arg2) {
+	void (*fn)(struct llext_loader *, struct llext *) = arg0;
 	fn(arg1, arg2);
 }
 #endif /* CONFIG_USERSPACE */
 
-__attribute__((retain)) const uintptr_t sketch_base_addr = DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) +
-			      DT_REG_ADDR(DT_NODELABEL(user_sketch));
+__attribute__((retain)) const uintptr_t sketch_base_addr =
+	DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
 __attribute__((retain)) const uintptr_t sketch_max_size = DT_REG_SIZE(DT_NODELABEL(user_sketch));
 
-static int loader(const struct shell *sh)
-{
+static int loader(const struct shell *sh) {
 	const struct flash_area *fa;
 	int rc;
 
@@ -80,8 +77,8 @@ static int loader(const struct shell *sh)
 		return rc;
 	}
 
-	uintptr_t base_addr = DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) +
-			      DT_REG_ADDR(DT_NODELABEL(user_sketch));
+	uintptr_t base_addr =
+		DT_REG_ADDR(DT_GPARENT(DT_NODELABEL(user_sketch))) + DT_REG_ADDR(DT_NODELABEL(user_sketch));
 
 	char header[HEADER_LEN];
 	rc = flash_area_read(fa, 0, header, sizeof(header));
@@ -117,17 +114,17 @@ static int loader(const struct shell *sh)
 #endif
 
 	if (sketch_hdr->flags & SKETCH_FLAG_LINKED) {
-		#ifdef CONFIG_BOARD_ARDUINO_PORTENTA_C33
-		#if CONFIG_MPU
+#ifdef CONFIG_BOARD_ARDUINO_PORTENTA_C33
+#if CONFIG_MPU
 		barrier_dmem_fence_full();
-		#endif
-		#if CONFIG_DCACHE
+#endif
+#if CONFIG_DCACHE
 		barrier_dsync_fence_full();
-		#endif
-		#if CONFIG_ICACHE
+#endif
+#if CONFIG_ICACHE
 		barrier_isync_fence_full();
-		#endif
-		#endif
+#endif
+#endif
 
 		extern struct k_heap llext_heap;
 		typedef void (*entry_point_t)(struct k_heap *heap, size_t heap_size);
@@ -140,7 +137,7 @@ static int loader(const struct shell *sh)
 	}
 
 #if defined(CONFIG_LLEXT_STORAGE_WRITABLE)
-	uint8_t* sketch_buf = k_aligned_alloc(4096, sketch_buf_len);
+	uint8_t *sketch_buf = k_aligned_alloc(4096, sketch_buf_len);
 
 	if (!sketch_buf) {
 		printk("Unable to allocate %d bytes\n", sketch_buf_len);
@@ -153,7 +150,7 @@ static int loader(const struct shell *sh)
 	}
 #else
 	// Assuming the sketch is stored in the same flash device as the loader
-	uint8_t* sketch_buf = (uint8_t*)base_addr;
+	uint8_t *sketch_buf = (uint8_t *)base_addr;
 #endif
 
 #ifdef CONFIG_LLEXT
@@ -203,10 +200,8 @@ static int loader(const struct shell *sh)
 		return -1;
 	}
 
-	k_thread_create(&llext_thread, llext_stack,
-			K_THREAD_STACK_SIZEOF(llext_stack),
-			&llext_entry, llext_bootstrap, ext, main_fn,
-			1, K_INHERIT_PERMS, K_FOREVER);
+	k_thread_create(&llext_thread, llext_stack, K_THREAD_STACK_SIZEOF(llext_stack), &llext_entry,
+					llext_bootstrap, ext, main_fn, 1, K_INHERIT_PERMS, K_FOREVER);
 
 	k_mem_domain_add_thread(&domain, &llext_thread);
 
@@ -227,8 +222,7 @@ static int loader(const struct shell *sh)
 SHELL_CMD_REGISTER(sketch, NULL, "Run sketch", loader);
 #endif
 
-int main(void)
-{
+int main(void) {
 	loader(NULL);
 	return 0;
 }
