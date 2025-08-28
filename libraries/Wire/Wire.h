@@ -16,56 +16,60 @@ typedef void (*voidFuncPtrParamInt)(int);
 namespace arduino {
 
 struct i2c_ring {
-  struct ring_buf rb;
-  uint8_t buffer[256];
+	struct ring_buf rb;
+	uint8_t buffer[256];
 };
 
 class ZephyrI2C : public HardwareI2C {
 public:
-  ZephyrI2C(const struct device* i2c);
+	ZephyrI2C(const struct device *i2c);
 
-  virtual void begin();
-  virtual void end();
-  virtual void begin(uint8_t address);
-  virtual void setClock(uint32_t freq);
+	virtual void begin();
+	virtual void end();
+	virtual void begin(uint8_t address);
+	virtual void setClock(uint32_t freq);
 
-  virtual void beginTransmission(uint8_t address);
-  virtual uint8_t endTransmission(bool stopBit);
-  virtual uint8_t endTransmission(void);
+	virtual void beginTransmission(uint8_t address);
+	virtual uint8_t endTransmission(bool stopBit);
+	virtual uint8_t endTransmission(void);
 
-  virtual size_t requestFrom(uint8_t address, size_t len, bool stopBit);
-  virtual size_t requestFrom(uint8_t address, size_t len);
+	virtual size_t requestFrom(uint8_t address, size_t len, bool stopBit);
+	virtual size_t requestFrom(uint8_t address, size_t len);
 
-  virtual void onReceive(void (*)(int));
-  virtual void onRequest(void (*)(void));
+	virtual void onReceive(void (*)(int));
+	virtual void onRequest(void (*)(void));
 
-  virtual size_t write(uint8_t data);
-  virtual size_t write(int data) { return write((uint8_t)data); };
-  virtual size_t write(const uint8_t *buffer, size_t size);
-  using Print::write;
-  virtual int read();
-  virtual int peek();
-  virtual void flush();
-  virtual int available();
+	virtual size_t write(uint8_t data);
 
-  // I2C target callbacks
-  int writeRequestedCallback(struct i2c_target_config *config);
-  int writeReceivedCallback(struct i2c_target_config *config, uint8_t val);
-  int readRequestedCallback(struct i2c_target_config *config, uint8_t *val);
-  int readProcessedCallback(struct i2c_target_config *config, uint8_t *val);
-  int stopCallback(struct i2c_target_config *config);
+	virtual size_t write(int data) {
+		return write((uint8_t)data);
+	};
 
-  struct i2c_target_config i2c_cfg;
+	virtual size_t write(const uint8_t *buffer, size_t size);
+	using Print::write;
+	virtual int read();
+	virtual int peek();
+	virtual void flush();
+	virtual int available();
+
+	// I2C target callbacks
+	int writeRequestedCallback(struct i2c_target_config *config);
+	int writeReceivedCallback(struct i2c_target_config *config, uint8_t val);
+	int readRequestedCallback(struct i2c_target_config *config, uint8_t *val);
+	int readProcessedCallback(struct i2c_target_config *config, uint8_t *val);
+	int stopCallback(struct i2c_target_config *config);
+
+	struct i2c_target_config i2c_cfg;
 
 private:
-  int _address;
+	int _address;
 
-  struct i2c_ring txRingBuffer;
-  struct i2c_ring rxRingBuffer;
-  const struct device *i2c_dev;
+	struct i2c_ring txRingBuffer;
+	struct i2c_ring rxRingBuffer;
+	const struct device *i2c_dev;
 
-  voidFuncPtr onRequestCb = NULL;
-  voidFuncPtrParamInt onReceiveCb = NULL;
+	voidFuncPtr onRequestCb = NULL;
+	voidFuncPtrParamInt onReceiveCb = NULL;
 };
 
 } // namespace arduino

@@ -8,69 +8,70 @@
 #include "zephyrInternal.h"
 #include <zephyr/kernel.h>
 
-arduino::ZephyrSPI::ZephyrSPI(const struct device *spi) : spi_dev(spi) {}
+arduino::ZephyrSPI::ZephyrSPI(const struct device *spi) : spi_dev(spi) {
+}
 
 uint8_t arduino::ZephyrSPI::transfer(uint8_t data) {
-  int ret;
-  uint8_t rx;
-  const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
-  const struct spi_buf_set tx_buf_set = {
-      .buffers = &tx_buf,
-      .count = 1,
-  };
-  const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
-  const struct spi_buf_set rx_buf_set = {
-      .buffers = &rx_buf,
-      .count = 1,
-  };
+	int ret;
+	uint8_t rx;
+	const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
+	const struct spi_buf_set tx_buf_set = {
+		.buffers = &tx_buf,
+		.count = 1,
+	};
+	const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
+	const struct spi_buf_set rx_buf_set = {
+		.buffers = &rx_buf,
+		.count = 1,
+	};
 
-  ret = spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
-  if (ret < 0) {
-    return 0;
-  }
+	ret = spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
+	if (ret < 0) {
+		return 0;
+	}
 
-  return rx;
+	return rx;
 }
 
 uint16_t arduino::ZephyrSPI::transfer16(uint16_t data) {
-  int ret;
-  uint16_t rx;
-  const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
-  const struct spi_buf_set tx_buf_set = {
-      .buffers = &tx_buf,
-      .count = 1,
-  };
-  const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
-  const struct spi_buf_set rx_buf_set = {
-      .buffers = &rx_buf,
-      .count = 1,
-  };
+	int ret;
+	uint16_t rx;
+	const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
+	const struct spi_buf_set tx_buf_set = {
+		.buffers = &tx_buf,
+		.count = 1,
+	};
+	const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
+	const struct spi_buf_set rx_buf_set = {
+		.buffers = &rx_buf,
+		.count = 1,
+	};
 
-  ret = spi_transceive(spi_dev, &config16, &tx_buf_set, &rx_buf_set);
-  if (ret < 0) {
-    return 0;
-  }
+	ret = spi_transceive(spi_dev, &config16, &tx_buf_set, &rx_buf_set);
+	if (ret < 0) {
+		return 0;
+	}
 
-  return rx;
+	return rx;
 }
 
 void arduino::ZephyrSPI::transfer(void *buf, size_t count) {
-  int ret;
-  const struct spi_buf tx_buf = {.buf = buf, .len = count};
-  const struct spi_buf_set tx_buf_set = {
-      .buffers = &tx_buf,
-      .count = 1,
-  };
+	int ret;
+	const struct spi_buf tx_buf = {.buf = buf, .len = count};
+	const struct spi_buf_set tx_buf_set = {
+		.buffers = &tx_buf,
+		.count = 1,
+	};
 
-  uint8_t rx[count];
-  const struct spi_buf rx_buf = {.buf = &rx, .len = count};
-  const struct spi_buf_set rx_buf_set = {
-      .buffers = &rx_buf,
-      .count = 1,
-  };
+	uint8_t rx[count];
+	const struct spi_buf rx_buf = {.buf = &rx, .len = count};
+	const struct spi_buf_set rx_buf_set = {
+		.buffers = &rx_buf,
+		.count = 1,
+	};
 
-  spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
-  memcpy(buf, rx, count);
+	spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
+	memcpy(buf, rx, count);
 }
 
 void arduino::ZephyrSPI::usingInterrupt(int interruptNumber) {
@@ -84,41 +85,52 @@ void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
 #endif
 
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
-  memset(&config, 0, sizeof(config));
-  memset(&config16, 0, sizeof(config16));
-  config.frequency = settings.getClockFreq() > SPI_MIN_CLOCK_FEQUENCY ? settings.getClockFreq() : SPI_MIN_CLOCK_FEQUENCY;
-  config16.frequency = config.frequency;
+	memset(&config, 0, sizeof(config));
+	memset(&config16, 0, sizeof(config16));
+	config.frequency = settings.getClockFreq() > SPI_MIN_CLOCK_FEQUENCY ? settings.getClockFreq() :
+																		  SPI_MIN_CLOCK_FEQUENCY;
+	config16.frequency = config.frequency;
 
-  auto mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
-  switch (settings.getDataMode()) {
-    case SPI_MODE0:
-      mode = 0; break;
-    case SPI_MODE1:
-      mode = SPI_MODE_CPHA; break;
-    case SPI_MODE2:
-      mode = SPI_MODE_CPOL; break;
-    case SPI_MODE3:
-      mode = SPI_MODE_CPOL | SPI_MODE_CPHA; break;
-  }
-  config.operation = SPI_WORD_SET(8) | (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
-  config16.operation = SPI_WORD_SET(16) | (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
+	auto mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
+	switch (settings.getDataMode()) {
+	case SPI_MODE0:
+		mode = 0;
+		break;
+	case SPI_MODE1:
+		mode = SPI_MODE_CPHA;
+		break;
+	case SPI_MODE2:
+		mode = SPI_MODE_CPOL;
+		break;
+	case SPI_MODE3:
+		mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
+		break;
+	}
+	config.operation = SPI_WORD_SET(8) |
+					   (settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) |
+					   mode;
+	config16.operation =
+		SPI_WORD_SET(16) |
+		(settings.getBitOrder() == MSBFIRST ? SPI_TRANSFER_MSB : SPI_TRANSFER_LSB) | mode;
 }
 
 void arduino::ZephyrSPI::endTransaction(void) {
-  spi_release(spi_dev, &config);
+	spi_release(spi_dev, &config);
 }
 
-void arduino::ZephyrSPI::attachInterrupt() {}
+void arduino::ZephyrSPI::attachInterrupt() {
+}
 
-void arduino::ZephyrSPI::detachInterrupt() {}
-
+void arduino::ZephyrSPI::detachInterrupt() {
+}
 
 void arduino::ZephyrSPI::begin() {
-  beginTransaction(SPISettings());
-  endTransaction();
+	beginTransaction(SPISettings());
+	endTransaction();
 }
 
-void arduino::ZephyrSPI::end() {}
+void arduino::ZephyrSPI::end() {
+}
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), spis)
 #if (DT_PROP_LEN(DT_PATH(zephyr_user), spis) > 1)
