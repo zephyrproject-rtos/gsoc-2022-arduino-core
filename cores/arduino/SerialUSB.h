@@ -13,13 +13,22 @@ namespace arduino {
 class SerialUSB_ : public ZephyrSerial {
 
 public:
-	SerialUSB_(const struct device *dev) : ZephyrSerial(dev) { }
+	SerialUSB_(const struct device *dev) : ZephyrSerial(dev) {
+	}
+
 	void begin(unsigned long baudrate, uint16_t config);
-	void begin(unsigned long baudrate) { begin(baudrate, SERIAL_8N1); }
+
+	void begin(unsigned long baudrate) {
+		begin(baudrate, SERIAL_8N1);
+	}
 
 	operator bool() override;
 	size_t write(const uint8_t *buffer, size_t size) override;
-	size_t write(const uint8_t data) override { return write(&data, 1); }
+
+	size_t write(const uint8_t data) override {
+		return write(&data, 1);
+	}
+
 	void flush() override;
 
 protected:
@@ -32,8 +41,9 @@ private:
 	struct k_timer baud_timer;
 	bool started = false;
 };
-}  // namespace arduino
+} // namespace arduino
 
-#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && (CONFIG_USB_CDC_ACM || CONFIG_USBD_CDC_ACM_CLASS))
+#if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) &&                                            \
+	 (CONFIG_USB_CDC_ACM || CONFIG_USBD_CDC_ACM_CLASS))
 extern arduino::SerialUSB_ Serial;
 #endif

@@ -21,9 +21,8 @@ static const char *const blocklist[] = {
 };
 
 /* doc device instantiation start */
-USBD_DEVICE_DEFINE(usbd,
-		   DEVICE_DT_GET(DT_NODELABEL(zephyr_udc0)),
-		   CONFIG_USB_DEVICE_VID, CONFIG_USB_DEVICE_PID);
+USBD_DEVICE_DEFINE(usbd, DEVICE_DT_GET(DT_NODELABEL(zephyr_udc0)), CONFIG_USB_DEVICE_VID,
+				   CONFIG_USB_DEVICE_PID);
 /* doc device instantiation end */
 
 /* doc string instantiation start */
@@ -40,14 +39,10 @@ USBD_DESC_CONFIG_DEFINE(hs_cfg_desc, "HS Configuration");
 static const uint8_t attributes = 0;
 
 /* Full speed configuration */
-USBD_CONFIGURATION_DEFINE(sample_fs_config,
-			  attributes,
-			  250, &fs_cfg_desc);
+USBD_CONFIGURATION_DEFINE(sample_fs_config, attributes, 250, &fs_cfg_desc);
 
 /* High speed configuration */
-USBD_CONFIGURATION_DEFINE(sample_hs_config,
-			  attributes,
-			  250, &hs_cfg_desc);
+USBD_CONFIGURATION_DEFINE(sample_hs_config, attributes, 250, &hs_cfg_desc);
 /* doc configuration instantiation end */
 
 /*
@@ -63,28 +58,22 @@ static const struct usb_bos_capability_lpm bos_cap_lpm = {
 
 USBD_DESC_BOS_DEFINE(sample_usbext, sizeof(bos_cap_lpm), &bos_cap_lpm);
 
-static void sample_fix_code_triple(struct usbd_context *uds_ctx,
-				   const enum usbd_speed speed)
-{
+static void sample_fix_code_triple(struct usbd_context *uds_ctx, const enum usbd_speed speed) {
 	/* Always use class code information from Interface Descriptors */
-	if (IS_ENABLED(CONFIG_USBD_CDC_ACM_CLASS) ||
-	    IS_ENABLED(CONFIG_USBD_CDC_ECM_CLASS) ||
-	    IS_ENABLED(CONFIG_USBD_CDC_NCM_CLASS) ||
-	    IS_ENABLED(CONFIG_USBD_AUDIO2_CLASS)) {
+	if (IS_ENABLED(CONFIG_USBD_CDC_ACM_CLASS) || IS_ENABLED(CONFIG_USBD_CDC_ECM_CLASS) ||
+		IS_ENABLED(CONFIG_USBD_CDC_NCM_CLASS) || IS_ENABLED(CONFIG_USBD_AUDIO2_CLASS)) {
 		/*
 		 * Class with multiple interfaces have an Interface
 		 * Association Descriptor available, use an appropriate triple
 		 * to indicate it.
 		 */
-		usbd_device_set_code_triple(uds_ctx, speed,
-					    USB_BCC_MISCELLANEOUS, 0x02, 0x01);
+		usbd_device_set_code_triple(uds_ctx, speed, USB_BCC_MISCELLANEOUS, 0x02, 0x01);
 	} else {
 		usbd_device_set_code_triple(uds_ctx, speed, 0, 0, 0);
 	}
 }
 
-struct usbd_context *usbd_setup_device(usbd_msg_cb_t msg_cb)
-{
+struct usbd_context *usbd_setup_device(usbd_msg_cb_t msg_cb) {
 	int err;
 
 	/* doc add string descriptor start */
@@ -110,14 +99,12 @@ struct usbd_context *usbd_setup_device(usbd_msg_cb_t msg_cb)
 	/* doc add string descriptor end */
 
 	if (usbd_caps_speed(&usbd) == USBD_SPEED_HS) {
-		err = usbd_add_configuration(&usbd, USBD_SPEED_HS,
-					     &sample_hs_config);
+		err = usbd_add_configuration(&usbd, USBD_SPEED_HS, &sample_hs_config);
 		if (err) {
 			return NULL;
 		}
 
-		err = usbd_register_all_classes(&usbd, USBD_SPEED_HS, 1,
-						blocklist);
+		err = usbd_register_all_classes(&usbd, USBD_SPEED_HS, 1, blocklist);
 		if (err) {
 			return NULL;
 		}
@@ -126,8 +113,7 @@ struct usbd_context *usbd_setup_device(usbd_msg_cb_t msg_cb)
 	}
 
 	/* doc configuration register start */
-	err = usbd_add_configuration(&usbd, USBD_SPEED_FS,
-				     &sample_fs_config);
+	err = usbd_add_configuration(&usbd, USBD_SPEED_FS, &sample_fs_config);
 	if (err) {
 		return NULL;
 	}
@@ -164,8 +150,7 @@ struct usbd_context *usbd_setup_device(usbd_msg_cb_t msg_cb)
 	return &usbd;
 }
 
-struct usbd_context *usbd_init_device(usbd_msg_cb_t msg_cb)
-{
+struct usbd_context *usbd_init_device(usbd_msg_cb_t msg_cb) {
 	int err;
 
 	if (usbd_setup_device(msg_cb) == NULL) {
