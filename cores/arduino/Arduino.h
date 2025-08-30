@@ -49,13 +49,8 @@ int digitalPinToInterrupt(pin_size_t pin);
 
 #include <variant.h>
 
-#ifndef LED_BUILTIN
-#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), builtin_led_gpios)                                      \
-  && (DT_PROP_LEN(DT_PATH(zephyr_user), builtin_led_gpios) > 0)
-#define LED_BUILTIN ZARD_GLOBAL_GPIO_NUM(DT_PATH(zephyr_user), builtin_led_gpios, 0)
-#elif DT_NODE_EXISTS(DT_ALIAS(led0))
+#if !defined(LED_BUILTIN) && DT_NODE_EXISTS(DT_ALIAS(led0))
 #define LED_BUILTIN ZARD_GLOBAL_GPIO_NUM(DT_ALIAS(led0), gpios, 0)
-#endif
 #endif // LED_BUILTIN
 
 #ifdef __cplusplus

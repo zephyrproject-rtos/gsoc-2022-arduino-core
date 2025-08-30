@@ -38,8 +38,6 @@
 				    <&pico_header 27 0>,
 				    <&pico_header 28 0>;
 
-		builtin-led-gpios = <&gpio0 25 0>;
-
 		pwm-pin-gpios =     <&pico_header 2 0>,
 				    <&pico_header 3 0>,
 				    <&pico_header 7 0>,
