@@ -257,15 +257,21 @@ void noTone(pin_size_t pinNumber) {
   gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
 }
 
-void delay(unsigned long ms) { k_sleep(K_MSEC(ms)); }
+void delay(unsigned long ms) {
+  k_sleep(K_MSEC(ms));
+}
 
-void delayMicroseconds(unsigned int us) { k_sleep(K_USEC(us)); }
+void delayMicroseconds(unsigned int us) {
+  k_busy_wait(us);
+}
 
 unsigned long micros(void) {
   return k_cyc_to_us_floor32(k_cycle_get_32());
 }
 
-unsigned long millis(void) { return k_uptime_get_32(); }
+unsigned long millis(void) {
+  return k_uptime_get_32();
+}
 
 #ifdef CONFIG_PWM
 
@@ -273,11 +279,11 @@ void analogWrite(pin_size_t pinNumber, int value)
 {
   size_t idx = pwm_pin_index(pinNumber);
 
-  if (!pwm_is_ready_dt(&arduino_pwm[idx])) {
+  if (idx >= ARRAY_SIZE(arduino_pwm)) {
     return;
   }
 
-  if (idx >= ARRAY_SIZE(arduino_pwm) ) {
+  if (!pwm_is_ready_dt(&arduino_pwm[idx])) {
     return;
   }
 
@@ -407,8 +413,6 @@ long random(long max) {
 
 #endif
 
-#ifdef CONFIG_GPIO_GET_DIRECTION
-
 unsigned long pulseIn(pin_size_t pinNumber, uint8_t state, unsigned long timeout) {
   struct k_timer timer;
   int64_t start, end, delta = 0;
@@ -418,10 +422,6 @@ unsigned long pulseIn(pin_size_t pinNumber, uint8_t state, unsigned long timeout
   k_timer_start(&timer, K_MSEC(timeout), K_NO_WAIT);
 
   if (!gpio_is_ready_dt(spec)) {
-    goto cleanup;
-  }
-
-  if (!gpio_pin_is_input_dt(spec)) {
     goto cleanup;
   }
 
@@ -448,8 +448,6 @@ cleanup:
   k_timer_stop(&timer);
   return (unsigned long)delta;
 }
-
-#endif // CONFIG_GPIO_GET_DIRECTION
 
 void enableInterrupt(pin_size_t pinNumber) {
   struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
