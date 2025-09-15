@@ -159,6 +159,17 @@ static int loader(const struct shell *sh) {
 
 		gpio_pin_configure_dt(&spec, GPIO_INPUT | GPIO_PULL_DOWN);
 		k_sleep(K_MSEC(200));
+		uint8_t *ram_firmware = NULL;
+		uint32_t *ram_start = (uint32_t *)0x20000000;
+		if (!sketch_valid) {
+			ram_firmware = (uint8_t *)k_malloc(64 * 1024);
+			if (!ram_firmware) {
+				printk("Failed to allocate RAM for firmware\n");
+				return -ENOMEM;
+			}
+			memset(ram_firmware, 0, 64 * 1024);
+			*ram_start = &ram_firmware[0];
+		}
 		if (gpio_pin_get_dt(&spec) == 0) {
 			matrixBegin();
 			matrixSetGrayscaleBits(8);
