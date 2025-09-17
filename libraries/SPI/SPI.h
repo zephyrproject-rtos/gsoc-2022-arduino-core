@@ -22,6 +22,14 @@
 #define SPE  6
 #define SPIE 7
 
+#define SPI_HAS_PERIPHERAL_MODE (1)
+
+// TODO:
+// This depends on the clock settings, can't be used for all boards.
+#ifndef SPI_MIN_CLOCK_FEQUENCY
+#define SPI_MIN_CLOCK_FEQUENCY 1000000
+#endif
+
 /* Count the number of GPIOs for limit of number of interrupts */
 #define INTERRUPT_HELPER(n, p, i) 1
 #define INTERRUPT_COUNT                                                                            \
@@ -49,6 +57,9 @@ public:
 
 	virtual void begin();
 	virtual void end();
+
+private:
+	int transfer(void *buf, size_t len, const struct spi_config *config);
 
 protected:
 	const struct device *spi_dev;
