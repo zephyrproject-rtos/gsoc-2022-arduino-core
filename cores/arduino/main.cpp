@@ -93,7 +93,7 @@ extern "C" __attribute__((section(".entry_point"), used)) void entry_point(struc
 	printk("Sketch Heap start: %p, size %p\n", &kheap_llext_heap, &kheap_llext_heap_size);
 
 	memcpy(&_sdata, &_sidata, (&_edata - &_sdata) * sizeof(uint32_t));
-	memset(&_sbss, 0, &_ebss - &_sbss);
+	memset(&_sbss, 0, (&_ebss - &_sbss) * sizeof(uint32_t));
 	__libc_init_array();
 	main();
 }
