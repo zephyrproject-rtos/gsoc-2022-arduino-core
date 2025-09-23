@@ -112,38 +112,25 @@ static const uint8_t pins[][2] = {
   };
 
 
-const int idxToPin(int idx) {
-    return idx;
-}
-
 #define NUM_MATRIX_LEDS 104
 static uint8_t __attribute__((aligned)) framebuffer[NUM_MATRIX_LEDS / 8];
 static uint8_t __attribute__((aligned)) framebuffer_color[NUM_MATRIX_LEDS];
 
-static void turnLed(int idx, bool on) {
-    GPIOF->MODER &= ~(0xFFFFFF);
-
-    if (on) {
-        GPIOF->BSRR |= (1 << (idxToPin(pins[idx][0])) | 1 << (idxToPin(pins[idx][1]) + 16));
-        GPIOF->MODER |= (1 << (idxToPin(pins[idx][0]) * 2) | 1 << (idxToPin(pins[idx][1]) * 2));
-    }
-}
-
-static uint32_t reverse(uint32_t x)
-{
-    x = ((x >> 1) & 0x55555555u) | ((x & 0x55555555u) << 1);
-    x = ((x >> 2) & 0x33333333u) | ((x & 0x33333333u) << 2);
-    x = ((x >> 4) & 0x0f0f0f0fu) | ((x & 0x0f0f0f0fu) << 4);
-    x = ((x >> 8) & 0x00ff00ffu) | ((x & 0x00ff00ffu) << 8);
-    x = ((x >> 16) & 0xffffu) | ((x & 0xffffu) << 16);
-    return x;
-}
-
 static bool color = false;
 static uint8_t _max_grayscale_bits = 3;
 
-static void timer_irq_handler_fn(const struct device *counter_dev, void *user_data)
-{
+static void turnLed(int idx, bool on) {
+    GPIOF->MODER &= 0xF0000000U;
+    if (on) {
+        uint8_t pin0 = pins[idx][0];
+        uint8_t pin1 = pins[idx][1];
+        
+        GPIOF->BSRR |= (1U << pin0) | (1U << (pin1 + 16));
+        GPIOF->MODER |= (1U << (pin0 << 1)) | (1U << (pin1 << 1));
+    }
+}
+
+static void timer_irq_handler_fn(const struct device *counter_dev, void *user_data) {
     static volatile int i_isr = 0;
     if (color) {
         static volatile int counter = 0;
