@@ -26,19 +26,11 @@ The **Arduino Core API** module for zephyr leverages the power of Zephyr under a
 west update
 ```
 
-* **Note:** For ***Linux users only*** there exists an ``install.sh`` script in this project that can be run to quickly link the ArduinoCore-API to this module.
-If you are able to run that script successfully then you can skip the next steps.
+* You also need to fetch the ArduinoCore-API sources using the following command:
 
-* To "complete" the core you need to copy or symlink the api folder from the [ArduinoCore-API](https://github.com/arduino/ArduinoCore-API.git) repo to the target's ``cores/arduino`` folder:
 ```sh
-$ git clone git@github.com:arduino/ArduinoCore-API # Any location
-$ ln -s /<your>/<location>/ArduinoCore-API/api cores/arduino/.
+west blobs fetch arduinocore-zephyr
 ```
-The `cores` folder can be found at `~/zephyrproject/modules/lib/Arduino-Zephyr-API/cores`.
-
-**Known Bug(s):**
-
-__NOTE:__ You can skip this step as well if you ran ``install.sh``.
 
 **Maintainers**:
 - [DhruvaG2000](https://github.com/DhruvaG2000)
