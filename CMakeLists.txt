@@ -80,6 +80,8 @@ if (CONFIG_ARDUINO_API)
     add_library(arduinocore_api_rust STATIC IMPORTED GLOBAL)
     set_target_properties(arduinocore_api_rust PROPERTIES IMPORTED_LOCATION ${RUST_LIB})
     zephyr_link_libraries(arduinocore_api_rust)
+  else()
+    zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/zephyr/blobs/ArduinoCore-API/)
   endif()
 
 endif()
