@@ -19,15 +19,5 @@ void start_static_threads() {
 		k_thread_name_set(thread_data->init_thread, thread_data->init_name);
 		thread_data->init_thread->init_data = thread_data;
 	}
-
-	/*
-	 * Take a sched lock to prevent them from running
-	 * until they are all started.
-	 */
-	k_sched_lock();
-	_FOREACH_STATIC_THREAD(thread_data) {
-		k_thread_start(thread_data->init_thread);
-	}
-	k_sched_unlock();
 }
 #endif
