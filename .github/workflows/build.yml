@@ -4,39 +4,53 @@ on: [push, pull_request]
 
 jobs:
   build:
+    name: Build Arduino-API Zephyr samples
     runs-on: ubuntu-latest
-    container: zephyrprojectrtos/ci:latest
+    container: zephyrprojectrtos/ci-base:latest
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
+      CCACHE_IGNOREOPTIONS: -specs=*
+      MODULE_PATH: ../modules/lib/Arduino-Zephyr-API
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: Arduino-Zephyr-API
+          fetch-depth: 0
+          persist-credentials: false
+          path: subfolder
+
+      - name: Fix module path, list needed HALs
+        run: |
+          mkdir -p $(dirname $MODULE_PATH) && mv subfolder $MODULE_PATH
+
+      - name: Setup Zephyr project
+        uses: zephyrproject-rtos/action-zephyr-setup@v1
+        with:
+          toolchains: arm-zephyr-eabi
+          manifest-file-name: ${{ env.MODULE_PATH }}/west.yml
+          enable-ccache: false
+
+      - name: Add manifest path as module
+        run: |
+          echo EXTRA_ZEPHYR_MODULES="$(pwd)/$MODULE_PATH" >> $GITHUB_ENV
 
       - name: Initialize
         run: |
-          west init -l Arduino-Zephyr-API/
-          west update
-          git clone https://github.com/arduino/ArduinoCore-API.git ArduinoCore-API
-          mkdir -p modules/lib
-          ln -s Arduino-Zephyr-API modules/lib/
-          cp -rfp ArduinoCore-API/api Arduino-Zephyr-API/cores/arduino/
+          git clone https://github.com/arduino/ArduinoCore-API.git $MODULE_PATH/../ArduinoCore-API
+          cp -rfp $MODULE_PATH/../ArduinoCore-API/api $MODULE_PATH/cores/arduino/
 
       - name: Build fade
-        working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b arduino_nano_33_ble/nrf52840/sense samples/fade
+          west build -p -b arduino_nano_33_ble/nrf52840/sense $MODULE_PATH/samples/fade
 
       - name: Build i2cdemo
-        working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b arduino_nano_33_ble/nrf52840/sense samples/i2cdemo
+          west build -p -b arduino_nano_33_ble/nrf52840/sense $MODULE_PATH/samples/i2cdemo
 
       - name: Build adc
-        working-directory: Arduino-Zephyr-API
         run: |
-          west build -p -b beagleconnect_freedom/cc1352p7 samples/analog_input
+          west build -p -b beagleconnect_freedom/cc1352p7 $MODULE_PATH/samples/analog_input
 
       - name: Archive firmware
         uses: actions/upload-artifact@v4
