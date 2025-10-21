@@ -25,6 +25,7 @@ EXPORT_SYMBOL(strcat);
 EXPORT_SYMBOL(memmove);
 
 EXPORT_SYMBOL(k_malloc);
+EXPORT_SYMBOL(k_free);
 EXPORT_SYMBOL(malloc);
 EXPORT_SYMBOL(realloc);
 EXPORT_SYMBOL(calloc);
@@ -107,6 +108,7 @@ FORCE_EXPORT_SYM(net_mgmt_event_wait_on_iface);
 
 #if defined(CONFIG_MBEDTLS)
 FORCE_EXPORT_SYM(tls_credential_add);
+FORCE_EXPORT_SYM(tls_credential_get);
 #endif
 
 #if defined(CONFIG_WIFI)
@@ -277,4 +279,32 @@ FORCE_EXPORT_SYM(flash_area_open);
 FORCE_EXPORT_SYM(flash_area_read);
 FORCE_EXPORT_SYM(flash_area_write);
 FORCE_EXPORT_SYM(flash_area_erase);
+FORCE_EXPORT_SYM(flash_area_close);
+#endif
+
+#if defined(CONFIG_FILE_SYSTEM)
+FORCE_EXPORT_SYM(fs_open);
+FORCE_EXPORT_SYM(fs_close);
+FORCE_EXPORT_SYM(fs_unlink);
+FORCE_EXPORT_SYM(fs_rename);
+FORCE_EXPORT_SYM(fs_read);
+FORCE_EXPORT_SYM(fs_write);
+FORCE_EXPORT_SYM(fs_seek);
+FORCE_EXPORT_SYM(fs_tell);
+FORCE_EXPORT_SYM(fs_truncate);
+FORCE_EXPORT_SYM(fs_sync);
+FORCE_EXPORT_SYM(fs_mkdir);
+FORCE_EXPORT_SYM(fs_opendir);
+FORCE_EXPORT_SYM(fs_readdir);
+FORCE_EXPORT_SYM(fs_closedir);
+FORCE_EXPORT_SYM(fs_mount);
+FORCE_EXPORT_SYM(fs_unmount);
+FORCE_EXPORT_SYM(fs_readmount);
+FORCE_EXPORT_SYM(fs_stat);
+FORCE_EXPORT_SYM(fs_statvfs);
+#if defined(CONFIG_FILE_SYSTEM_MKFS)
+FORCE_EXPORT_SYM(fs_mkfs);
+#endif
+FORCE_EXPORT_SYM(fs_register);
+FORCE_EXPORT_SYM(fs_unregister);
 #endif
