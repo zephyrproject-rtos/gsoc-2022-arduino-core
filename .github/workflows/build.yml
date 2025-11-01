@@ -37,8 +37,7 @@ jobs:
 
       - name: Initialize
         run: |
-          git clone https://github.com/arduino/ArduinoCore-API.git $MODULE_PATH/../ArduinoCore-API
-          cp -rfp $MODULE_PATH/../ArduinoCore-API/api $MODULE_PATH/cores/arduino/
+          west blobs fetch arduinocore-zephyr
 
       - name: Setup Rust toolchain
         run: |
