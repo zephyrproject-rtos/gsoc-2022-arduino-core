@@ -40,6 +40,15 @@ jobs:
           git clone https://github.com/arduino/ArduinoCore-API.git $MODULE_PATH/../ArduinoCore-API
           cp -rfp $MODULE_PATH/../ArduinoCore-API/api $MODULE_PATH/cores/arduino/
 
+      - name: Setup Rust toolchain
+        run: |
+          wget https://sh.rustup.rs
+          mv index.html rustup_install.sh
+          bash rustup_install.sh -y
+          /root/.cargo/bin/rustup default stable
+          /root/.cargo/bin/rustup target add thumbv6m-none-eabi thumbv7em-none-eabihf thumbv7em-none-eabi thumbv7m-none-eabi
+          echo "/root/.cargo/bin" >> $GITHUB_PATH
+
       - name: Build fade
         run: |
           west build -p -b arduino_nano_33_ble/nrf52840/sense $MODULE_PATH/samples/fade
