@@ -49,13 +49,30 @@ EXPORT_SYMBOL(isupper);
 EXPORT_SYMBOL(islower);
 EXPORT_SYMBOL(isxdigit);
 
+// From math.h
+EXPORT_SYMBOL(acos);
+EXPORT_SYMBOL(acosf);
+EXPORT_SYMBOL(asin);
+EXPORT_SYMBOL(asinf);
+EXPORT_SYMBOL(atan);
 EXPORT_SYMBOL(atan2);
 EXPORT_SYMBOL(atan2f);
 EXPORT_SYMBOL(atanf);
-EXPORT_SYMBOL(asinf);
-EXPORT_SYMBOL(acosf);
+EXPORT_SYMBOL(cos);
+EXPORT_SYMBOL(cosf);
+EXPORT_SYMBOL(exp);
+EXPORT_SYMBOL(exp2);
+EXPORT_SYMBOL(log);
+EXPORT_SYMBOL(logf);
+EXPORT_SYMBOL(log2);
+EXPORT_SYMBOL(log10);
+EXPORT_SYMBOL(pow);
+EXPORT_SYMBOL(sin);
+EXPORT_SYMBOL(sinf);
 EXPORT_SYMBOL(sqrt);
 EXPORT_SYMBOL(sqrtf);
+EXPORT_SYMBOL(tan);
+EXPORT_SYMBOL(tanf);
 
 EXPORT_SYMBOL(k_sched_lock);
 EXPORT_SYMBOL(k_sched_unlock);
@@ -207,12 +224,6 @@ EXPORT_SYMBOL(k_fatal_halt);
 EXPORT_SYMBOL(k_work_schedule);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
-
-EXPORT_SYMBOL(sin);
-EXPORT_SYMBOL(cos);
-EXPORT_SYMBOL(tan);
-EXPORT_SYMBOL(atan);
-EXPORT_SYMBOL(pow);
 
 EXPORT_SYMBOL(puts);
 EXPORT_SYMBOL(putchar);
