@@ -244,6 +244,7 @@ static int loader(const struct shell *sh) {
 
 	if (!sketch_buf) {
 		printk("Unable to allocate %d bytes\n", sketch_buf_len);
+		return -ENOMEM;
 	}
 
 	rc = flash_area_read(fa, 0, sketch_buf, sketch_buf_len);
