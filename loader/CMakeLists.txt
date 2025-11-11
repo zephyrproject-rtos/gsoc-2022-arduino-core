@@ -23,5 +23,6 @@ target_sources_ifdef(CONFIG_USB_DEVICE_STACK_NEXT app PRIVATE
 
 FILE(GLOB app_sources *.c)
 target_sources(app PRIVATE ${app_sources})
+target_compile_definitions(app PUBLIC _XOPEN_SOURCE=700)
 
 target_link_libraries(app PUBLIC blobs)
