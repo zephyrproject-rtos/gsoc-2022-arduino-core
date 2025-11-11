@@ -83,13 +83,13 @@ void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
 	case SPI_MODE0:
 		break;
 	case SPI_MODE1:
-		mode = SPI_MODE_CPHA;
+		mode |= SPI_MODE_CPHA;
 		break;
 	case SPI_MODE2:
-		mode = SPI_MODE_CPOL;
+		mode |= SPI_MODE_CPOL;
 		break;
 	case SPI_MODE3:
-		mode = SPI_MODE_CPOL | SPI_MODE_CPHA;
+		mode |= SPI_MODE_CPOL | SPI_MODE_CPHA;
 		break;
 	}
 
