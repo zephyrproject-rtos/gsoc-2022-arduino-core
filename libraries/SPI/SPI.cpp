@@ -96,12 +96,12 @@ void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
 	// Set SPI configuration structure for 8-bit transfers
 	memset(&config, 0, sizeof(struct spi_config));
 	config.operation = mode | SPI_WORD_SET(8);
-	config.frequency = max(SPI_MIN_CLOCK_FEQUENCY, settings.getClockFreq());
+	config.frequency = max(SPI_MIN_CLOCK_FREQUENCY, settings.getClockFreq());
 
 	// Set SPI configuration structure for 16-bit transfers
 	memset(&config16, 0, sizeof(struct spi_config));
 	config16.operation = mode | SPI_WORD_SET(16);
-	config16.frequency = max(SPI_MIN_CLOCK_FEQUENCY, settings.getClockFreq());
+	config16.frequency = max(SPI_MIN_CLOCK_FREQUENCY, settings.getClockFreq());
 }
 
 void arduino::ZephyrSPI::endTransaction(void) {

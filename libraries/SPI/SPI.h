@@ -26,8 +26,8 @@
 
 // TODO:
 // This depends on the clock settings, can't be used for all boards.
-#ifndef SPI_MIN_CLOCK_FEQUENCY
-#define SPI_MIN_CLOCK_FEQUENCY 1000000
+#ifndef SPI_MIN_CLOCK_FREQUENCY
+#define SPI_MIN_CLOCK_FREQUENCY 1000000
 #endif
 
 /* Count the number of GPIOs for limit of number of interrupts */
