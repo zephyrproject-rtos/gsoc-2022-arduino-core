@@ -17,6 +17,8 @@ EXPORT_SYMBOL(strstr);
 EXPORT_SYMBOL(strncmp);
 EXPORT_SYMBOL(strncpy);
 EXPORT_SYMBOL(strcasecmp);
+EXPORT_SYMBOL(strtod);
+EXPORT_SYMBOL(strtol);
 EXPORT_SYMBOL(strtoul);
 EXPORT_SYMBOL(strcmp);
 EXPORT_SYMBOL(strlen);
@@ -232,6 +234,7 @@ EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
 EXPORT_SYMBOL(cbvprintf);
 FORCE_EXPORT_SYM(abort);
+EXPORT_SYMBOL(sscanf);
 
 #if defined(CONFIG_RING_BUFFER)
 EXPORT_SYMBOL(ring_buf_get);
@@ -274,6 +277,7 @@ FORCE_EXPORT_SYM(__aeabi_dcmpge);
 
 #if defined (CONFIG_CPP)
 FORCE_EXPORT_SYM(__cxa_pure_virtual);
+FORCE_EXPORT_SYM(__assert_no_args);
 #endif
 
 #if defined(CONFIG_BOARD_ARDUINO_UNO_Q)
