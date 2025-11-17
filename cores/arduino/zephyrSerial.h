@@ -76,6 +76,9 @@ public:
 	}
 
 	void end() {
+		if (uart->ops.deinit) {
+			uart->ops.deinit(uart);
+		}
 	}
 
 	size_t write(const uint8_t *buffer, size_t size);
