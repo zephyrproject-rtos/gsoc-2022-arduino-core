@@ -9,6 +9,19 @@
 
 #include <zephyr/spinlock.h>
 
+// create an array of arduino_pins with functions to reinitialize pins if needed
+static const struct device *pinmux_array[DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios)] = {
+	nullptr};
+
+void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev) {
+	if (pinmux_array[pin] != dev) {
+		pinmux_array[pin] = dev;
+		if (dev != NULL) {
+			dev->ops.init(dev);
+		}
+	}
+}
+
 static const struct gpio_dt_spec arduino_pins[] = {
 	DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
@@ -238,6 +251,7 @@ int digitalPinToPinIndex(pin_size_t pinNumber) {
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
 	RETURN_ON_INVALID_PIN(pinNumber);
 
+	_reinit_peripheral_if_needed(pinNumber, NULL);
 	if (pinMode == INPUT) { // input mode
 		gpio_pin_configure_dt(&arduino_pins[pinNumber], GPIO_INPUT | GPIO_ACTIVE_HIGH);
 	} else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
@@ -478,6 +492,7 @@ void analogWrite(pin_size_t pinNumber, int value) {
 		return;
 	}
 
+	_reinit_peripheral_if_needed(pinNumber, arduino_pwm[idx].dev);
 	value = CLAMP(value, 0, maxInput);
 
 	const uint32_t pulse = map64(value, 0, maxInput, 0, arduino_pwm[idx].period);
@@ -506,6 +521,9 @@ void analogWrite(enum dacPins dacName, int value) {
 			return;
 		}
 
+		// TODO: add reverse map to find pin name from DAC* define
+		// In the meantime, consider A0 == DAC0
+		_reinit_peripheral_if_needed((pin_size_t)(dacName + A0), dac_dev);
 		ret = dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
 		if (ret != 0) {
 			return;
@@ -567,6 +585,8 @@ int analogRead(pin_size_t pinNumber) {
 	if (arduino_adc[idx].resolution > 16) {
 		return -ENOTSUP;
 	}
+
+	_reinit_peripheral_if_needed(pinNumber, arduino_adc[idx].dev);
 
 	err = adc_channel_setup(arduino_adc[idx].dev, &arduino_adc[idx].channel_cfg);
 	if (err < 0) {
