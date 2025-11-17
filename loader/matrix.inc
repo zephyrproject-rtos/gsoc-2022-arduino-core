@@ -163,12 +163,12 @@ static void timer_irq_handler_fn(const struct device *counter_dev, void *user_da
     i_isr = (i_isr + 1) % NUM_MATRIX_LEDS;
 }
 
-void matrixWrite(uint32_t* buf) {
+void matrixWrite(const uint32_t* buf) {
     memcpy(framebuffer, buf, NUM_MATRIX_LEDS/8);
     color = false;
 }
 
-void matrixGrayscaleWrite(uint8_t* buf) {
+void matrixGrayscaleWrite(const uint8_t* buf) {
     memcpy(framebuffer_color, buf, NUM_MATRIX_LEDS);
     color = true;
 }
@@ -201,7 +201,7 @@ void matrixEnd() {
 }
 
 
-void matrixPlay(uint8_t* buf, uint32_t len) {
+void matrixPlay(const uint8_t* buf, uint32_t len) {
     int i = 0;
     while (i < (len / 104)) {
 		matrixGrayscaleWrite(&buf[i*104]);
