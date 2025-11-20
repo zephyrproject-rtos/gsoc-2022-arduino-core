@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2025 Ayush Singh <ayush@beagleboard.org>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = 
+			<&main_gpio0 6 GPIO_ACTIVE_HIGH>, /* D0 - LED 1 */
+			<&main_gpio0 5 GPIO_ACTIVE_HIGH>, /* D1 - LED 2 */
+			<&main_gpio0 4 GPIO_ACTIVE_HIGH>, /* D2 - LED 3 */
+			<&main_gpio0 3 GPIO_ACTIVE_HIGH>, /* D3 - LED 4 */
+			<&main_gpio1 12 GPIO_ACTIVE_HIGH>, /* D4 - P1.04 */
+			<&main_gpio0 50 GPIO_ACTIVE_HIGH>, /* D5 - P1.20 */
+			<&main_gpio1 2 GPIO_ACTIVE_HIGH>, /* D6 - P1.34 */
+			<&main_gpio0 53 GPIO_ACTIVE_HIGH>, /* D7 - P2.18 */
+			<&main_gpio0 49 GPIO_ACTIVE_HIGH>, /* D8 - P2.20 */
+			<&main_gpio0 63 GPIO_ACTIVE_HIGH>, /* D9 - P2.22 */
+			<&main_gpio0 51 GPIO_ACTIVE_HIGH>, /* D10 - P2.24 */
+			<&main_gpio0 52 GPIO_ACTIVE_HIGH>; /* D11 - P2.33 */
+
+		builtin-led-gpios = 
+			<&main_gpio0 6 GPIO_ACTIVE_HIGH>, /* LED 1 */
+			<&main_gpio0 5 GPIO_ACTIVE_HIGH>, /* LED 2 */
+			<&main_gpio0 4 GPIO_ACTIVE_HIGH>, /* LED 3 */
+			<&main_gpio0 3 GPIO_ACTIVE_HIGH>; /* LED 4 */
+
+		serials = <&main_uart0 &main_uart5>;
+		i2cs = <&main_i2c2 &main_i2c3>;
+	};
+};
