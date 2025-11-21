@@ -233,6 +233,7 @@ EXPORT_SYMBOL(printf);
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
 EXPORT_SYMBOL(cbvprintf);
+EXPORT_SYMBOL(vsnprintf);
 FORCE_EXPORT_SYM(abort);
 EXPORT_SYMBOL(sscanf);
 
