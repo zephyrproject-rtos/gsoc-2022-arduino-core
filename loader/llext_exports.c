@@ -84,9 +84,14 @@ EXPORT_SYMBOL(usb_enable);
 EXPORT_SYMBOL(usb_disable);
 #endif
 
+#if CONFIG_LOG
 EXPORT_SYMBOL(z_log_msg_runtime_vcreate);
+FORCE_EXPORT_SYM(log_const_sketch)
+#endif
 
+#if defined(CONFIG_LOG_RUNTIME_FILTERING)
 FORCE_EXPORT_SYM(log_dynamic_sketch)
+#endif
 
 #if defined(CONFIG_NETWORKING)
 FORCE_EXPORT_SYM(net_if_foreach);
