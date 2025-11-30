@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "api/ArduinoAPI.h"
+#include <api/ArduinoAPI.h>
 
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
