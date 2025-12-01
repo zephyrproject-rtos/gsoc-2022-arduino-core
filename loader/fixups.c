@@ -1,6 +1,13 @@
 #include <cmsis_core.h>
 #include <zephyr/init.h>
 
+#ifndef CONFIG_CPP
+void __cxa_pure_virtual() {
+	while (1)
+		;
+}
+#endif
+
 int disable_mpu_rasr_xn(void) {
 	uint32_t index;
 	/* Kept the max index as 8(irrespective of soc) because the sram
