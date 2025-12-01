@@ -16,6 +16,20 @@ project(app LANGUAGES C CXX)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/blobs)
 
+# Memory region relocation based on Kconfig
+# Relocate LLEXT heap if region specified
+if(NOT "${CONFIG_LLEXT_HEAP_REGION}" STREQUAL "")
+    zephyr_code_relocate(FILES ${ZEPHYR_BASE}/subsys/llext/llext_mem.c
+                         LOCATION ${CONFIG_LLEXT_HEAP_REGION}_BSS_NOINIT)
+endif()
+
+# Relocate main stack if region specified
+if(NOT "${CONFIG_MAIN_STACK_REGION}" STREQUAL "")
+    zephyr_code_relocate(FILES ${ZEPHYR_BASE}/kernel/init.c
+                         LOCATION ${CONFIG_MAIN_STACK_REGION}_BSS_NOINIT)
+endif()
+
+
 # for USB device stack NEXT
 target_sources_ifdef(CONFIG_USB_DEVICE_STACK_NEXT app PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../cores/arduino/usb_device_descriptor.c

@@ -1,0 +1,19 @@
+#
+# Copyright (c) 2025 Arduino
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+source "Kconfig.zephyr"
+
+config LLEXT_HEAP_REGION
+	string "LLEXT heap memory region"
+	depends on CODE_DATA_RELOCATION
+	help
+	  Specify the memory region for LLEXT heap.
+
+config MAIN_STACK_REGION
+	string "Main stack memory region"
+	depends on CODE_DATA_RELOCATION
+	help
+	  Specify the memory region for main stack.
