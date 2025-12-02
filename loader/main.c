@@ -14,6 +14,7 @@ LOG_MODULE_REGISTER(sketch);
 #include <zephyr/llext/buf_loader.h>
 #include <zephyr/shell/shell.h>
 #include <zephyr/shell/shell_uart.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #include <stdlib.h>
 #include <zephyr/drivers/gpio.h>
@@ -35,11 +36,11 @@ struct sketch_header_v1 {
 #define SKETCH_FLAG_LINKED    0x02
 #define SKETCH_FLAG_IMMEDIATE 0x04
 
-#define TARGET_HAS_USB_CDC_SHELL                                                                   \
-	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) && CONFIG_SHELL &&                             \
+#define TARGET_HAS_USB_CDC                                                                         \
+	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) &&                                             \
 		(CONFIG_USB_DEVICE_STACK || CONFIG_USB_DEVICE_STACK_NEXT)
 
-#if TARGET_HAS_USB_CDC_SHELL
+#if TARGET_HAS_USB_CDC
 const struct device *const usb_dev =
 	DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), cdc_acm, 0));
 
@@ -63,6 +64,7 @@ int usb_enable(usb_dc_status_callback status_cb) {
 }
 #endif
 
+#if CONFIG_SHELL
 static int enable_shell_usb(void) {
 	bool log_backend = CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > 0;
 	uint32_t level = (CONFIG_SHELL_BACKEND_SERIAL_LOG_LEVEL > LOG_LEVEL_DBG) ?
@@ -74,6 +76,7 @@ static int enable_shell_usb(void) {
 
 	return 0;
 }
+#endif
 #endif
 
 #ifdef CONFIG_USERSPACE
@@ -198,8 +201,9 @@ static int loader(const struct shell *sh) {
 
 	size_t sketch_buf_len = sketch_hdr->len;
 
-#if TARGET_HAS_USB_CDC_SHELL
+#if TARGET_HAS_USB_CDC
 	int debug = (!sketch_valid) || (sketch_hdr->flags & SKETCH_FLAG_DEBUG);
+#if CONFIG_SHELL
 	if (debug && strcmp(k_thread_name_get(k_current_get()), "main") == 0) {
 		// disables default shell on UART
 		shell_uninit(shell_backend_uart_get_ptr(), NULL);
@@ -214,6 +218,20 @@ static int loader(const struct shell *sh) {
 		enable_shell_usb();
 		return 0;
 	}
+#elif CONFIG_LOG
+#if !CONFIG_USB_DEVICE_INITIALIZE_AT_BOOT
+	usb_enable(NULL);
+#endif
+	for (int i = 0; i < log_backend_count_get(); i++) {
+		const struct log_backend *backend;
+		backend = log_backend_get(i);
+		log_backend_init(backend);
+		log_backend_enable(backend, backend->cb->ctx, CONFIG_LOG_DEFAULT_LEVEL);
+		if (!debug) {
+			break;
+		}
+	}
+#endif
 #endif
 
 	if (sketch_hdr->flags & SKETCH_FLAG_LINKED) {
