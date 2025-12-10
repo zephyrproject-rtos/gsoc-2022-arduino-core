@@ -57,7 +57,7 @@ void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
 }
 
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
-	uint32_t mode = 0;
+	uint32_t mode = SPI_HOLD_ON_CS;
 
 	// Set bus mode
 	switch (settings.getBusMode()) {
