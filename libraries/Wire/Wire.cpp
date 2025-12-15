@@ -48,7 +48,7 @@ static struct i2c_target_callbacks target_callbacks = {
 	.stop = i2c_target_stop_cb,
 };
 
-arduino::ZephyrI2C::ZephyrI2C(const struct device *i2c) : i2c_dev(i2c), i2c_cfg({0}) {
+arduino::ZephyrI2C::ZephyrI2C(const struct device *i2c) : i2c_cfg({0}), i2c_dev(i2c) {
 	ring_buf_init(&txRingBuffer.rb, sizeof(txRingBuffer.buffer), txRingBuffer.buffer);
 	ring_buf_init(&rxRingBuffer.rb, sizeof(rxRingBuffer.buffer), rxRingBuffer.buffer);
 }
