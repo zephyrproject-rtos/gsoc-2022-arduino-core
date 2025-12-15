@@ -10,8 +10,11 @@
 
 // Helper function to get ZephyrI2C instance from config pointer.
 static arduino::ZephyrI2C *getInstance(struct i2c_target_config *config) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
 	return reinterpret_cast<arduino::ZephyrI2C *>(reinterpret_cast<char *>(config) -
 												  offsetof(arduino::ZephyrI2C, i2c_cfg));
+#pragma GCC diagnostic pop
 }
 
 static int i2c_target_stop_cb(struct i2c_target_config *config) {
