@@ -100,6 +100,8 @@ uint8_t arduino::ZephyrI2C::endTransmission(bool stopBit) {
 	size_t max = ring_buf_capacity_get(&txRingBuffer.rb);
 	size_t len = ring_buf_get_claim(&txRingBuffer.rb, &buf, max);
 
+	ARG_UNUSED(stopBit);
+
 	ret = i2c_write(i2c_dev, buf, len, _address);
 
 	// Must be called even if 0 bytes claimed.
@@ -115,8 +117,11 @@ uint8_t arduino::ZephyrI2C::endTransmission(void) {
 size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len_in, bool stopBit) {
 	int ret = -EIO;
 	uint8_t *buf = NULL;
-	size_t len = ring_buf_put_claim(&rxRingBuffer.rb, &buf, len_in);
+	size_t len;
 
+	ARG_UNUSED(stopBit);
+
+	len = ring_buf_put_claim(&rxRingBuffer.rb, &buf, len_in);
 	if (len && buf) {
 		ret = i2c_read(i2c_dev, buf, len, address);
 	}
@@ -171,6 +176,8 @@ void arduino::ZephyrI2C::onRequest(voidFuncPtr cb) {
 }
 
 int arduino::ZephyrI2C::writeRequestedCallback(struct i2c_target_config *config) {
+	ARG_UNUSED(config);
+
 	// Reset the buffer on write requests.
 	ring_buf_reset(&rxRingBuffer.rb);
 	return 0;
@@ -179,6 +186,8 @@ int arduino::ZephyrI2C::writeRequestedCallback(struct i2c_target_config *config)
 int arduino::ZephyrI2C::writeReceivedCallback(struct i2c_target_config *config, uint8_t val) {
 	size_t len = ring_buf_size_get(&rxRingBuffer.rb);
 	size_t max = ring_buf_capacity_get(&rxRingBuffer.rb);
+
+	ARG_UNUSED(config);
 
 	// If the buffer is about to overflow, invoke the callback
 	// with the current length.
@@ -201,6 +210,8 @@ int arduino::ZephyrI2C::readRequestedCallback(struct i2c_target_config *config, 
 }
 
 int arduino::ZephyrI2C::readProcessedCallback(struct i2c_target_config *config, uint8_t *val) {
+	ARG_UNUSED(config);
+
 	*val = 0xFF;
 	ring_buf_get(&txRingBuffer.rb, val, 1);
 	// Returning a negative value here is not handled gracefully and
@@ -209,6 +220,8 @@ int arduino::ZephyrI2C::readProcessedCallback(struct i2c_target_config *config, 
 }
 
 int arduino::ZephyrI2C::stopCallback(struct i2c_target_config *config) {
+	ARG_UNUSED(config);
+
 	// If the RX buffer is not empty invoke the callback with the
 	// remaining data length.
 	if (onReceiveCb) {
