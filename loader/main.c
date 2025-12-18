@@ -165,7 +165,7 @@ static int loader(const struct shell *sh) {
 		uint8_t *ram_firmware = NULL;
 		uint32_t *ram_start = (uint32_t *)0x20000000;
 		if (!sketch_valid) {
-			ram_firmware = (uint8_t *)k_malloc(64 * 1024);
+			ram_firmware = (uint8_t *)malloc(64 * 1024);
 			if (!ram_firmware) {
 				printk("Failed to allocate RAM for firmware\n");
 				return -ENOMEM;
