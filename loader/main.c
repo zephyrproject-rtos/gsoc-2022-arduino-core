@@ -171,7 +171,7 @@ static int loader(const struct shell *sh) {
 				return -ENOMEM;
 			}
 			memset(ram_firmware, 0, 64 * 1024);
-			*ram_start = &ram_firmware[0];
+			*ram_start = (uint32_t)&ram_firmware[0];
 		}
 		if (gpio_pin_get_dt(&spec) == 0) {
 			matrixBegin();
