@@ -195,6 +195,7 @@ SYS_INIT(maybe_flash_bootloader, POST_KERNEL, CONFIG_FILE_SYSTEM_INIT_PRIORITY);
 
 int analog_reference(uint8_t reference) {
 	uint8_t init_status;
+
 	/* VREF+ is connected to VDDA by default */
 	const struct gpio_dt_spec spec =
 		GPIO_DT_SPEC_GET_BY_IDX(DT_PATH(zephyr_user), analog_switch_gpios, 0);
@@ -210,7 +211,7 @@ int analog_reference(uint8_t reference) {
 	if (reference == AR_DEFAULT) {
 		/* VREF+ is connected to VDDA */
 		gpio_pin_set_dt(&spec, 0);
-		return;
+		return 0;
 	}
 
 	gpio_pin_set_dt(&spec, 1);
@@ -236,7 +237,7 @@ int analog_reference(uint8_t reference) {
 	}
 
 	HAL_SYSCFG_VREFBUF_VoltageScalingConfig(voltageScaling);
-	HAL_SYSCFG_EnableVREFBUF();
+	init_status = HAL_SYSCFG_EnableVREFBUF();
 	HAL_SYSCFG_VREFBUF_HighImpedanceConfig(SYSCFG_VREFBUF_HIGH_IMPEDANCE_DISABLE);
 
 	__ASSERT(init_status == HAL_OK, "ADC Conversion value may be incorrect");
@@ -248,7 +249,7 @@ EXPORT_SYMBOL(analog_reference);
 
 int disable_vrefbuf() {
 	// This is the safe HW configuration
-	analog_reference(AR_DEFAULT);
+	return analog_reference(AR_DEFAULT);
 }
 
 SYS_INIT(disable_vrefbuf, POST_KERNEL, 0);
