@@ -220,7 +220,9 @@ static int loader(const struct shell *sh) {
 	}
 #elif CONFIG_LOG
 #if !CONFIG_USB_DEVICE_INITIALIZE_AT_BOOT
-	usb_enable(NULL);
+	if (debug) {
+		usb_enable(NULL);
+	}
 #endif
 	for (int i = 0; i < log_backend_count_get(); i++) {
 		const struct log_backend *backend;
