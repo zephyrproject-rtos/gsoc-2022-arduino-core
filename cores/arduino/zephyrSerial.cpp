@@ -124,9 +124,9 @@ int arduino::ZephyrSerial::availableForWrite()
 {
 	int ret;
 
-	k_sem_take(&rx.sem, K_FOREVER);
-	ret = ring_buf_space_get(&rx.ringbuf);
-	k_sem_give(&rx.sem);
+	k_sem_take(&tx.sem, K_FOREVER);
+	ret = ring_buf_space_get(&tx.ringbuf);
+	k_sem_give(&tx.sem);
 
 	return ret;
 }
