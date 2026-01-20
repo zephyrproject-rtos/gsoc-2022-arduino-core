@@ -26,8 +26,8 @@ target board. To add board support:
 1. This project is structured in a way so as to isolate the variants from the core API. Thus, whenever a new board
 needs to be added it needs to be done in the `variants/` folder.
 Add a folder inside of the variants folder that matches the name of your board.
-2. Add an overlay file and a pinmap header file that match the name of the board.
-3. Add your new headerfile to an `#ifdef` statement in the variant.h file.
+2. Add an overlay file file that match the name of the board.
+3. Add a `variant.h` file.
 
 An example of this structure is shown below.
 
@@ -35,16 +35,8 @@ An example of this structure is shown below.
 variants/
 ├── arduino_nano_33_ble
 │   ├── arduino_nano_33_ble.overlay
-│   └── arduino_nano_33_ble_pinmap.h
-├── CMakeLists.txt
-└── variant.h
-
+│   ├── variant.h
 ```
-
-- The top level consists of `CMakeLists.txt`, `variant.h` and the `<BOARD_NAME>` folder. Each of these files have a specific role to play.
-		- The `Cmakelists` help the compiler locate the proper directory to help find the proper header files that are board specific. You need to add the name using `zephyr_include_directories(BOARD_NAME)` to this file. Do note that this `BOARD_NAME` is the same as the name of your board's directory.
-		- `variant.h` contains the necessary `#includes` inorder to tell the source code about your board's pinmap.
-- The `<BOARD_NAME>` folder is where the overlay and pinmap file resides. Inorder to understand how to write DT overlays, lookup `Documentation/overlays.md`. To understand the `<boardname_pinmap.h>` file, go through the existing `variants/ARDUINO_NANO33BLE/arduino_nano_ble_sense_pinmap.h` which shows how to use the overlay nodes inside our C programs using zephyr macros like `GPIO_DT_SPEC_GET`. The zephyr-project documentation on this is pretty extensive as well and worth reading.
 
 ## Guide to Writing Overlays
 
