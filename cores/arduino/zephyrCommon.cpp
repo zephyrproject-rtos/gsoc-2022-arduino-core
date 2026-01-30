@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #include "zephyrInternal.h"
 
-static const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
+static constexpr struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
 
 namespace {
@@ -56,6 +56,18 @@ constexpr const size_t is_first_appearance(const size_t &idx, const size_t &at, 
                tail...);
 }
 
+constexpr inline const struct device *local_gpio_port(pin_size_t gpin) {
+	return arduino_pins[gpin].port;
+}
+
+constexpr inline pin_size_t local_gpio_pin(pin_size_t gpin) {
+	return arduino_pins[gpin].pin;
+}
+
+inline int global_gpio_pin_configure(pin_size_t pinNumber, int flags) {
+	return gpio_pin_configure_dt(&arduino_pins[pinNumber], flags);
+}
+
 #define GET_DEVICE_VARGS(n, p, i, _) DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i))
 #define FIRST_APPEARANCE(n, p, i)                                                                  \
   is_first_appearance(0, i, ((size_t)-1), DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i)),       \
@@ -101,10 +113,10 @@ struct gpio_port_callback *find_gpio_port_callback(const struct device *dev)
 
 void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func)
 {
-  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+  struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[arduino_pins[pinNumber].pin].handler = func;
+    pcb->handlers[local_gpio_pin(pinNumber)].handler = func;
   }
 }
 
@@ -190,26 +202,26 @@ void yield(void) {
  */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
   if (pinMode == INPUT) { // input mode
-    gpio_pin_configure_dt(&arduino_pins[pinNumber],
+    global_gpio_pin_configure(pinNumber,
                           GPIO_INPUT | GPIO_ACTIVE_HIGH);
   } else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
-    gpio_pin_configure_dt(&arduino_pins[pinNumber],
+    global_gpio_pin_configure(pinNumber,
                           GPIO_INPUT | GPIO_PULL_UP | GPIO_ACTIVE_HIGH);
   } else if (pinMode == INPUT_PULLDOWN) { // input with internal pull-down
-    gpio_pin_configure_dt(&arduino_pins[pinNumber],
+    global_gpio_pin_configure(pinNumber,
                           GPIO_INPUT | GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH);
   } else if (pinMode == OUTPUT) { // output mode
-    gpio_pin_configure_dt(&arduino_pins[pinNumber],
+    global_gpio_pin_configure(pinNumber,
                           GPIO_OUTPUT_LOW | GPIO_ACTIVE_HIGH);
   }
 }
 
 void digitalWrite(pin_size_t pinNumber, PinStatus status) {
-  gpio_pin_set_dt(&arduino_pins[pinNumber], status);
+  gpio_pin_set(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), status);
 }
 
 PinStatus digitalRead(pin_size_t pinNumber) {
-  return (gpio_pin_get_dt(&arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
+  return (gpio_pin_get(local_gpio_port(pinNumber), local_gpio_pin(pinNumber)) == 1) ? HIGH : LOW;
 }
 
 #ifndef MAX_TONE_PINS
@@ -227,13 +239,12 @@ static struct pin_timer {
 
 void tone_expiry_cb(struct k_timer *timer) {
   struct pin_timer *pt = CONTAINER_OF(timer, struct pin_timer, timer);
-  const struct gpio_dt_spec *spec = &arduino_pins[pt->pin];
 
   if (pt->count == 0) {
     k_timer_stop(timer);
-    gpio_pin_set_dt(spec, 0);
+    gpio_pin_set(local_gpio_port(pt->pin), local_gpio_pin(pt->pin), 0);
   } else {
-    gpio_pin_toggle_dt(spec);
+    gpio_pin_toggle(local_gpio_port(pt->pin), local_gpio_pin(pt->pin));
     if (!pt->infinity) {
       pt->count--;
     }
@@ -242,7 +253,6 @@ void tone_expiry_cb(struct k_timer *timer) {
 
 void tone(pin_size_t pinNumber, unsigned int frequency,
           unsigned long duration) {
-  const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
   struct k_timer *timer;
   k_timeout_t timeout;
 
@@ -256,7 +266,7 @@ void tone(pin_size_t pinNumber, unsigned int frequency,
   k_timer_stop(&arduino_pin_timers[pinNumber].timer);
 
   if (frequency == 0) {
-    gpio_pin_set_dt(spec, 0);
+    gpio_pin_set(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), 0);
     return;
   }
 
@@ -271,15 +281,13 @@ void tone(pin_size_t pinNumber, unsigned int frequency,
   arduino_pin_timers[pinNumber].pin = pinNumber;
   k_timer_init(timer, tone_expiry_cb, NULL);
 
-  gpio_pin_set_dt(spec, 0);
+  gpio_pin_set(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), 0);
   k_timer_start(timer, timeout, timeout);
 }
 
 void noTone(pin_size_t pinNumber) {
-  const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
-
   k_timer_stop(&arduino_pin_timers[pinNumber].timer);
-  gpio_pin_set_dt(spec, 0);
+  gpio_pin_set(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), 0);
 }
 
 void delay(unsigned long ms) {
@@ -402,16 +410,16 @@ void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinSt
     return;
   }
 
-  pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+  pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
   __ASSERT(pcb != nullptr, "gpio_port_callback not found");
 
-  pcb->pins |= BIT(arduino_pins[pinNumber].pin);
+  pcb->pins |= BIT(local_gpio_pin(pinNumber));
   setInterruptHandler(pinNumber, callback);
   enableInterrupt(pinNumber);
 
-  gpio_pin_interrupt_configure(arduino_pins[pinNumber].port, arduino_pins[pinNumber].pin, intmode);
+  gpio_pin_interrupt_configure(local_gpio_port(pinNumber), local_gpio_pin(pinNumber), intmode);
   gpio_init_callback(&pcb->callback, handleGpioCallback, pcb->pins);
-  gpio_add_callback(arduino_pins[pinNumber].port, &pcb->callback);
+  gpio_add_callback(local_gpio_port(pinNumber), &pcb->callback);
 }
 
 void detachInterrupt(pin_size_t pinNumber)
@@ -439,29 +447,30 @@ long random(long max) {
 #endif
 
 unsigned long pulseIn(pin_size_t pinNumber, uint8_t state, unsigned long timeout) {
+  const struct device* port = local_gpio_port(pinNumber);
+  const size_t pin = local_gpio_pin(pinNumber);
   struct k_timer timer;
   int64_t start, end, delta = 0;
-  const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
 
-  if (!gpio_is_ready_dt(spec)) {
+  if (!device_is_ready(port)) {
     return 0;
   }
 
   k_timer_init(&timer, NULL, NULL);
   k_timer_start(&timer, K_MSEC(timeout), K_NO_WAIT);
 
-  while(gpio_pin_get_dt(spec) == state && k_timer_status_get(&timer) == 0);
+  while(gpio_pin_get(port, pin) == state && k_timer_status_get(&timer) == 0);
   if (k_timer_status_get(&timer) > 0) {
     goto cleanup;
   }
 
-  while(gpio_pin_get_dt(spec) != state && k_timer_status_get(&timer) == 0);
+  while(gpio_pin_get(port, pin) != state && k_timer_status_get(&timer) == 0);
   if (k_timer_status_get(&timer) > 0) {
     goto cleanup;
   }
 
   start = k_uptime_ticks();
-  while(gpio_pin_get_dt(spec) == state && k_timer_status_get(&timer) == 0);
+  while(gpio_pin_get(port, pin) == state && k_timer_status_get(&timer) == 0);
   if (k_timer_status_get(&timer) > 0) {
     goto cleanup;
   }
@@ -475,18 +484,18 @@ cleanup:
 }
 
 void enableInterrupt(pin_size_t pinNumber) {
-  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+  struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[arduino_pins[pinNumber].pin].enabled = true;
+    pcb->handlers[local_gpio_pin(pinNumber)].enabled = true;
   }
 }
 
 void disableInterrupt(pin_size_t pinNumber) {
-  struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+  struct gpio_port_callback *pcb = find_gpio_port_callback(local_gpio_port(pinNumber));
 
   if (pcb) {
-    pcb->handlers[arduino_pins[pinNumber].pin].enabled = false;
+    pcb->handlers[local_gpio_pin(pinNumber)].enabled = false;
   }
 }
 
@@ -506,7 +515,7 @@ void noInterrupts(void) {
 
 int digitalPinToInterrupt(pin_size_t pin) {
   struct gpio_port_callback *pcb =
-      find_gpio_port_callback(arduino_pins[pin].port);
+      find_gpio_port_callback(local_gpio_port(pin));
 
   return (pcb) ? pin : -1;
 }
