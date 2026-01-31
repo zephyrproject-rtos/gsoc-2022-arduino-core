@@ -33,8 +33,6 @@
 
 #undef DIGITAL_PIN_CHECK_UNIQUE
 
-#ifndef LED_BUILTIN
-
 /* Return the index of it if matched, oterwise return 0 */
 #define LED_BUILTIN_INDEX_BY_REG_AND_PINNUM(n, p, i, dev, num)                                     \
 	(DIGITAL_PIN_EXISTS(n, p, i, dev, num) ? i : 0)
@@ -53,9 +51,9 @@
 	     DT_PHA_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0, pin)) > 0)
 #warning "pin not found in digital_pin_gpios"
 #else
-#define LED_BUILTIN                                                                                \
-	DIGITAL_PIN_GPIOS_FIND_PIN(                                                              \
-		DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0)),        \
+#define ZARD_LED_BUILTIN                                                                           \
+	DIGITAL_PIN_GPIOS_FIND_PIN(                                                                    \
+		DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0)),                \
 		DT_PHA_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0, pin))
 #endif
 
@@ -67,14 +65,12 @@
 				    DT_PHA_BY_IDX(DT_ALIAS(led0), gpios, 0, pin)) > 0)
 #warning "pin not found in digital_pin_gpios"
 #else
-#define LED_BUILTIN                                                                                \
-	DIGITAL_PIN_GPIOS_FIND_PIN(DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_ALIAS(led0), gpios, 0)),     \
-				     DT_PHA_BY_IDX(DT_ALIAS(led0), gpios, 0, pin))
+#define ZARD_LED_BUILTIN                                                                           \
+	DIGITAL_PIN_GPIOS_FIND_PIN(DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_ALIAS(led0), gpios, 0)),           \
+							   DT_PHA_BY_IDX(DT_ALIAS(led0), gpios, 0, pin))
 #endif
 
 #endif // builtin_led_gpios
-
-#endif // LED_BUILTIN
 
 #define DN_ENUMS(n, p, i) D##i = i
 
@@ -103,6 +99,11 @@ void noInterrupts(void);
 int digitalPinToInterrupt(pin_size_t pin);
 
 #include <variant.h>
+
+#if !defined(LED_BUILTIN) && defined(ZARD_LED_BUILTIN)
+#define LED_BUILTIN ZARD_LED_BUILTIN
+#endif // LED_BUILTIN
+
 #ifdef __cplusplus
 #include <zephyrPrint.h>
 #include <zephyrSerial.h>
