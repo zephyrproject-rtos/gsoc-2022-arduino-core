@@ -56,7 +56,7 @@ enum uart_config_data_bits conf_data_bits(uint16_t conf)
 void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf)
 {
 	struct uart_config config = {
-		.baudrate = baud,
+		.baudrate = static_cast<uint32_t>(baud),
 		.parity = conf_parity(conf),
 		.stop_bits = conf_stop_bits(conf),
 		.data_bits = conf_data_bits(conf),
