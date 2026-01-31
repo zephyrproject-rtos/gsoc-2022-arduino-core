@@ -1,10 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if (CONFIG_ARDUINO_API)
-  if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${BOARD}${NORMALIZED_BOARD_QUALIFIERS})
-    set(variant_dir variants/${BOARD}${NORMALIZED_BOARD_QUALIFIERS})
+  string(REPLACE "__" "_" NORMALIZED_BOARD_TARGET "${NORMALIZED_BOARD_TARGET}")
+
+  if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${BOARD})
+    set(variant_dir variants/${BOARD})
+  elseif (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${NORMALIZED_BOARD_TARGET})
+    set(variant_dir variants/${NORMALIZED_BOARD_TARGET})
   else()
-    message(FATAL_ERROR "Variant dir not found: variants/${BOARD}${NORMALIZED_BOARD_QUALIFIERS}")
+    message(FATAL_ERROR "Variant dir not found: variants/${BOARD}, variants/${NORMALIZED_BOARD_TARGET}")
   endif()
 
   add_subdirectory(cores)
