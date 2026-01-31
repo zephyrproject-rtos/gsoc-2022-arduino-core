@@ -7,6 +7,8 @@
 #include <Arduino.h>
 #include "zephyrInternal.h"
 
+#include <zephyr/spinlock.h>
+
 static const struct gpio_dt_spec arduino_pins[] = {DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
 
@@ -212,49 +214,97 @@ PinStatus digitalRead(pin_size_t pinNumber) {
   return (gpio_pin_get_dt(&arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
 
-#ifndef MAX_TONE_PINS
+#if CONFIG_ARDUINO_MAX_TONES < 0
 #define MAX_TONE_PINS DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios)
+#else
+#define MAX_TONE_PINS CONFIG_ARDUINO_MAX_TONES
 #endif
 
 #define TOGGLES_PER_CYCLE 2ULL
 
 static struct pin_timer {
   struct k_timer timer;
-  uint32_t count;
-  pin_size_t pin;
-  bool infinity;
+  uint32_t count{0};
+  pin_size_t pin{pin_size_t(-1)};
+  bool infinity{false};
+  struct k_spinlock lock;
 } arduino_pin_timers[MAX_TONE_PINS];
+
+static struct pin_timer* find_pin_timer(pin_size_t pinNumber, bool active_only) {
+  for (size_t i = 0; i < ARRAY_SIZE(arduino_pin_timers); i++) {
+    k_spinlock_key_t key = k_spin_lock(&arduino_pin_timers[i].lock);
+
+    if (arduino_pin_timers[i].pin == pinNumber) {
+      k_spin_unlock(&arduino_pin_timers[i].lock, key);
+      return &arduino_pin_timers[i];
+    }
+
+    k_spin_unlock(&arduino_pin_timers[i].lock, key);
+  }
+
+  if (active_only) {
+    return nullptr;
+  }
+
+  for (size_t i = 0; i < ARRAY_SIZE(arduino_pin_timers); i++) {
+    k_spinlock_key_t key = k_spin_lock(&arduino_pin_timers[i].lock);
+
+    if (arduino_pin_timers[i].pin == pin_size_t(-1)) {
+      arduino_pin_timers[i].pin = pinNumber;
+      k_spin_unlock(&arduino_pin_timers[i].lock, key);
+      return &arduino_pin_timers[i];
+    }
+
+    k_spin_unlock(&arduino_pin_timers[i].lock, key);
+  }
+
+  return nullptr;
+}
 
 void tone_expiry_cb(struct k_timer *timer) {
   struct pin_timer *pt = CONTAINER_OF(timer, struct pin_timer, timer);
-  const struct gpio_dt_spec *spec = &arduino_pins[pt->pin];
+  k_spinlock_key_t key = k_spin_lock(&pt->lock);
+  pin_size_t pin = pt->pin;
 
   if (pt->count == 0 && !pt->infinity) {
+    if (pin != pin_size_t(-1)) {
+      gpio_pin_set_dt(&arduino_pins[pin], 0);
+    }
+
     k_timer_stop(timer);
-    gpio_pin_set_dt(spec, 0);
+    pt->pin = pin_size_t(-1);
   } else {
-    gpio_pin_toggle_dt(spec);
+    if (pin != pin_size_t(-1)) {
+      gpio_pin_toggle_dt(&arduino_pins[pin]);
+    }
+
     pt->count--;
   }
+
+  k_spin_unlock(&pt->lock, key);
 }
 
 void tone(pin_size_t pinNumber, unsigned int frequency,
           unsigned long duration) {
-  const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
-  struct k_timer *timer;
+  k_spinlock_key_t key;
+  struct pin_timer *pt;
   k_timeout_t timeout;
 
-  if (pinNumber >= MAX_TONE_PINS) {
+  pt = find_pin_timer(pinNumber, false);
+
+  if (pt == nullptr) {
     return;
   }
 
-  timer = &arduino_pin_timers[pinNumber].timer;
-
   pinMode(pinNumber, OUTPUT);
-  k_timer_stop(&arduino_pin_timers[pinNumber].timer);
+  k_timer_stop(&pt->timer);
 
   if (frequency == 0) {
-    gpio_pin_set_dt(spec, 0);
+    key = k_spin_lock(&pt->lock);
+    pt->pin = pin_size_t(-1);
+    k_spin_unlock(&pt->lock, key);
+
+    gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
     return;
   }
 
@@ -263,21 +313,34 @@ void tone(pin_size_t pinNumber, unsigned int frequency,
     timeout.ticks = 1;
   }
 
-  arduino_pin_timers[pinNumber].infinity = (duration == 0);
-  arduino_pin_timers[pinNumber].count = (uint64_t)duration * frequency *
-				        (MSEC_PER_SEC / TOGGLES_PER_CYCLE);
-  arduino_pin_timers[pinNumber].pin = pinNumber;
-  k_timer_init(timer, tone_expiry_cb, NULL);
+  key = k_spin_lock(&pt->lock);
+  pt->infinity = (duration == 0);
+  pt->count = min((uint64_t)duration * frequency * TOGGLES_PER_CYCLE / MSEC_PER_SEC, UINT32_MAX);
+  pt->pin = pinNumber;
+  k_spin_unlock(&pt->lock, key);
 
-  gpio_pin_set_dt(spec, 0);
-  k_timer_start(timer, timeout, timeout);
+  k_timer_init(&pt->timer, tone_expiry_cb, NULL);
+
+  gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
+  k_timer_start(&pt->timer, timeout, timeout);
 }
 
 void noTone(pin_size_t pinNumber) {
-  const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
+  struct pin_timer *pt;
+  k_spinlock_key_t key;
 
-  k_timer_stop(&arduino_pin_timers[pinNumber].timer);
-  gpio_pin_set_dt(spec, 0);
+  pt = find_pin_timer(pinNumber, true);
+
+  if (pt == nullptr) {
+    return;
+  }
+
+  key = k_spin_lock(&pt->lock);
+  k_timer_stop(&pt->timer);
+  pt->pin = pin_size_t(-1);
+  k_spin_unlock(&pt->lock, key);
+
+  gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
 }
 
 void delay(unsigned long ms) {
