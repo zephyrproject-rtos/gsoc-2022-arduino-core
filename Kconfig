@@ -34,4 +34,11 @@ config ARDUINO_ENTRY
 	bool "Provide arduino setup and loop entry points"
 	default y
 
+config ARDUINO_MAX_TONES
+	int "Maximum number of tones that can be played simultaneously with tone()"
+	default -1
+	help
+	  Specify the maximum number of tones that can be played simultaneously with tone().
+	  If set to a negative value, the maximum number will be determined from the
+	  system's digital pin configuration.
 endif
