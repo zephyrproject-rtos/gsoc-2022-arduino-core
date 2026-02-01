@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <api/ArduinoAPI.h>
+#include "api/ArduinoAPI.h"
 
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
@@ -104,6 +104,5 @@ int digitalPinToInterrupt(pin_size_t pin);
 
 #include <variant.h>
 #ifdef __cplusplus
-#include <zephyrPrint.h>
 #include <zephyrSerial.h>
 #endif // __cplusplus
