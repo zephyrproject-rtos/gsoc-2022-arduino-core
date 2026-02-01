@@ -11,10 +11,13 @@ zephyr_include_directories(../../variants)
 
 if(NOT DEFINED ARDUINO_BUILD_PATH)
 
-zephyr_sources(zephyrPrint.cpp)
 zephyr_sources(zephyrSerial.cpp)
 zephyr_sources(zephyrCommon.cpp)
-zephyr_sources(apiCommon.cpp)
+
+if(CONFIG_USE_ARDUINO_API_RUST_IMPLEMENTATION)
+  zephyr_sources(zephyrPrint.cpp)
+  zephyr_sources(apiCommon.cpp)
+endif()
 
 if(DEFINED CONFIG_ARDUINO_ENTRY)
 zephyr_sources(main.cpp)
