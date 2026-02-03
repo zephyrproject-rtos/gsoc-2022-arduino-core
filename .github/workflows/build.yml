@@ -37,7 +37,7 @@ jobs:
 
       - name: Initialize
         run: |
-          west blobs fetch arduinocore-zephyr
+          west blobs --auto-accept fetch arduinocore-zephyr
 
       - name: Setup Rust toolchain
         run: |
