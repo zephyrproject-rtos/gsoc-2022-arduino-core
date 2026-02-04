@@ -36,6 +36,8 @@ struct sketch_header_v1 {
 #define SKETCH_FLAG_LINKED    0x02
 #define SKETCH_FLAG_IMMEDIATE 0x04
 
+#define SKETCH_RAM_BUFFER_LEN 131072
+
 #define TARGET_HAS_USB_CDC                                                                         \
 	DT_NODE_HAS_PROP(DT_PATH(zephyr_user), cdc_acm) &&                                             \
 		(CONFIG_USB_DEVICE_STACK || CONFIG_USB_DEVICE_STACK_NEXT)
@@ -165,12 +167,12 @@ static int loader(const struct shell *sh) {
 		uint8_t *ram_firmware = NULL;
 		uint32_t *ram_start = (uint32_t *)0x20000000;
 		if (!sketch_valid) {
-			ram_firmware = (uint8_t *)malloc(64 * 1024);
+			ram_firmware = (uint8_t *)malloc(SKETCH_RAM_BUFFER_LEN);
 			if (!ram_firmware) {
 				printk("Failed to allocate RAM for firmware\n");
 				return -ENOMEM;
 			}
-			memset(ram_firmware, 0, 64 * 1024);
+			memset(ram_firmware, 0, SKETCH_RAM_BUFFER_LEN);
 			*ram_start = (uint32_t)&ram_firmware[0];
 		}
 		if (gpio_pin_get_dt(&spec) == 0) {
