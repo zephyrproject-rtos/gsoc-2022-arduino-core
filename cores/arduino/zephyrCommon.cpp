@@ -447,7 +447,7 @@ long random(long max) {
 #endif
 
 unsigned long pulseIn(pin_size_t pinNumber, uint8_t state, unsigned long timeout) {
-  const struct device* port = local_gpio_port(pinNumber);
+  const struct device *port = local_gpio_port(pinNumber);
   const size_t pin = local_gpio_pin(pinNumber);
   struct k_timer timer;
   int64_t start, end, delta = 0;
