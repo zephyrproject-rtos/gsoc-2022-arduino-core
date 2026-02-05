@@ -38,6 +38,8 @@ variants/
 │   ├── variant.h
 ```
 
+It is possible to apply the overlay outside of the `variants` folder. In that case `cmake` will show a warning and a default empty `variant.h` file will be used. The `zephyr,user` section will still need to be defined somewhere in your project, as described in the [Guide to Writing Overlays section](#guide-to-writing-overlays).
+
 ## Guide to Writing Overlays
 
 ### DeviceTree Overlay files for Arduino boards

@@ -8,7 +8,11 @@ if (CONFIG_ARDUINO_API)
   elseif (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${NORMALIZED_BOARD_TARGET})
     set(variant_dir variants/${NORMALIZED_BOARD_TARGET})
   else()
-    message(FATAL_ERROR "Variant dir not found: variants/${BOARD}, variants/${NORMALIZED_BOARD_TARGET}")
+    message(WARNING
+      "Variant dir not found: variants/${BOARD}, variants/${NORMALIZED_BOARD_TARGET}\n"
+      "Your board is currently not supported. To use it you must create a DTS overlay."
+    )
+    set(variant_dir variants/default)
   endif()
 
   add_subdirectory(cores)
