@@ -229,14 +229,12 @@ void tone_expiry_cb(struct k_timer *timer) {
   struct pin_timer *pt = CONTAINER_OF(timer, struct pin_timer, timer);
   const struct gpio_dt_spec *spec = &arduino_pins[pt->pin];
 
-  if (pt->count == 0) {
+  if (pt->count == 0 && !pt->infinity) {
     k_timer_stop(timer);
     gpio_pin_set_dt(spec, 0);
   } else {
     gpio_pin_toggle_dt(spec);
-    if (!pt->infinity) {
-      pt->count--;
-    }
+    pt->count--;
   }
 }
 
