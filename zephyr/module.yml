@@ -420,3 +420,30 @@ blobs:
     url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/api/itoa.h
     description: "Arduino Core API Header"
     doc-url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/README.md
+  - path: loader/4343WA1_clm_blob.c
+    sha256: 9687c4b2a15c18c0c0ae77ebe153910e5633f5c7e4682323a79f92c39c47abf3
+    type: img
+    version: '0.53.1' #?????????????
+    license-path: zephyr/blobs/loader/LICENSE.PBL
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.53.1/loader/blobs/4343WA1_clm_blob.c
+    description: "Infinion 4343WA1 Wi-Fi Firmware"
+    doc-url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/README.md #???????????
+  - path: loader/wifi_nvram_image.h
+    sha256: 296b7085220263eeb7a4221f4d7e035c2f0d591ab8f485534d6cf9adfbea7d09
+    type: img
+    version: '0.53.1' #?????????????
+    license-path: zephyr/blobs/loader/LICENSE.PBL
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.53.1/loader/blobs/wifi_nvram_image.h
+    description: "Infinion 4343WA1 Wi-Fi Firmware"
+    doc-url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/README.md #???????????
+  - path: loader/c33_bl.bin
+    sha256: a0bbce60d688d4a98735edefc05bf679f6b057983cc95a759f07f18049c18fc9
+    type: img
+    version: '0.53.1' #?????????????
+    license-path: zephyr/blobs/loader/LICENSE.PBL #?
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.53.1/loader/blobs/c33_bl.bin
+    description: "bootloader reflasher for C33"
+    doc-url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/README.md #???????????
