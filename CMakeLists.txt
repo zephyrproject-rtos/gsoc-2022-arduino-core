@@ -3,15 +3,13 @@
 if (CONFIG_ARDUINO_API)
   string(REPLACE "__" "_" NORMALIZED_BOARD_TARGET "${NORMALIZED_BOARD_TARGET}")
 
-  if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${BOARD})
+  # Find variant directory and check for variant.h
+  # If board-specific variant.h exists, use it; otherwise fall back to default
+  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/variants/${BOARD}/variant.h)
     set(variant_dir variants/${BOARD})
-  elseif (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/variants/${NORMALIZED_BOARD_TARGET})
+  elseif (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/variants/${NORMALIZED_BOARD_TARGET}/variant.h)
     set(variant_dir variants/${NORMALIZED_BOARD_TARGET})
   else()
-    message(WARNING
-      "Variant dir not found: variants/${BOARD}, variants/${NORMALIZED_BOARD_TARGET}\n"
-      "Your board is currently not supported. To use it you must create a DTS overlay."
-    )
     set(variant_dir variants/default)
   endif()
 
