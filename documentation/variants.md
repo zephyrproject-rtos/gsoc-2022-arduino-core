@@ -27,7 +27,7 @@ target board. To add board support:
 needs to be added it needs to be done in the `variants/` folder.
 Add a folder inside of the variants folder that matches the name of your board.
 2. Add an overlay file file that match the name of the board.
-3. Add a `variant.h` file.
+3. Add a `variant.h` file. (if required only)
 
 An example of this structure is shown below.
 
@@ -35,7 +35,7 @@ An example of this structure is shown below.
 variants/
 ├── arduino_nano_33_ble
 │   ├── arduino_nano_33_ble.overlay
-│   ├── variant.h
+│   ├── variant.h (optional)
 ```
 
 It is possible to apply the overlay outside of the `variants` folder. In that case `cmake` will show a warning and a default empty `variant.h` file will be used. The `zephyr,user` section will still need to be defined somewhere in your project, as described in the [Guide to Writing Overlays section](#guide-to-writing-overlays).
@@ -187,7 +187,7 @@ One example of a change that you may find useful is mapping additional pins. For
 example, the LEDs on the nRF52840 are not connected to any of the Arduino header
 pins. To define a built-in LED for this board, a 22nd pin definition was added.
 
-Your pinmap header file must be added to the variant.h file by adding three
+Your pinmap header file can optionally be added to the variant.h file by adding three
 lines using this format:
 
 ```c
