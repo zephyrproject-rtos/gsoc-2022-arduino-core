@@ -338,12 +338,15 @@ void noTone(pin_size_t pinNumber) {
 	gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
 }
 
-void delay(unsigned long ms) {
-	k_sleep(K_MSEC(ms));
+__attribute__((always_inline)) void delay(unsigned long ms) {
+  k_sleep(K_MSEC(ms));
 }
 
-void delayMicroseconds(unsigned int us) {
-	k_busy_wait(us);
+__attribute__((always_inline)) void delayMicroseconds(unsigned int us) {
+  if (us == 0) {
+    return;
+  }
+  k_busy_wait(us - 1);
 }
 
 unsigned long micros(void) {
