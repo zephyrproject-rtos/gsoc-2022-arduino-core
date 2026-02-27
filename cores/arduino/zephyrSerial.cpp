@@ -10,11 +10,9 @@
 #include <api/HardwareSerial.h>
 #include <zephyrSerial.h>
 
-namespace
-{
+namespace {
 
-enum uart_config_parity conf_parity(uint16_t conf)
-{
+enum uart_config_parity conf_parity(uint16_t conf) {
 	switch (conf & SERIAL_PARITY_MASK) {
 	case SERIAL_PARITY_EVEN:
 		return UART_CFG_PARITY_EVEN;
@@ -25,8 +23,7 @@ enum uart_config_parity conf_parity(uint16_t conf)
 	}
 }
 
-enum uart_config_stop_bits conf_stop_bits(uint16_t conf)
-{
+enum uart_config_stop_bits conf_stop_bits(uint16_t conf) {
 	switch (conf & SERIAL_STOP_BIT_MASK) {
 	case SERIAL_STOP_BIT_1_5:
 		return UART_CFG_STOP_BITS_1_5;
@@ -37,8 +34,7 @@ enum uart_config_stop_bits conf_stop_bits(uint16_t conf)
 	}
 }
 
-enum uart_config_data_bits conf_data_bits(uint16_t conf)
-{
+enum uart_config_data_bits conf_data_bits(uint16_t conf) {
 	switch (conf & SERIAL_DATA_MASK) {
 	case SERIAL_DATA_5:
 		return UART_CFG_DATA_BITS_5;
@@ -53,8 +49,7 @@ enum uart_config_data_bits conf_data_bits(uint16_t conf)
 
 } // anonymous namespace
 
-void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf)
-{
+void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf) {
 	struct uart_config config = {
 		.baudrate = static_cast<uint32_t>(baud),
 		.parity = conf_parity(conf),
@@ -68,8 +63,7 @@ void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf)
 	uart_irq_rx_enable(uart);
 }
 
-void arduino::ZephyrSerial::IrqHandler()
-{
+void arduino::ZephyrSerial::IrqHandler() {
 	uint8_t buf[8];
 	int length;
 	int ret = 0;
@@ -108,13 +102,11 @@ void arduino::ZephyrSerial::IrqHandler()
 	k_sem_give(&tx.sem);
 }
 
-void arduino::ZephyrSerial::IrqDispatch(const struct device *dev, void *data)
-{
+void arduino::ZephyrSerial::IrqDispatch(const struct device *dev, void *data) {
 	reinterpret_cast<ZephyrSerial *>(data)->IrqHandler();
 }
 
-int arduino::ZephyrSerial::available()
-{
+int arduino::ZephyrSerial::available() {
 	int ret;
 
 	k_sem_take(&rx.sem, K_FOREVER);
@@ -124,8 +116,7 @@ int arduino::ZephyrSerial::available()
 	return ret;
 }
 
-int arduino::ZephyrSerial::peek()
-{
+int arduino::ZephyrSerial::peek() {
 	uint8_t data;
 
 	k_sem_take(&rx.sem, K_FOREVER);
@@ -135,8 +126,7 @@ int arduino::ZephyrSerial::peek()
 	return data;
 }
 
-int arduino::ZephyrSerial::read()
-{
+int arduino::ZephyrSerial::read() {
 	uint8_t data;
 
 	k_sem_take(&rx.sem, K_FOREVER);
@@ -146,8 +136,7 @@ int arduino::ZephyrSerial::read()
 	return data;
 }
 
-size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size)
-{
+size_t arduino::ZephyrSerial::write(const uint8_t *buffer, size_t size) {
 	int ret;
 
 	k_sem_take(&tx.sem, K_FOREVER);
@@ -175,13 +164,17 @@ arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user
 	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (DECL_SERIAL_0(n, p, i)), (DECL_SERIAL_N(n, p, i)))
 
 #define CALL_EVENT_0(n, p, i)
-#define CALL_EVENT_N(n, p, i) if (_CONCAT(Serial, i).available()) _CONCAT(_CONCAT(serial, i), Event)();
-#define CALL_SERIALEVENT_N(n, p, i)                                                               \
+#define CALL_EVENT_N(n, p, i)                                                                      \
+	if (_CONCAT(Serial, i).available())                                                            \
+		_CONCAT(_CONCAT(serial, i), Event)();
+#define CALL_SERIALEVENT_N(n, p, i)                                                                \
 	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (CALL_EVENT_0(n, p, i)), (CALL_EVENT_N(n, p, i)));
 
 #define DECL_EVENT_0(n, p, i)
-#define DECL_EVENT_N(n, p, i) __attribute__((weak)) void serial##i##Event() { }
-#define DECLARE_SERIALEVENT_N(n, p, i)                                                                   \
+#define DECL_EVENT_N(n, p, i)                                                                      \
+	__attribute__((weak)) void serial##i##Event() {                                                \
+	}
+#define DECLARE_SERIALEVENT_N(n, p, i)                                                             \
 	COND_CODE_1(ARDUINO_SERIAL_DEFINED_##i, (DECL_EVENT_0(n, p, i)), (DECL_EVENT_N(n, p, i)));
 
 DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_SERIAL_N)
@@ -193,15 +186,16 @@ arduino::ZephyrSerial Serial(DEVICE_DT_GET(DT_NODELABEL(arduino_serial)));
 arduino::ZephyrSerialStub Serial;
 #endif
 
-
-__attribute__((weak)) void serialEvent() { }
+__attribute__((weak)) void serialEvent() {
+}
 #if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
 DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, DECLARE_SERIALEVENT_N)
 #endif
 
-void arduino::serialEventRun(void)
-{
-	if (Serial.available()) serialEvent();
+void arduino::serialEventRun(void) {
+	if (Serial.available()) {
+		serialEvent();
+	}
 #if (DT_PROP_LEN(DT_PATH(zephyr_user), serials) > 1)
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), serials, CALL_SERIALEVENT_N)
 #endif

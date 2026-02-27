@@ -7,12 +7,14 @@
 #include "Arduino.h"
 
 int main(void) {
-  setup();
+	setup();
 
-  for (;;) {
-    loop();
-    if (arduino::serialEventRun) arduino::serialEventRun();
-  }
+	for (;;) {
+		loop();
+		if (arduino::serialEventRun) {
+			arduino::serialEventRun();
+		}
+	}
 
-  return 0;
+	return 0;
 }
