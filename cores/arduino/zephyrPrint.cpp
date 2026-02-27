@@ -9,18 +9,14 @@
 #include <Arduino.h>
 #include <api/Print.h>
 
-namespace arduino
-{
-namespace zephyr
-{
+namespace arduino {
+namespace zephyr {
 
-int cbprintf_callback(int c, void *ctx)
-{
+int cbprintf_callback(int c, void *ctx) {
 	return reinterpret_cast<arduino::Print *>(ctx)->write((unsigned char)c);
 }
 
-size_t wrap_cbprintf(void *ctx, const char *format, ...)
-{
+size_t wrap_cbprintf(void *ctx, const char *format, ...) {
 	va_list ap;
 	int rc;
 
@@ -31,8 +27,7 @@ size_t wrap_cbprintf(void *ctx, const char *format, ...)
 	return static_cast<size_t>(rc > 0 ? rc : 0);
 }
 
-size_t print_number_base_any(void *ctx, unsigned long long ull, int base)
-{
+size_t print_number_base_any(void *ctx, unsigned long long ull, int base) {
 	arduino::Print &print = *reinterpret_cast<arduino::Print *>(ctx);
 	char string[sizeof(unsigned long long) * 8] = {0};
 	size_t digit = 0;
@@ -47,7 +42,7 @@ size_t print_number_base_any(void *ctx, unsigned long long ull, int base)
 		if (value < 10) {
 			string[sizeof(string) - digit] = '0' + value;
 		} else {
-			string[sizeof(string) - digit] = 'A' + (value- 10);
+			string[sizeof(string) - digit] = 'A' + (value - 10);
 		}
 
 		digit++;
@@ -57,8 +52,7 @@ size_t print_number_base_any(void *ctx, unsigned long long ull, int base)
 	return print.write(string + (sizeof(string) - digit), digit + 1);
 }
 
-size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits)
-{
+size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits) {
 	arduino::Print &print = *reinterpret_cast<arduino::Print *>(ctx);
 	const unsigned long long mask = (1 << bits) - 1;
 	int digit = (((sizeof(unsigned long long) * 8) + bits) / bits);
@@ -75,7 +69,7 @@ size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits)
 			if (value < 10) {
 				print.write('0' + value);
 			} else {
-				print.write('A' + (value- 10));
+				print.write('A' + (value - 10));
 			}
 			output_count++;
 		}
@@ -92,11 +86,10 @@ size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits)
  * This is the default implementation.
  * It will be overridden by subclassese.
  */
-size_t arduino::Print::write(const uint8_t *buffer, size_t size)
-{
-  size_t i;
-  for (i=0; i<size && write(buffer[i]); i++) {
-  }
+size_t arduino::Print::write(const uint8_t *buffer, size_t size) {
+	size_t i;
+	for (i = 0; i < size && write(buffer[i]); i++) {
+	}
 
-  return i;
+	return i;
 }
