@@ -133,8 +133,9 @@ int digitalPinToInterrupt(pin_size_t pin);
 #define portOutputRegister(x)  (x)
 #define portInputRegister(x)   (x)
 
-void analogReadResolution(int bits);
+#if defined(CONFIG_PWM) || defined(CONFIG_DAC)
 void analogWriteResolution(int bits);
+#endif
 
 #include <variant.h>
 
