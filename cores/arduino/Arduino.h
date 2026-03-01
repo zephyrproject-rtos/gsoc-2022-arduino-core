@@ -40,7 +40,7 @@
 	DIGITAL_PIN_GPIOS_FIND_PIN(DT_REG_ADDR(DT_PHANDLE_BY_IDX(node, gpios, 0)),                     \
 							   DT_PHA_BY_IDX(node, gpios, 0, pin))
 
-/* Return the index of it if matched, oterwise return 0 */
+/* Return the index of it if matched, otherwise return 0 */
 #define LED_BUILTIN_INDEX_BY_REG_AND_PINNUM(n, p, i, dev, num)                                     \
 	(DIGITAL_PIN_EXISTS(n, p, i, dev, num) ? i : 0)
 
