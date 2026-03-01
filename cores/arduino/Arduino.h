@@ -118,7 +118,10 @@ void analogReadResolution(int bits);
 #define DAC_ENUMS(n, p, i) DAC##i = i,
 
 enum dacPins {
-	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_ENUMS) NUM_OF_DACS
+#if DT_PROP_LEN_OR(DT_PATH(zephyr_user), dac_channels, 0) > 0
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_ENUMS)
+#endif
+	NUM_OF_DACS
 };
 
 #endif

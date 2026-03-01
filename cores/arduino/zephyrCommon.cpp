@@ -190,8 +190,12 @@ static const struct device *const dac_dev = DEVICE_DT_GET(DAC_NODE);
 		.buffered = true,                                                                          \
 	},
 
+#if DT_PROP_LEN_OR(DT_PATH(zephyr_user), dac_channels, 0) > 0
 static const struct dac_channel_cfg dac_ch_cfg[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_CHANNEL_DEFINE)};
+
+static bool dac_channel_initialized[NUM_OF_DACS];
+#endif
 
 #endif
 
@@ -451,15 +455,36 @@ void analogWrite(pin_size_t pinNumber, int value) {
 
 #ifdef CONFIG_DAC
 void analogWrite(enum dacPins dacName, int value) {
+#if DT_PROP_LEN_OR(DT_PATH(zephyr_user), dac_channels, 0) > 0
+	const int maxInput = BIT(_analog_write_resolution) - 1U;
+	int ret = 0;
+
 	if (dacName >= NUM_OF_DACS) {
 		return;
 	}
 
-	dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
+	if (!dac_channel_initialized[dacName]) {
+		if (!device_is_ready(dac_dev)) {
+			return;
+		}
 
-	const int max_dac_value = 1U << dac_ch_cfg[dacName].resolution;
-	dac_write_value(dac_dev, dac_ch_cfg[dacName].channel_id,
-					map(value, 0, 1 << _analog_write_resolution, 0, max_dac_value));
+		ret = dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
+		if (ret != 0) {
+			return;
+		}
+		dac_channel_initialized[dacName] = true;
+	}
+
+	value = CLAMP(value, 0, maxInput);
+
+	const int max_dac_value = BIT(dac_ch_cfg[dacName].resolution) - 1;
+	const uint32_t output = map(value, 0, maxInput, 0, max_dac_value);
+
+	(void)dac_write_value(dac_dev, dac_ch_cfg[dacName].channel_id, output);
+#else
+	ARG_UNUSED(dacName);
+	ARG_UNUSED(value);
+#endif
 }
 #endif
 
