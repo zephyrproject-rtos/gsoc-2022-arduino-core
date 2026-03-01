@@ -84,7 +84,7 @@ size_t print_number_base_pow2(void *ctx, unsigned long long ull, unsigned bits) 
 
 /*
  * This is the default implementation.
- * It will be overridden by subclassese.
+ * It will be overridden by subclasses.
  */
 size_t arduino::Print::write(const uint8_t *buffer, size_t size) {
 	size_t i;
