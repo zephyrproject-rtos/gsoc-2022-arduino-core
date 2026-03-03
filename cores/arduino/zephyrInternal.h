@@ -14,7 +14,9 @@ extern "C" {
 
 void enableInterrupt(pin_size_t);
 void disableInterrupt(pin_size_t);
+#ifdef CONFIG_PINCTRL_DYNAMIC
 void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev);
+#endif
 
 #ifdef __cplusplus
 } // extern "C"

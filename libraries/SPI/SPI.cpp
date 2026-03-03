@@ -118,13 +118,17 @@ void arduino::ZephyrSPI::detachInterrupt() {
 }
 
 void arduino::ZephyrSPI::begin() {
+#ifdef CONFIG_PINCTRL_DYNAMIC
 	spi_dev->ops.init(spi_dev);
+#endif
 }
 
 void arduino::ZephyrSPI::end() {
+#ifdef CONFIG_DEVICE_DEINIT_SUPPORT
 	if (spi_dev->ops.deinit) {
 		spi_dev->ops.deinit(spi_dev);
 	}
+#endif
 }
 
 #if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), spis)
