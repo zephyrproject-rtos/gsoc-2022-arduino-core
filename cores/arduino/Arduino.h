@@ -115,8 +115,11 @@ void analogReadResolution(int bits);
 #undef DAC1
 #undef DAC2
 #undef DAC3
-#define DAC_ENUMS(n, p, i) DAC ## i = i,
-enum dacPins { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_ENUMS) NUM_OF_DACS };
+#define DAC_ENUMS(n, p, i) DAC##i = i,
+
+enum dacPins {
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_ENUMS) NUM_OF_DACS
+};
 
 #endif
 
@@ -125,10 +128,10 @@ void noInterrupts(void);
 
 int digitalPinToInterrupt(pin_size_t pin);
 
-#define digitalPinToPort(x) (x)
+#define digitalPinToPort(x)    (x)
 #define digitalPinToBitMask(x) (x)
-#define portOutputRegister(x) (x)
-#define portInputRegister(x) (x)
+#define portOutputRegister(x)  (x)
+#define portInputRegister(x)   (x)
 
 void analogReadResolution(int bits);
 void analogWriteResolution(int bits);

@@ -154,7 +154,7 @@ size_t pwm_pin_index(pin_size_t pinNumber) {
 							   DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 #define ADC_CH_CFG(n, p, i) arduino_adc[i].channel_cfg,
 
-static const struct adc_dt_spec arduino_adc[] =
+static const struct adc_dt_spec arduino_adc[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_DT_SPEC)};
 
 /* io-channel-pins node provides a mapping digital pin numbers to adc channels */
@@ -179,23 +179,23 @@ size_t analog_pin_index(pin_size_t pinNumber) {
 
 #if (DT_NODE_HAS_PROP(DT_PATH(zephyr_user), dac))
 
-#define DAC_NODE DT_PHANDLE(DT_PATH(zephyr_user), dac)
+#define DAC_NODE       DT_PHANDLE(DT_PATH(zephyr_user), dac)
 #define DAC_RESOLUTION DT_PROP(DT_PATH(zephyr_user), dac_resolution)
 static const struct device *const dac_dev = DEVICE_DT_GET(DAC_NODE);
 
-#define DAC_CHANNEL_DEFINE(n, p, i) \
-  { \
-    .channel_id = DT_PROP_BY_IDX(n, p, i), \
-    .resolution = DAC_RESOLUTION, \
-    .buffered = true, \
-  },
+#define DAC_CHANNEL_DEFINE(n, p, i)                                                                \
+	{                                                                                              \
+		.channel_id = DT_PROP_BY_IDX(n, p, i),                                                     \
+		.resolution = DAC_RESOLUTION,                                                              \
+		.buffered = true,                                                                          \
+	},
 
-static const struct dac_channel_cfg dac_ch_cfg[] =
-  { DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_CHANNEL_DEFINE) };
+static const struct dac_channel_cfg dac_ch_cfg[] = {
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), dac_channels, DAC_CHANNEL_DEFINE)};
 
 #endif
 
-#endif //CONFIG_DAC
+#endif // CONFIG_DAC
 
 static unsigned int irq_key;
 static bool interrupts_disabled = false;
@@ -412,11 +412,13 @@ unsigned long millis(void) {
 
 #if defined(CONFIG_DAC) || defined(CONFIG_PWM)
 static int _analog_write_resolution = 8;
+
 void analogWriteResolution(int bits) {
-    _analog_write_resolution = bits;
+	_analog_write_resolution = bits;
 }
+
 int analogWriteResolution() {
-  return _analog_write_resolution;
+	return _analog_write_resolution;
 }
 #endif
 
@@ -451,19 +453,18 @@ void analogWrite(pin_size_t pinNumber, int value) {
 #endif
 
 #ifdef CONFIG_DAC
-void analogWrite(enum dacPins dacName, int value)
-{
-  if (dacName >= NUM_OF_DACS) {
-    return;
-  }
+void analogWrite(enum dacPins dacName, int value) {
+	if (dacName >= NUM_OF_DACS) {
+		return;
+	}
 
-  dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
+	dac_channel_setup(dac_dev, &dac_ch_cfg[dacName]);
 
-  const int max_dac_value = 1U << dac_ch_cfg[dacName].resolution;
-  dac_write_value(dac_dev, dac_ch_cfg[dacName].channel_id, map(value, 0, 1 << _analog_write_resolution, 0, max_dac_value));
+	const int max_dac_value = 1U << dac_ch_cfg[dacName].resolution;
+	dac_write_value(dac_dev, dac_ch_cfg[dacName].channel_id,
+					map(value, 0, 1 << _analog_write_resolution, 0, max_dac_value));
 }
 #endif
-
 
 #ifdef CONFIG_ADC
 
@@ -481,22 +482,18 @@ void __attribute__((weak)) analogReference(uint8_t mode) {
 // Note: We can not update the arduino_adc structure as it is read only...
 static int read_resolution = 10;
 
-void analogReadResolution(int bits)
-{
+void analogReadResolution(int bits) {
 	read_resolution = bits;
 }
 
-int analogReadResolution()
-{
+int analogReadResolution() {
 	return read_resolution;
 }
 
-
-int analogRead(pin_size_t pinNumber)
-{
+int analogRead(pin_size_t pinNumber) {
 	int err;
 	uint16_t buf;
-	struct adc_sequence seq = { .buffer = &buf, .buffer_size = sizeof(buf) };
+	struct adc_sequence seq = {.buffer = &buf, .buffer_size = sizeof(buf)};
 	size_t idx = analog_pin_index(pinNumber);
 
 	if (idx >= ARRAY_SIZE(arduino_adc)) {
@@ -526,12 +523,16 @@ int analogRead(pin_size_t pinNumber)
 	}
 
 	/*
-	* If necessary map the return value to the
-	* number of bits the user has asked for
-	*/
-	if (read_resolution == seq.resolution) return buf;
-	if (read_resolution < seq.resolution)  return buf >> (seq.resolution - read_resolution);
-	return buf << (read_resolution - seq.resolution) ;
+	 * If necessary map the return value to the
+	 * number of bits the user has asked for
+	 */
+	if (read_resolution == seq.resolution) {
+		return buf;
+	}
+	if (read_resolution < seq.resolution) {
+		return buf >> (seq.resolution - read_resolution);
+	}
+	return buf << (read_resolution - seq.resolution);
 }
 
 #endif
