@@ -338,17 +338,6 @@ void noTone(pin_size_t pinNumber) {
 	gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
 }
 
-__attribute__((always_inline)) void delay(unsigned long ms) {
-  k_sleep(K_MSEC(ms));
-}
-
-__attribute__((always_inline)) void delayMicroseconds(unsigned int us) {
-  if (us == 0) {
-    return;
-  }
-  k_busy_wait(us - 1);
-}
-
 unsigned long micros(void) {
 #ifdef CONFIG_TIMER_HAS_64BIT_CYCLE_COUNTER
 	return k_cyc_to_us_floor32(k_cycle_get_64());

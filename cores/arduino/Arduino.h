@@ -116,6 +116,8 @@ int digitalPinToInterrupt(pin_size_t pin);
 #define LED_BUILTIN ZARD_LED_BUILTIN
 #endif // LED_BUILTIN
 
+#include <inlines.h>
+
 #ifdef __cplusplus
 #include <zephyrSerial.h>
 #endif // __cplusplus
