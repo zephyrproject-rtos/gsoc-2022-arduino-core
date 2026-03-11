@@ -48,6 +48,9 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
     printk("\n\nERR: i2c burst read fails\n\n\n");
     return 0;
   }
+
+  /* Flush the receive buffer so another read() call returns the correct data */
+  flush();
   ret = ring_buf_put(&rxRingBuffer.rb, rxRingBuffer.buffer, len);
   if (ret == 0)
   {
@@ -101,7 +104,9 @@ int arduino::ZephyrI2C::peek() {
   return (int)buf[0];
 }
 
-void arduino::ZephyrI2C::flush() {}
+void arduino::ZephyrI2C::flush() {
+  ring_buf_reset(&rxRingBuffer.rb);
+}
 
 void arduino::ZephyrI2C::onReceive(voidFuncPtrParamInt cb) {}
 void arduino::ZephyrI2C::onRequest(voidFuncPtr cb) {}
