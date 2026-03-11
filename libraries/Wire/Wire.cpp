@@ -98,10 +98,10 @@ int arduino::ZephyrI2C::available() { // TODO for ADS1115
 
 int arduino::ZephyrI2C::peek() {
   uint8_t buf[1];
-  int bytes_read = ring_buf_peek(&rxRingBuffer.rb, buf, 1);
-  if (bytes_read == 0){
-    return 0;
-  } 
+  if (!ring_buf_peek(&rxRingBuffer.rb, buf, 1)){
+    // No data available
+    return -1;
+  }
   return (int)buf[0];
 }
 
