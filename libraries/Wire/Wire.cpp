@@ -7,6 +7,9 @@
 #include <Wire.h>
 #include <zephyr/sys/util_macro.h>
 
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(arduino_wire, CONFIG_ARDUINO_API_LOG_LEVEL);
+
 arduino::ZephyrI2C::ZephyrI2C(const struct device *i2c) : i2c_dev(i2c)
 {
 }
@@ -45,12 +48,14 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
   /* Use stack-allocated buffer for reading */
   uint8_t readbuff[sizeof(rxRingBuffer.buffer)];
   if (len > sizeof(readbuff)) {
+    LOG_ERR("requested read length (%zu) exceeds buffer size (%zu)", len, sizeof(readbuff));
     return 0;
   }
 
   int ret = i2c_read(i2c_dev, readbuff, len, address);
   if (ret != 0)
   {
+    LOG_ERR("burst read failed");
     return 0;
   }
 
@@ -59,6 +64,7 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
   ret = ring_buf_put(&rxRingBuffer.rb, readbuff, len);
   if (ret == 0)
   {
+    LOG_ERR("failed to put data in ring buffer");
     return 0;
   }
   return len;
@@ -70,6 +76,7 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len) { // TODO fo
 
 size_t arduino::ZephyrI2C::write(uint8_t data) {  // TODO for ADS1115
   if (usedTxBuffer >= sizeof(txBuffer)) {
+    LOG_ERR("tx buffer is full");
     return 0;
   }
   txBuffer[usedTxBuffer++] = data;
@@ -89,6 +96,7 @@ int arduino::ZephyrI2C::read() {
   uint8_t buf[1];
 
   if(!ring_buf_get(&rxRingBuffer.rb, buf, 1)) {
+    LOG_ERR("buffer is empty");
     return -1; // no data available
   }
 
