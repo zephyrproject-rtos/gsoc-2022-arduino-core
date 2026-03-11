@@ -41,4 +41,9 @@ config ARDUINO_MAX_TONES
 	  Specify the maximum number of tones that can be played simultaneously with tone().
 	  If set to a negative value, the maximum number will be determined from the
 	  system's digital pin configuration.
+
+module = ARDUINO_API
+module-str = arduino_api
+source "subsys/logging/Kconfig.template.log_config"
+
 endif
