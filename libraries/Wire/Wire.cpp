@@ -80,15 +80,12 @@ size_t arduino::ZephyrI2C::write(const uint8_t *buffer, size_t size) {
 
 int arduino::ZephyrI2C::read() {
   uint8_t buf[1];
-  if (ring_buf_peek(&rxRingBuffer.rb, buf, 1) > 0) {
-        int ret = ring_buf_get(&rxRingBuffer.rb, buf, 1);
-        if (ret == 0) {
-          printk("\n\nERR: buff empty\n\n\n");
-            return 0;
-        }
-		return (int)buf[0];
+
+  if(!ring_buf_get(&rxRingBuffer.rb, buf, 1)) {
+    return -1; // no data available
   }
-  return EXIT_FAILURE;
+
+  return (int)buf[0];
 }
 
 int arduino::ZephyrI2C::available() { // TODO for ADS1115 
