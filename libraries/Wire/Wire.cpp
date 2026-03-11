@@ -69,6 +69,9 @@ size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len) { // TODO fo
 }
 
 size_t arduino::ZephyrI2C::write(uint8_t data) {  // TODO for ADS1115
+  if (usedTxBuffer >= sizeof(txBuffer)) {
+    return 0;
+  }
   txBuffer[usedTxBuffer++] = data;
   return 1;
 }
