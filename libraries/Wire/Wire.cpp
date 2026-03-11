@@ -42,19 +42,23 @@ uint8_t arduino::ZephyrI2C::endTransmission(void) { // TODO for ADS1115
 
 size_t arduino::ZephyrI2C::requestFrom(uint8_t address, size_t len,
                                        bool stopBit) {
-  int ret = i2c_read(i2c_dev, rxRingBuffer.buffer, len, address);
+  /* Use stack-allocated buffer for reading */
+  uint8_t readbuff[sizeof(rxRingBuffer.buffer)];
+  if (len > sizeof(readbuff)) {
+    return 0;
+  }
+
+  int ret = i2c_read(i2c_dev, readbuff, len, address);
   if (ret != 0)
   {
-    printk("\n\nERR: i2c burst read fails\n\n\n");
     return 0;
   }
 
   /* Flush the receive buffer so another read() call returns the correct data */
   flush();
-  ret = ring_buf_put(&rxRingBuffer.rb, rxRingBuffer.buffer, len);
+  ret = ring_buf_put(&rxRingBuffer.rb, readbuff, len);
   if (ret == 0)
   {
-    printk("\n\nERR: buff put fails\n\n\n");
     return 0;
   }
   return len;
