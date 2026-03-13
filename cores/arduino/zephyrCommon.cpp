@@ -13,6 +13,13 @@ static const struct gpio_dt_spec arduino_pins[] = {
 	DT_FOREACH_PROP_ELEM_SEP(
 	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
 
+#define RETURN_ON_INVALID_PIN(pinNumber, ...)                                                      \
+	do {                                                                                           \
+		if ((pin_size_t)(pinNumber) >= ARRAY_SIZE(arduino_pins)) {                                 \
+			return __VA_ARGS__;                                                                    \
+		}                                                                                          \
+	} while (0)
+
 namespace {
 
 #if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
@@ -103,6 +110,8 @@ struct gpio_port_callback *find_gpio_port_callback(const struct device *dev) {
 }
 
 void setInterruptHandler(pin_size_t pinNumber, voidFuncPtr func) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
 
 	if (pcb) {
@@ -215,6 +224,9 @@ void yield(void) {
  *  A high physical level will be interpreted as value 1
  */
 void pinMode(pin_size_t pinNumber, PinMode pinMode) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
+	_reinit_peripheral_if_needed(pinNumber, NULL);
 	if (pinMode == INPUT) { // input mode
 		gpio_pin_configure_dt(&arduino_pins[pinNumber], GPIO_INPUT | GPIO_ACTIVE_HIGH);
 	} else if (pinMode == INPUT_PULLUP) { // input with internal pull-up
@@ -229,10 +241,14 @@ void pinMode(pin_size_t pinNumber, PinMode pinMode) {
 }
 
 void digitalWrite(pin_size_t pinNumber, PinStatus status) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	gpio_pin_set_dt(&arduino_pins[pinNumber], status);
 }
 
 PinStatus digitalRead(pin_size_t pinNumber) {
+	RETURN_ON_INVALID_PIN(pinNumber, LOW);
+
 	return (gpio_pin_get_dt(&arduino_pins[pinNumber]) == 1) ? HIGH : LOW;
 }
 
@@ -314,6 +330,8 @@ void tone_expiry_cb(struct k_timer *timer) {
 }
 
 void tone(pin_size_t pinNumber, unsigned int frequency, unsigned long duration) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	k_spinlock_key_t key;
 	uint64_t toggles_count;
 	struct pin_timer *pt;
@@ -565,6 +583,8 @@ int analogRead(pin_size_t pinNumber) {
 #endif
 
 void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinStatus) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	struct gpio_port_callback *pcb;
 	gpio_flags_t intmode = 0;
 
@@ -600,6 +620,8 @@ void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, PinStatus pinSt
 }
 
 void detachInterrupt(pin_size_t pinNumber) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	setInterruptHandler(pinNumber, nullptr);
 	disableInterrupt(pinNumber);
 }
@@ -623,6 +645,8 @@ long random(long max) {
 #endif
 
 unsigned long pulseIn(pin_size_t pinNumber, uint8_t state, unsigned long timeout) {
+	RETURN_ON_INVALID_PIN(pinNumber, LOW);
+
 	struct k_timer timer;
 	int64_t start, end, delta = 0;
 	const struct gpio_dt_spec *spec = &arduino_pins[pinNumber];
@@ -662,6 +686,8 @@ cleanup:
 }
 
 void enableInterrupt(pin_size_t pinNumber) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
 
 	if (pcb) {
@@ -670,6 +696,8 @@ void enableInterrupt(pin_size_t pinNumber) {
 }
 
 void disableInterrupt(pin_size_t pinNumber) {
+	RETURN_ON_INVALID_PIN(pinNumber);
+
 	struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
 
 	if (pcb) {
@@ -691,8 +719,10 @@ void noInterrupts(void) {
 	}
 }
 
-int digitalPinToInterrupt(pin_size_t pin) {
-	struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pin].port);
+int digitalPinToInterrupt(pin_size_t pinNumber) {
+	RETURN_ON_INVALID_PIN(pinNumber, -1);
 
-	return (pcb) ? pin : -1;
+	struct gpio_port_callback *pcb = find_gpio_port_callback(arduino_pins[pinNumber].port);
+
+	return (pcb) ? pinNumber : -1;
 }
