@@ -131,10 +131,14 @@ void noInterrupts(void);
 
 int digitalPinToInterrupt(pin_size_t pin);
 
+// These defines can be overridden by variant.h if implemented
 #define digitalPinToPort(x)    (x)
 #define digitalPinToBitMask(x) (x)
 #define portOutputRegister(x)  (x)
 #define portInputRegister(x)   (x)
+
+const struct device *digitalPinToPortDevice(pin_size_t pinNumber);
+int digitalPinToPinIndex(pin_size_t pinNumber);
 
 #if defined(CONFIG_PWM) || defined(CONFIG_DAC)
 void analogWriteResolution(int bits);
