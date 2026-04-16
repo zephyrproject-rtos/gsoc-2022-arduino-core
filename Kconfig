@@ -17,10 +17,6 @@ config ARDUINO_API
 
 if ARDUINO_API
 
-config USE_ARDUINO_API_RUST_IMPLEMENTATION
-	bool "Use Rust implementation API core"
-	select RUST
-
 config QEMU_ICOUNT
 	bool "QEMU icount mode"
 	default n
@@ -39,8 +35,8 @@ config ARDUINO_MAX_TONES
 	default -1
 	help
 	  Specify the maximum number of tones that can be played simultaneously with tone().
-	  If set to a negative value, the maximum number will be determined from the
-	  system's digital pin configuration.
+	  If set to -1 (or any other negative value), the maximum number will be
+	  determined from the system's digital pin configuration.
 
 module = ARDUINO_API
 module-str = arduino_api
