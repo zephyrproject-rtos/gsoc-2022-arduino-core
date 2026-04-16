@@ -249,9 +249,15 @@ static struct pin_timer {
 	uint32_t count{0};
 	pin_size_t pin{pin_size_t(-1)};
 	bool infinity{false};
-	struct k_spinlock lock;
+	bool timer_initialized{false};
+	struct k_spinlock lock{};
 } arduino_pin_timers[MAX_TONE_PINS];
 
+K_MUTEX_DEFINE(timer_cfg_lock);
+
+void tone_expiry_cb(struct k_timer *timer);
+
+/* Callers must hold timer_cfg_lock while using this helper. */
 static struct pin_timer *find_pin_timer(pin_size_t pinNumber, bool active_only) {
 	for (size_t i = 0; i < ARRAY_SIZE(arduino_pin_timers); i++) {
 		k_spinlock_key_t key = k_spin_lock(&arduino_pin_timers[i].lock);
@@ -294,12 +300,13 @@ void tone_expiry_cb(struct k_timer *timer) {
 		}
 
 		k_timer_stop(timer);
+		pt->count = 0;
+		pt->infinity = false;
 		pt->pin = pin_size_t(-1);
 	} else {
 		if (pin != pin_size_t(-1)) {
 			gpio_pin_toggle_dt(&arduino_pins[pin]);
 		}
-
 		pt->count--;
 	}
 
@@ -308,24 +315,42 @@ void tone_expiry_cb(struct k_timer *timer) {
 
 void tone(pin_size_t pinNumber, unsigned int frequency, unsigned long duration) {
 	k_spinlock_key_t key;
+	uint64_t toggles_count;
 	struct pin_timer *pt;
 	k_timeout_t timeout;
+
+	if (k_is_in_isr()) {
+		return;
+	}
+
+	k_mutex_lock(&timer_cfg_lock, K_FOREVER);
 
 	pt = find_pin_timer(pinNumber, false);
 
 	if (pt == nullptr) {
+		k_mutex_unlock(&timer_cfg_lock);
 		return;
+	}
+
+	if (!pt->timer_initialized) {
+		k_timer_init(&pt->timer, tone_expiry_cb, NULL);
+		pt->timer_initialized = true;
 	}
 
 	pinMode(pinNumber, OUTPUT);
 	k_timer_stop(&pt->timer);
 
-	if (frequency == 0) {
+	toggles_count = ((uint64_t)duration * frequency / (MSEC_PER_SEC / TOGGLES_PER_CYCLE));
+	if (frequency == 0 || (toggles_count == 0 && duration != 0)) {
 		key = k_spin_lock(&pt->lock);
+		pt->count = 0;
+		pt->infinity = false;
 		pt->pin = pin_size_t(-1);
 		k_spin_unlock(&pt->lock, key);
 
 		gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
+
+		k_mutex_unlock(&timer_cfg_lock);
 		return;
 	}
 
@@ -336,32 +361,43 @@ void tone(pin_size_t pinNumber, unsigned int frequency, unsigned long duration) 
 
 	key = k_spin_lock(&pt->lock);
 	pt->infinity = (duration == 0);
-	pt->count = min((uint64_t)duration * frequency * TOGGLES_PER_CYCLE / MSEC_PER_SEC, UINT32_MAX);
+	pt->count = min(toggles_count, UINT32_MAX);
 	pt->pin = pinNumber;
 	k_spin_unlock(&pt->lock, key);
 
-	k_timer_init(&pt->timer, tone_expiry_cb, NULL);
-
-	gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
+	gpio_pin_set_dt(&arduino_pins[pinNumber], 1);
 	k_timer_start(&pt->timer, timeout, timeout);
+
+	k_mutex_unlock(&timer_cfg_lock);
 }
 
 void noTone(pin_size_t pinNumber) {
 	struct pin_timer *pt;
 	k_spinlock_key_t key;
 
+	if (k_is_in_isr()) {
+		return;
+	}
+
+	k_mutex_lock(&timer_cfg_lock, K_FOREVER);
+
 	pt = find_pin_timer(pinNumber, true);
 
 	if (pt == nullptr) {
+		k_mutex_unlock(&timer_cfg_lock);
 		return;
 	}
 
 	key = k_spin_lock(&pt->lock);
 	k_timer_stop(&pt->timer);
+	pt->count = 0;
+	pt->infinity = false;
 	pt->pin = pin_size_t(-1);
 	k_spin_unlock(&pt->lock, key);
 
 	gpio_pin_set_dt(&arduino_pins[pinNumber], 0);
+
+	k_mutex_unlock(&timer_cfg_lock);
 }
 
 unsigned long micros(void) {
