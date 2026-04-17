@@ -5,7 +5,7 @@
  */
 
 #include <Arduino.h>
-#include "zephyrInternal.h"
+#include "wiring_private.h"
 
 #include <zephyr/spinlock.h>
 
@@ -22,10 +22,6 @@ void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev) {
 	}
 }
 
-static const struct gpio_dt_spec arduino_pins[] = {
-	DT_FOREACH_PROP_ELEM_SEP(
-	DT_PATH(zephyr_user), digital_pin_gpios, GPIO_DT_SPEC_GET_BY_IDX, (, ))};
-
 #define RETURN_ON_INVALID_PIN(pinNumber, ...)                                                      \
 	do {                                                                                           \
 		if ((pin_size_t)(pinNumber) >= ARRAY_SIZE(arduino_pins)) {                                 \
@@ -34,63 +30,6 @@ static const struct gpio_dt_spec arduino_pins[] = {
 	} while (0)
 
 namespace {
-
-#if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
-
-/*
- * Calculate GPIO ports/pins number statically from devicetree configuration
- */
-
-template <class N, class Head> constexpr N sum_of_list(const N sum, const Head &head) {
-	return sum + head;
-}
-
-template <class N, class Head, class... Tail>
-constexpr N sum_of_list(const N sum, const Head &head, const Tail &...tail) {
-	return sum_of_list(sum + head, tail...);
-}
-
-template <class N, class Head> constexpr N max_in_list(const N max, const Head &head) {
-	return (max >= head) ? max : head;
-}
-
-template <class N, class Head, class... Tail>
-constexpr N max_in_list(const N max, const Head &head, const Tail &...tail) {
-	return max_in_list((max >= head) ? max : head, tail...);
-}
-
-template <class Query, class Head>
-constexpr size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
-									 const Query &query, const Head &head) {
-	return ((found == ((size_t)-1)) && (query == head) && (idx == at)) ? 1 : 0;
-}
-
-template <class Query, class Head, class... Tail>
-constexpr size_t is_first_appearance(const size_t &idx, const size_t &at, const size_t &found,
-									 const Query &query, const Head &head, const Tail &...tail) {
-	return ((found == ((size_t)-1)) && (query == head) && (idx == at)) ?
-			   1 :
-			   is_first_appearance(idx + 1, at, (query == head ? idx : found), query, tail...);
-}
-
-#define GET_DEVICE_VARGS(n, p, i, _) DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i))
-#define FIRST_APPEARANCE(n, p, i)                                                                  \
-	is_first_appearance(0, i, ((size_t)-1), DEVICE_DT_GET(DT_GPIO_CTLR_BY_IDX(n, p, i)),           \
-						DT_FOREACH_PROP_ELEM_SEP_VARGS(n, p, GET_DEVICE_VARGS, (, ), 0))
-const int port_num = sum_of_list(
-	0, DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios,
-            FIRST_APPEARANCE, (, )));
-
-#define GPIO_NGPIOS(n, p, i) DT_PROP(DT_GPIO_CTLR_BY_IDX(n, p, i), ngpios)
-const int max_ngpios = max_in_list(
-	0, DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios, GPIO_NGPIOS, (, )));
-
-#else
-
-const int port_num = 1;
-const int max_ngpios = 0;
-
-#endif
 
 /*
  * GPIO callback implementation
