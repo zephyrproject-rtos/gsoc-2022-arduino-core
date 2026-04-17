@@ -347,9 +347,8 @@ void delayMicroseconds(unsigned int us) {
 }
 
 unsigned long micros(void) {
-	return k_cyc_to_us_floor32(k_cycle_get_32());
+        return k_cyc_to_us_floor32(k_cycle_get_64());
 }
-
 unsigned long millis(void) {
 	return k_uptime_get_32();
 }

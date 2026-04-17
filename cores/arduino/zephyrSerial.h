@@ -85,6 +85,7 @@ public:
 	}
 
 	int available();
+  	int availableForWrite();
 	int peek();
 	int read();
 
