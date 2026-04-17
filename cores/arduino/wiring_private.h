@@ -8,6 +8,13 @@
 
 #pragma once
 
+#define RETURN_ON_INVALID_PIN(pinNumber, ...)                                                      \
+	do {                                                                                           \
+		if ((pin_size_t)(pinNumber) >= ARRAY_SIZE(arduino_pins)) {                                 \
+			return __VA_ARGS__;                                                                    \
+		}                                                                                          \
+	} while (0)
+
 #ifdef __cplusplus
 
 namespace zephyr {
@@ -74,6 +81,8 @@ constexpr int port_num = 1;
 constexpr int max_ngpios = 0;
 
 #endif
+
+void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev);
 
 } // namespace arduino
 } // namespace zephyr
