@@ -17,42 +17,47 @@ namespace arduino {
 
 class ZephyrI2C : public HardwareI2C {
 public:
-  ZephyrI2C(const struct device* i2c);
+	ZephyrI2C(const struct device *i2c);
 
-  virtual void begin();
-  virtual void end();
-  virtual void begin(uint8_t address);
-  virtual void setClock(uint32_t freq);
+	virtual void begin();
+	virtual void end();
+	virtual void begin(uint8_t address);
+	virtual void setClock(uint32_t freq);
 
-  virtual void beginTransmission(uint8_t address);
-  virtual uint8_t endTransmission(bool stopBit);
-  virtual uint8_t endTransmission(void);
+	virtual void beginTransmission(uint8_t address);
+	virtual uint8_t endTransmission(bool stopBit);
+	virtual uint8_t endTransmission(void);
 
-  virtual size_t requestFrom(uint8_t address, size_t len, bool stopBit);
-  virtual size_t requestFrom(uint8_t address, size_t len);
+	virtual size_t requestFrom(uint8_t address, size_t len, bool stopBit);
+	virtual size_t requestFrom(uint8_t address, size_t len);
 
-  virtual void onReceive(void (*)(int));
-  virtual void onRequest(void (*)(void));
+	virtual void onReceive(void (*)(int));
+	virtual void onRequest(void (*)(void));
 
-  virtual size_t write(uint8_t data);
-  virtual size_t write(int data) { return write((uint8_t)data); };
-  virtual size_t write(const uint8_t *buffer, size_t size);
-  using Print::write;
-  virtual int read();
-  virtual int peek();
-  virtual void flush();
-  virtual int available();
+	virtual size_t write(uint8_t data);
+
+	virtual size_t write(int data) {
+		return write((uint8_t)data);
+	};
+
+	virtual size_t write(const uint8_t *buffer, size_t size);
+	using Print::write;
+	virtual int read();
+	virtual int peek();
+	virtual void flush();
+	virtual int available();
 
 private:
-  int _address;
-  uint8_t txBuffer[256];
-  uint32_t usedTxBuffer;
-  struct rx_ring_buf{
-    struct ring_buf rb;
-    uint8_t buffer[256];
-  };
-  struct rx_ring_buf rxRingBuffer;
-  const struct device* i2c_dev;
+	int _address;
+	uint8_t txBuffer[256];
+	uint32_t usedTxBuffer;
+
+	struct rx_ring_buf {
+		struct ring_buf rb;
+		uint8_t buffer[256];
+	};
+	struct rx_ring_buf rxRingBuffer;
+	const struct device *i2c_dev;
 };
 
 } // namespace arduino
