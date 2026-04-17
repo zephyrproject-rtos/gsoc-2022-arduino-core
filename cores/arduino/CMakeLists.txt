@@ -19,6 +19,13 @@ if(CONFIG_USE_ARDUINO_API_RUST_IMPLEMENTATION)
   zephyr_sources(apiCommon.cpp)
 endif()
 
+zephyr_sources(wiring_analog.cpp)
+zephyr_sources(wiring_digital.cpp)
+zephyr_sources(wiring_pulse.cpp)
+zephyr_sources(Tone.cpp)
+zephyr_sources(WMath.cpp)
+zephyr_sources(WInterrupts.cpp)
+
 if(DEFINED CONFIG_ARDUINO_ENTRY)
 zephyr_sources(main.cpp)
 endif()
