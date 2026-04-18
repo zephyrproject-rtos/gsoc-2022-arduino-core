@@ -106,7 +106,7 @@ struct gpio_port_callback {
 	struct arduino_callback handlers[max_ngpios];
 	gpio_port_pins_t pins;
 	const struct device *dev;
-} port_callback[port_num] = {0};
+} port_callback[port_num] = {};
 
 struct gpio_port_callback *find_gpio_port_callback(const struct device *dev) {
 	for (size_t i = 0; i < ARRAY_SIZE(port_callback); i++) {
@@ -210,6 +210,7 @@ static const struct device *const dac_dev = DEVICE_DT_GET(DAC_NODE);
 		.channel_id = DT_PROP_BY_IDX(n, p, i),                                                     \
 		.resolution = DAC_RESOLUTION,                                                              \
 		.buffered = true,                                                                          \
+		.internal = false,                                                                         \
 	},
 
 #if DT_PROP_LEN_OR(DT_PATH(zephyr_user), dac_channels, 0) > 0
@@ -571,7 +572,16 @@ int analogReadResolution() {
 int analogRead(pin_size_t pinNumber) {
 	int err;
 	uint16_t buf;
-	struct adc_sequence seq = {.buffer = &buf, .buffer_size = sizeof(buf)};
+	struct adc_sequence seq = {.options = nullptr,
+							   .channels = 0,
+							   .buffer = &buf,
+							   .buffer_size = sizeof(buf),
+#if defined(CONFIG_ADC_SEQUENCE_PRIORITY)
+							   .priority = 0,
+#endif
+							   .resolution = 0,
+							   .oversampling = 0,
+							   .calibrate = false};
 	size_t idx = analog_pin_index(pinNumber);
 
 	if (idx >= ARRAY_SIZE(arduino_adc)) {
