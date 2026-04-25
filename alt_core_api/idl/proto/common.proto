@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2026 TOKITA Hiroshi
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package arduino;
+
+enum PinStatus {
+	LOW = 0;
+	HIGH = 1;
+	CHANGE = 2;
+	FALLING = 3;
+	RISING = 4;
+}
+
+enum PinMode {
+	INPUT = 0;
+	OUTPUT = 1;
+	INPUT_PULLUP = 2;
+	INPUT_PULLDOWN = 3;
+	OUTPUT_OPENDRAIN = 4;
+}
+
+enum BitOrder {
+	LSBFIRST = 0;
+	MSBFIRST = 1;
+}
+
+enum IPType {
+	IPv4 = 0;
+	IPv6 = 1;
+}

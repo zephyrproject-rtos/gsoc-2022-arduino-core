@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2026 TOKITA Hiroshi
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package arduino;
+
+import "arduino_opts.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+enum LookaheadMode {
+	SKIP_ALL = 0;
+	SKIP_NONE = 1;
+	SKIP_WHITESPACE = 2;
+}
+
+service Stream {
+	option (arduino.base_services) = "Print";
+
+	rpc Available(google.protobuf.Empty) returns (google.protobuf.Int32Value) {
+		option (arduino.cpp_name) = "available";
+		option (arduino.cpp_return) = "int";
+	}
+	rpc Read(google.protobuf.Empty) returns (google.protobuf.Int32Value) {
+		option (arduino.cpp_name) = "read";
+		option (arduino.cpp_return) = "int";
+	}
+	rpc Peek(google.protobuf.Empty) returns (google.protobuf.Int32Value) {
+		option (arduino.cpp_name) = "peek";
+		option (arduino.cpp_return) = "int";
+	}
+}

@@ -6,6 +6,7 @@ The **Arduino Core API** module for zephyr leverages the power of Zephyr under a
 
 * [Using external Arduino Libraries](/documentation/arduino_libs.md)
 * [Adding custom boards/ variants](/documentation/variants.md)
+* [Arduino IDL code generation](/documentation/idl_codegen.md)
 
 ## Adding Arduino Core API to Zephyr
 

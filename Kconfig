@@ -20,6 +20,7 @@ if ARDUINO_API
 config USE_ARDUINO_API_RUST_IMPLEMENTATION
 	bool "Use Rust implementation API core"
 	select RUST
+	select NANOPB
 
 config QEMU_ICOUNT
 	bool "QEMU icount mode"
