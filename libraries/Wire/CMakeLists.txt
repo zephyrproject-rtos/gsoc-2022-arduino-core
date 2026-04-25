@@ -3,6 +3,6 @@ zephyr_include_directories(.)
 
 if(NOT DEFINED ARDUINO_BUILD_PATH)
 
-zephyr_sources(Wire.cpp)
+zephyr_sources_ifdef(CONFIG_I2C Wire.cpp)
 
 endif()
