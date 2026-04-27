@@ -154,14 +154,14 @@ size_t pwm_pin_index(pin_size_t pinNumber) {
 							   DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 #define ADC_CH_CFG(n, p, i) arduino_adc[i].channel_cfg,
 
-const struct adc_dt_spec arduino_adc[] = {
+static const struct adc_dt_spec arduino_adc[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_DT_SPEC)};
 
 /* io-channel-pins node provides a mapping digital pin numbers to adc channels */
 const pin_size_t arduino_analog_pins[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS)};
 
-struct adc_channel_cfg channel_cfg[ARRAY_SIZE(arduino_analog_pins)] = {
+struct adc_channel_cfg channel_cfg[] = {
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_CH_CFG)};
 
 size_t analog_pin_index(pin_size_t pinNumber) {
@@ -352,7 +352,13 @@ unsigned long millis(void) {
 
 #ifdef CONFIG_PWM
 
+static uint32_t map64(uint32_t x, uint32_t in_min, uint32_t in_max, uint32_t out_min,
+					  uint32_t out_max) {
+	return ((uint64_t)(x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min);
+}
+
 void analogWrite(pin_size_t pinNumber, int value) {
+	const int maxInput = BIT(_analog_write_resolution) - 1U;
 	size_t idx = pwm_pin_index(pinNumber);
 
 	if (idx >= ARRAY_SIZE(arduino_pwm)) {
@@ -363,17 +369,15 @@ void analogWrite(pin_size_t pinNumber, int value) {
 		return;
 	}
 
-	if (((uint32_t)value) > arduino_pwm[idx].period) {
-		value = arduino_pwm[idx].period;
-	} else if (value < 0) {
-		value = 0;
-	}
+	value = CLAMP(value, 0, maxInput);
+
+	const uint32_t pulse = map64(value, 0, maxInput, 0, arduino_pwm[idx].period);
 
 	/*
 	 * A duty ratio determines by the period value defined in dts
 	 * and the value arguments. So usually the period value sets as 255.
 	 */
-	(void)pwm_set_pulse_dt(&arduino_pwm[idx], value);
+	(void)pwm_set_pulse_dt(&arduino_pwm[idx], pulse);
 }
 
 #endif
