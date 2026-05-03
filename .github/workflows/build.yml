@@ -58,7 +58,7 @@ jobs:
 
       - name: Build adc
         run: |
-          west build -p -b beagleconnect_freedom/cc1352p7 $MODULE_PATH/samples/analog_input
+          west build -p -b beagleconnect_freedom@C7/cc1352p7 $MODULE_PATH/samples/analog_input
 
       - name: Archive firmware
         uses: actions/upload-artifact@v4
