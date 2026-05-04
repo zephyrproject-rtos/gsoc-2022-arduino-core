@@ -15,17 +15,21 @@ arduino::ZephyrI2C::ZephyrI2C(const struct device *i2c) : i2c_dev(i2c) {
 
 void arduino::ZephyrI2C::begin() {
 	ring_buf_init(&rxRingBuffer.rb, sizeof(rxRingBuffer.buffer), rxRingBuffer.buffer);
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 	i2c_dev->ops.init(i2c_dev);
+#endif
 }
 
 void arduino::ZephyrI2C::begin(uint8_t slaveAddr) {
 }
 
 void arduino::ZephyrI2C::end() {
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 #ifdef CONFIG_DEVICE_DEINIT_SUPPORT
 	if (i2c_dev->ops.deinit) {
 		i2c_dev->ops.deinit(i2c_dev);
 	}
+#endif
 #endif
 }
 

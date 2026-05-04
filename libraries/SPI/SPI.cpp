@@ -118,14 +118,18 @@ void arduino::ZephyrSPI::detachInterrupt() {
 }
 
 void arduino::ZephyrSPI::begin() {
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 	spi_dev->ops.init(spi_dev);
+#endif
 }
 
 void arduino::ZephyrSPI::end() {
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 #ifdef CONFIG_DEVICE_DEINIT_SUPPORT
 	if (spi_dev->ops.deinit) {
 		spi_dev->ops.deinit(spi_dev);
 	}
+#endif
 #endif
 }
 

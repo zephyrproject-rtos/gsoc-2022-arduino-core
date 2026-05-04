@@ -76,10 +76,12 @@ public:
 	}
 
 	void end() {
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 #ifdef CONFIG_DEVICE_DEINIT_SUPPORT
 		if (uart->ops.deinit) {
 			uart->ops.deinit(uart);
 		}
+#endif
 #endif
 	}
 

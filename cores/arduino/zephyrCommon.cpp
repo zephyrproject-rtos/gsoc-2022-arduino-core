@@ -9,6 +9,7 @@
 
 #include <zephyr/spinlock.h>
 
+#ifdef CONFIG_ARDUINO_DEVICE_REINIT_ON_USE
 // create an array of arduino_pins with functions to reinitialize pins if needed
 static const struct device *pinmux_array[DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios)] = {
 	nullptr};
@@ -21,6 +22,10 @@ void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev) {
 		}
 	}
 }
+#else
+void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev) {
+}
+#endif
 
 static const struct gpio_dt_spec arduino_pins[] = {
 	DT_FOREACH_PROP_ELEM_SEP(

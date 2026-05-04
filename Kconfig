@@ -42,6 +42,16 @@ config ARDUINO_MAX_TONES
 	  If set to -1 (or any other negative value), the maximum number will be
 	  determined from the system's digital pin configuration.
 
+config ARDUINO_DEVICE_REINIT_ON_USE
+	bool "Reinitialize devices before Arduino peripheral use"
+	help
+	  Call the underlying Zephyr device init callback before using
+	  Arduino peripherals such as Serial, SPI, Wire, ADC, DAC, or PWM.
+
+	  This is a temporary workaround for boards that need to re-apply
+	  peripheral pinmux settings when a sketch switches a pin between GPIO
+	  and another function.
+
 module = ARDUINO_API
 module-str = arduino_api
 source "subsys/logging/Kconfig.template.log_config"
