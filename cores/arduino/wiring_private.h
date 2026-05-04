@@ -13,10 +13,36 @@
 	DIGITAL_PIN_GPIOS_FIND_PIN(DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), p, i)),         \
 							   DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 
+#define PWM_PINS_GLOBAL(n, p, i)                                                                   \
+	ZARD_GLOBAL_GPIO_OFFSET(DT_PHANDLE_BY_IDX(n, p, i)) + DT_PHA_BY_IDX(n, p, i, pin),
+#define PWM_CONN_CHANNEL_DT(n, p, i)                                                               \
+	COND_CODE_1(DT_NODE_HAS_STATUS_OKAY(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i)),                  \
+		    ({ .dev = DEVICE_DT_GET(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i)),                  \
+		       .channel = DT_MAP_ENTRY_PARENT_SPECIFIER_BY_IDX(n, p, i, 0),                \
+		       .period = 255, },),                                                         \
+		    ())
+#define PWM_CONN_PINNUM(n, p, i)                                                                   \
+	COND_CODE_1(DT_NODE_HAS_STATUS_OKAY(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i)),                  \
+		    (ZARD_CONNECTOR_PIN_NAME_D(DT_NODELABEL(ZARD_CONNECTOR),                       \
+					       DT_MAP_ENTRY_CHILD_SPECIFIER_BY_IDX(n, p, i, 0)),), \
+		    ())
+
 #define ADC_DT_SPEC(n, p, i) ADC_DT_SPEC_GET_BY_IDX(n, i),
 #define ADC_PINS(n, p, i)                                                                          \
 	DIGITAL_PIN_GPIOS_FIND_PIN(DT_REG_ADDR(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), p, i)),         \
 							   DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
+#define ADC_PINS_GLOBAL(n, p, i)                                                                   \
+	ZARD_GLOBAL_GPIO_OFFSET(DT_PHANDLE_BY_IDX(n, p, i)) + DT_PHA_BY_IDX(n, p, i, pin),
+#define ADC_CONN_CHANNEL_DT(n, p, i)                                                               \
+	COND_CODE_1(DT_NODE_HAS_STATUS_OKAY(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i)),                  \
+		    (ADC_DT_SPEC_STRUCT(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i),                       \
+					DT_MAP_ENTRY_PARENT_SPECIFIER_BY_IDX(n, p, i, 0)),),       \
+		    ())
+#define ADC_CONN_PINNUM(n, p, i)                                                                   \
+	COND_CODE_1(DT_NODE_HAS_STATUS_OKAY(DT_MAP_ENTRY_PARENT_BY_IDX(n, p, i)),                  \
+		    (ZARD_CONNECTOR_PIN_NAME_A(DT_NODELABEL(ZARD_CONNECTOR),                       \
+					       DT_MAP_ENTRY_CHILD_SPECIFIER_BY_IDX(n, p, i, 0)),), \
+		    ())
 
 #ifdef __cplusplus
 
@@ -44,29 +70,62 @@ static constexpr const struct device *gpio_ports[] = {DT_FOREACH_NODE(ZARD_GET_G
 static constexpr uint32_t gpio_ngpios[] = {DT_FOREACH_NODE(ZARD_GET_GPIO_NGPIOS)};
 static constexpr gpio_flags_t gpio_flags[] = {DT_FOREACH_NODE(ZARD_GET_GPIO_FLAGS)};
 
-BUILD_ASSERT(ARRAY_SIZE(gpio_ports) > 0,
-	     "No gpio-controller nodes found: cannot derive Arduino pins from connector definition");
+BUILD_ASSERT(
+	ARRAY_SIZE(gpio_ports) > 0,
+	"No gpio-controller nodes found: cannot derive Arduino pins from connector definition");
 #endif // digital_pin_gpios
 
 #ifdef CONFIG_PWM
 
 constexpr struct pwm_dt_spec arduino_pwm[] = {
-	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwms, PWM_DT_SPEC)};
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), pwms)
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwms, PWM_DT_SPEC)
+#elif defined(ZARD_PWM_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_PWM_CONNECTOR), pwm_map, PWM_CONN_CHANNEL_DT)
+#endif
+};
 
 /* pwm-pins node provides a mapping digital pin numbers to pwm channels */
 constexpr pin_size_t arduino_pwm_pins[] = {
-	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwm_pin_gpios, PWM_PINS)};
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), pwm_pin_gpios)
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), digital_pin_gpios)
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwm_pin_gpios, PWM_PINS)
+#else
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), pwm_pin_gpios, PWM_PINS_GLOBAL)
+#endif
+#elif defined(ZARD_PWM_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_PWM_CONNECTOR), pwm_map, PWM_CONN_PINNUM)
+#endif
+};
+
+BUILD_ASSERT(ARRAY_SIZE(arduino_pwm) == ARRAY_SIZE(arduino_pwm_pins));
 
 #endif
 
 #ifdef CONFIG_ADC
 
 constexpr struct adc_dt_spec arduino_adc[] = {
-	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_DT_SPEC)};
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), io_channels)
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, ADC_DT_SPEC)
+#elif defined(ZARD_ADC_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_ADC_CONNECTOR), io_channel_map, ADC_CONN_CHANNEL_DT)
+#endif
+};
 
-/* io-channel-pins node provides a mapping digital pin numbers to adc channels */
+/* adc-pin-gpios provides a mapping digital pin numbers to adc channels */
 constexpr pin_size_t arduino_analog_pins[] = {
-	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS)};
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), adc_pin_gpios)
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), digital_pin_gpios)
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS)
+#else
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ADC_PINS_GLOBAL)
+#endif
+#elif defined(ZARD_ADC_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_ADC_CONNECTOR), io_channel_map, ADC_CONN_PINNUM)
+#endif
+};
+
+BUILD_ASSERT(ARRAY_SIZE(arduino_adc) == ARRAY_SIZE(arduino_analog_pins));
 
 #endif
 
@@ -187,7 +246,7 @@ inline int global_gpio_pin_configure(pin_size_t pinNumber, int flags) {
 
 	if (port) {
 		return gpio_pin_configure(port, local_gpio_pin(pinNumber),
-					  flags | local_gpio_flags(pinNumber));
+								  flags | local_gpio_flags(pinNumber));
 	} else {
 		return -1;
 	}
