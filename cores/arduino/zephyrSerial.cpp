@@ -68,9 +68,7 @@ void arduino::ZephyrSerial::IrqHandler() {
 	int length;
 	int ret = 0;
 
-	if (!uart_irq_update(uart)) {
-		return;
-	}
+	(void)uart_irq_update(uart);
 
 	if (ring_buf_size_get(&tx.ringbuf) == 0) {
 		uart_irq_tx_disable(uart);
