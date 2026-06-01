@@ -144,6 +144,10 @@ int digitalPinToPinIndex(pin_size_t pinNumber);
 void analogWriteResolution(int bits);
 #endif
 
+#if defined(__arm__)
+#define F_CPU (SystemCoreClock)
+#endif
+
 #include <variant.h>
 
 #if !defined(LED_BUILTIN) && defined(ZARD_LED_BUILTIN)
