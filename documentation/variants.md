@@ -46,6 +46,8 @@ It is possible to apply the overlay outside of the `variants` folder. In that ca
 
 The Arduino API requires pin mapping definitions to use Arduino-style pin numbers
 (pin numbers printed on the board, not GPIO numbers).
+When `digital-pin-gpios` is not defined and pin mapping is derived from connector `gpio-map`,
+Arduino API `Pin number` uses global GPIO numbering (see `configuration-reference.md`, Section D).
 The pin-mapping node is under the `zephyr,user` node of DTS.
 `digital-pin-gpios` defines digital input/output pins that is D0, D1, ..,
 `adc-pin-gpios` defines analog input pins that is A0, A1, ... .
@@ -59,7 +61,7 @@ You can also use the Arduino header node definition here.
 When an Arduino header exists in a board's in-tree DTS file it can easily be
 used to create the necessary overlay file. Assign the relevant mapping using the
 Arduino header label (usually either `&arduino_header` or `&arduino_nano_header`
-and the `gpio_map` number. The second number is used to add GPIO flags and may
+and the connector pin identifier from `gpio-map`. The second number is used to add GPIO flags and may
 safely be left as zero.
 
 For example, creating an overlay file for the Nordic nRF52840 Development Kit
@@ -91,8 +93,8 @@ It instantiate the `Serial` with the UART device that contained in the node.
 Also instantiate as `Serial1`, `Serial2`, .. `SerialN` with the devices that is
 after the second in the case of the array contains plural devices.
 
-If the `serials` node is not defined, Use the node labeled `arduino-serial`.
-Boards with Arduino-shield style connectors usually label `arduino-serial` for
+If the `serials` node is not defined, use the node labeled `arduino_serial`.
+Boards with Arduino-shield style connectors usually label `arduino_serial` for
 UART port exposed in header or frequently used UART port.
 
 If even 'arduino_serial' does not define, it uses the stub implementation
@@ -115,8 +117,8 @@ It instantiate the `Wire` with the i2c device that contained in the node.
 Also instantiate as `Wire1`, `Wire2`, .. `WireN` with the devices
 that is after the second in the case of the array contains plural devices.
 
-If the `i2cs` node is not defined, Use the node labeled `arduino-i2c`.
-Boards with Arduino-shield style connectors usually label `arduino-i2c`
+If the `i2cs` node is not defined, use the node labeled `arduino_i2c`.
+Boards with Arduino-shield style connectors usually label `arduino_i2c`
 to i2c exposed in the connector.
 
 The following example instantiates `Wire` and `Wire2` with each `i2c0` and `i2c1`.
@@ -145,6 +147,12 @@ to define `LED_BUILTIN`.
 
 The `LED_BUILTIN` does not define here if it has not found both nodes or
 defined `LED_BUILTIN` already.
+
+When `/zephyr,user/digital-pin-gpios` is absent, the `led0` alias sets
+`LED_BUILTIN` to the **global GPIO-based Pin number**, which matches the
+numeric pin interpretation in that mode.
+See `configuration-reference.md`, Section B (`Alias: led0`) and
+Section D (`Pin mapping` / `Global GPIO numbering`).
 
 For example, in the case of the 13th digital pins connected to the onboard LED,
 define `builtin-led-gpios` as follows.
