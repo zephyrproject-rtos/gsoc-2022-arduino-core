@@ -58,6 +58,8 @@ void arduino::ZephyrSerial::begin(unsigned long baud, uint16_t conf) {
 		.flow_ctrl = UART_CFG_FLOW_CTRL_NONE,
 	};
 
+	uart->ops.init(uart);
+
 	uart_configure(uart, &config);
 	uart_irq_callback_user_data_set(uart, arduino::ZephyrSerial::IrqDispatch, this);
 	uart_irq_rx_enable(uart);
