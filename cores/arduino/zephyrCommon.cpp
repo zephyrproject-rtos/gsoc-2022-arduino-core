@@ -12,8 +12,11 @@ namespace zephyr {
 namespace arduino {
 
 // create an array of arduino_pins with functions to reinitialize pins if needed
-static const struct device *pinmux_array[DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios)] = {
-	nullptr};
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), digital_pin_gpios)
+const struct device *pinmux_array[DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios)] = {nullptr};
+#else
+const struct device *pinmux_array[end_accum(ARRAY_SIZE(gpio_ports))] = {nullptr};
+#endif
 
 void _reinit_peripheral_if_needed(pin_size_t pin, const struct device *dev) {
 	if (pinmux_array[pin] != dev) {

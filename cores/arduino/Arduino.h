@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2022 Dhruva Gole
+ * Copyright (c) 2026 TOKITA Hiroshi
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,6 +15,8 @@
 #include <zephyr/drivers/adc.h>
 #include <zephyr/drivers/dac.h>
 #include <zephyr/drivers/i2c.h>
+
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), digital_pin_gpios)
 
 #if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
 /* Note: DT_REG_ADDR needs an expanded argument or it will not work properly */
@@ -83,15 +86,33 @@
 
 #define DN_ENUMS(n, p, i) D##i = i
 
+#else
+
+#include "connectors/connector.h"
+
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), builtin_led_gpios) &&                                   \
+	(DT_PROP_LEN(DT_PATH(zephyr_user), builtin_led_gpios) > 0)
+#define ZARD_LED_BUILTIN                                                                           \
+	ZARD_GLOBAL_GPIO_OFFSET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0)) +       \
+		DT_PHA_BY_IDX(DT_PATH(zephyr_user), builtin_led_gpios, 0, pin)
+#elif DT_NODE_EXISTS(DT_ALIAS(led0))
+#define ZARD_LED_BUILTIN                                                                           \
+	ZARD_GLOBAL_GPIO_OFFSET(DT_PHANDLE_BY_IDX(DT_ALIAS(led0), gpios, 0)) +                         \
+		DT_PHA_BY_IDX(DT_ALIAS(led0), gpios, 0, pin)
+#endif
+#endif // digital_pin_gpios
+
 /*
  * expand as
  * enum digitalPins { D0, D1, ... LED... NUM_OF_DIGITAL_PINS };
  */
 enum digitalPins {
-#if DT_PROP_LEN(DT_PATH(zephyr_user), digital_pin_gpios) > 0
+#if DT_PROP_LEN_OR(DT_PATH(zephyr_user), digital_pin_gpios, 0) > 0
 	DT_FOREACH_PROP_ELEM_SEP(DT_PATH(zephyr_user), digital_pin_gpios, DN_ENUMS, (, )),
-#endif
 	NUM_OF_DIGITAL_PINS
+#elif defined(ZARD_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_CONNECTOR), gpio_map, ZARD_CONN_DN_ENUMS)
+#endif
 };
 
 #ifdef CONFIG_ADC
@@ -101,7 +122,15 @@ enum digitalPins {
 									  DT_PHA_BY_IDX(DT_PATH(zephyr_user), p, i, pin)),
 
 enum analogPins {
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), adc_pin_gpios)
+#if DT_NODE_HAS_PROP(DT_PATH(zephyr_user), digital_pin_gpios)
 	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, AN_ENUMS)
+#else
+	DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), adc_pin_gpios, ZARD_AN_ENUM_GLOBAL)
+#endif
+#elif defined(ZARD_CONNECTOR)
+	DT_FOREACH_MAP_ENTRY(DT_NODELABEL(ZARD_CONNECTOR), gpio_map, ZARD_CONN_AN_ENUMS)
+#endif
 };
 
 // We provide analogReadResolution APIs
