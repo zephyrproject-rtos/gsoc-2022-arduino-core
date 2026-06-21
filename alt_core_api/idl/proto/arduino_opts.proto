@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2026 TOKITA Hiroshi
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package arduino;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+	string cpp_type = 50001;
+	string field_cpp_name = 50002;
+}
+
+extend google.protobuf.MethodOptions {
+	string cpp_name = 50101;
+	string cpp_return = 50102;
+	string method_visibility = 50114;
+}
+
+extend google.protobuf.ServiceOptions {
+	string interface_class_name = 50211;
+	repeated string base_services = 50216;
+	string interface_header_name = 50217;
+	repeated string extra_includes = 50218;
+}

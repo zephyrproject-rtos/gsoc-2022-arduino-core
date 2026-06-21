@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+#
+# Copyright (c) 2026 TOKITA Hiroshi
+#
+# SPDX-License-Identifier: Apache-2.0
+
+import sys
+import pathlib
+
+SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPT_DIR))
+
+from protoc_gen_arduinoif.core import main
+
+if __name__ == "__main__":
+    raise SystemExit(main())

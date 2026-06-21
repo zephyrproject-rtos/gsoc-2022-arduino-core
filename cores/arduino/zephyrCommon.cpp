@@ -404,7 +404,8 @@ void tone(pin_size_t pinNumber, unsigned int frequency, unsigned long duration) 
 
 	key = k_spin_lock(&pt->lock);
 	pt->infinity = (duration == 0);
-	pt->count = min(toggles_count, UINT32_MAX);
+	pt->count = min((uint64_t)duration * frequency * TOGGLES_PER_CYCLE / MSEC_PER_SEC,
+			(uint64_t)UINT32_MAX);
 	pt->pin = pinNumber;
 	k_spin_unlock(&pt->lock, key);
 

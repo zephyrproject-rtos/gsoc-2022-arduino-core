@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) 2026 TOKITA Hiroshi
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+syntax = "proto3";
+
+package arduino;
+
+import "arduino_opts.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+message PrintWriteByteRequest {
+	uint32 value = 1 [ (arduino.cpp_type) = "uint8_t", (arduino.field_cpp_name) = "arg0" ];
+}
+
+message PrintWriteBufferRequest {
+	bytes buffer = 1 [ (arduino.cpp_type) = "const uint8_t *", (arduino.field_cpp_name) = "arg0" ];
+	uint32 size = 2 [ (arduino.cpp_type) = "size_t", (arduino.field_cpp_name) = "arg1" ];
+}
+
+service Print {
+	rpc WriteByte(PrintWriteByteRequest) returns (google.protobuf.UInt32Value) {
+		option (arduino.cpp_name) = "write";
+		option (arduino.cpp_return) = "size_t";
+	}
+	rpc WriteBuffer(PrintWriteBufferRequest) returns (google.protobuf.UInt32Value) {
+		option (arduino.cpp_name) = "write";
+		option (arduino.cpp_return) = "size_t";
+	}
+	rpc AvailableForWrite(google.protobuf.Empty) returns (google.protobuf.Int32Value) {
+		option (arduino.cpp_name) = "availableForWrite";
+		option (arduino.cpp_return) = "int";
+	}
+	rpc Flush(google.protobuf.Empty) returns (google.protobuf.Empty) {
+		option (arduino.cpp_name) = "flush";
+	}
+}
