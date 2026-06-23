@@ -1,0 +1,5 @@
+{
+  "name": "Arduino Zephyr Boards (BETA)",
+  "architecture": "zephyr_main",
+  "category": "Arduino"
+}

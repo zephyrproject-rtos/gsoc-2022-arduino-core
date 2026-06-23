@@ -1,0 +1,569 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&zephyr_udc0 {
+	board_cdc_acm_uart: board_cdc_acm_uart {
+		compatible = "zephyr,cdc-acm-uart";
+	status = "okay";
+	};
+};
+
+&usart1 {
+	status = "okay";
+};
+
+&usart2 {
+	status = "okay";
+	pinctrl-0 = <&usart2_tx_pd5 &usart2_rx_pd6>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+};
+
+&uart4 {
+	status = "okay";
+	pinctrl-0 = <&uart4_tx_ph13 &uart4_rx_pi9>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+};
+
+&usart6 {
+	status = "okay";
+};
+
+&rtc {
+    status = "okay";
+
+	clocks = <&rcc STM32_CLOCK(APB4, 16U)>,
+             <&rcc STM32_SRC_LSE RTC_SEL(1)>;
+};
+
+&i2c4 {
+	status = "okay";
+	gc2145: gc2145@3c {
+		compatible = "galaxycore,gc2145";
+		reg = <0x3c>;
+		reset-gpios = <&gpiod 4 GPIO_ACTIVE_LOW>;
+		pwdn-gpios = <&gpioa 1 GPIO_ACTIVE_LOW>;
+
+		port {
+			gc2145_ep_out: endpoint {
+				remote-endpoint-label = "dcmi_ep_in";
+			};
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-0 = <&i2c1_scl_pb8 &i2c1_sda_pb9>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&i2c2 {
+	status = "okay";
+	pinctrl-0 = <&i2c2_scl_ph4 &i2c2_sda_pb11>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&timers1 {
+	status = "okay";
+	st,prescaler = <0>;
+
+	pwm1: pwm {
+		status = "okay";
+		/* Temporarily removed SPI1 pins */
+		/* pinctrl-0 = <&tim1_ch3_pj9 &tim1_ch1_pk1 &tim1_ch2_pj11>; */
+		pinctrl-0 = <&tim1_ch3_pj9 &tim1_ch1_pk1>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers2 {
+	status = "okay";
+	st,prescaler = <100>;
+
+	pwm2: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim2_ch4_pa3  &tim2_ch3_pa2>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers3 {
+	status = "okay";
+	st,prescaler = <100>;
+
+	pwm3: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim3_ch2_pa7 &tim3_ch1_pb4>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers4 {
+	status = "okay";
+	st,prescaler = <100>;
+
+	pwm4: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim4_ch2_pd13 &tim4_ch3_pb8 &tim4_ch4_pb9>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers8 {
+	status = "okay";
+	st,prescaler = <100>;
+
+	pwm8: pwm {
+		status = "okay";
+		/* Temporarily removed SPI1 pins */
+		/* pinctrl-0 = <&tim8_ch1_pj8 &tim8_ch2_pj10>; */
+		pinctrl-0 = <&tim8_ch1_pj8>;
+		pinctrl-names = "default";
+	};
+};
+
+/* Temporarily removed SPI1 pins */
+/* &timers12 { */
+/*	status = "okay"; */
+/* 	st,prescaler = <100>; */
+/*	pwm12: pwm { */
+/* 		status = "okay"; */
+/* 		pinctrl-0 = <&tim12_ch1_ph6>; */
+/* 		pinctrl-names = "default"; */
+/* 	}; */
+/*}; */
+
+&pwm1 {
+	/* Use the pwmclock node to start the clock generation */
+	pwmclock: pwmclock {
+		status = "okay";
+		compatible = "pwm-clock";
+		clock-frequency = <0>;
+		#clock-cells = <1>;
+		pwms = <&pwm1 3 PWM_HZ(12000000) PWM_POLARITY_NORMAL>;
+	};
+};
+
+&dmamux1 {
+	status = "okay";
+};
+
+&dma1 {
+	status = "okay";
+};
+
+&fdcan2 {
+	status = "okay";
+	clocks = <&rcc STM32_CLOCK(APB1_2, 8)>,
+		 <&rcc STM32_SRC_HSE FDCAN_SEL(0)>;
+};
+
+&dcmi {
+	status = "okay";
+	/* ext-sdram = <&sdram1>; */
+	pinctrl-0 = <&dcmi_hsync_ph8 &dcmi_pixclk_pa6 &dcmi_vsync_pi5
+				&dcmi_d0_ph9 &dcmi_d1_ph10 &dcmi_d2_ph11 &dcmi_d3_pg11
+				&dcmi_d4_ph14 &dcmi_d5_pi4 &dcmi_d6_pi6 &dcmi_d7_pi7>;
+	pinctrl-names = "default";
+	dmas = <&dma1 0 75 (STM32_DMA_PERIPH_TO_MEMORY | STM32_DMA_PERIPH_NO_INC |
+			STM32_DMA_MEM_INC | STM32_DMA_PERIPH_32BITS | STM32_DMA_MEM_32BITS |
+			STM32_DMA_PRIORITY_HIGH) STM32_DMA_FIFO_1_4>;
+
+	port {
+		dcmi_ep_in: endpoint {
+			remote-endpoint-label = "gc2145_ep_out";
+			bus-width = <8>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			pclk-sample = <0>;
+		};
+	};
+};
+
+&spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi1_sck_pb3
+		     &spi1_miso_pg9 &spi1_mosi_pd7>;
+	pinctrl-names = "default";
+};
+
+&spi5 {
+	status = "okay";
+	pinctrl-0 = <&spi5_sck_ph6
+		     &spi5_miso_pj11 &spi5_mosi_pj10>;
+	pinctrl-names = "default";
+};
+
+&adc1 {
+	pinctrl-0 = <&adc1_inp4_pc4
+		&adc1_inp8_pc5
+		&adc1_inp9_pb0
+		&adc1_inp5_pb1
+		&adc1_inp13_pc3
+		&adc1_inp12_pc2
+		&adc1_inp10_pc0
+		&adc1_inp16_pa0
+		&adc1_inp18_pa4
+		&adc1_inp19_pa5
+		&adc1_inp0_pa0_c
+		&adc1_inp1_pa1_c>;
+	pinctrl-names = "default";
+	st,adc-clock-source = "SYNC";
+	st,adc-prescaler = <4>;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@4 {
+		reg = <4>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@8 {
+		reg = <8>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@9 {
+		reg = <9>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@5 {
+		reg = <5>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@d {
+		reg = <13>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@c {
+		reg = <12>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@a {
+		reg = <10>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@10 {
+		reg = <16>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@12 {
+		reg = <18>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@13 {
+		reg = <19>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	/* PA0_C and PA1_C */
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+};
+
+&adc3 {
+	pinctrl-0 = <&adc3_inp0_pc2_c
+		&adc3_inp1_pc3_c>;
+	pinctrl-names = "default";
+	st,adc-clock-source = "SYNC";
+	st,adc-prescaler = <4>;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_MAX>;
+		zephyr,resolution = <16>;
+	};
+};
+
+/{
+	chosen {
+		zephyr,camera = &dcmi;
+		zephyr,log-uart = &log_uarts;
+		/* zephyr,console = &board_cdc_acm_uart; */
+	};
+
+	log_uarts: log_uarts {
+		compatible = "zephyr,log-uart";
+		uarts = <&usart1 &board_cdc_acm_uart>;
+	};
+
+	/* used to overcome problems with _C analog pins */
+	gpioz: gpio@deadbeef {
+		compatible = "vnd,gpio";
+		gpio-controller;
+		reg = <0xdeadbeef 0x1000>;
+		#gpio-cells = <0x2>;
+		status = "okay";
+	};
+};
+
+
+/delete-node/ &slot0_partition;
+
+&flash0 {
+	partitions {
+		slot0_partition: partition@40000 {
+			label = "image-0";
+			reg = <0x040000 0xa0000>;
+		};
+
+		user_sketch: partition@e0000 {
+			reg = <0x0E0000 0x20000>;
+		};
+	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&arduino_header 6 0>,
+						<&arduino_header 7 0>,
+						<&arduino_header 8 0>,
+						<&arduino_header 9 0>,
+						<&arduino_header 10 0>,
+						<&arduino_header 11 0>,
+						<&arduino_header 12 0>,
+						<&arduino_header 13 0>,
+						<&arduino_header 14 0>,
+						<&arduino_header 15 0>,
+						<&arduino_header 16 0>,
+						<&arduino_header 17 0>,
+						<&arduino_header 18 0>,
+						<&arduino_header 19 0>,
+						<&gpiog 14 0>,				/* TX1 - 14 */
+						<&gpioc 7 0>,
+						<&gpioh 13 0>,
+						<&gpioi 9 0>,
+						<&gpiod 5 0>,
+						<&gpiod 6 0>,
+						<&gpiob 11 0>,
+						<&gpioh 4 0>,
+
+						<&gpioj 12 0>,				/* Big header - 22 */
+						<&gpiog 13 0>,
+						<&gpiog 12 0>,
+						<&gpioj 0 0>,
+						<&gpioj 14 0>,
+						<&gpioj 1 0>,
+						<&gpioj 15 0>,
+						<&gpioj 2 0>,
+						<&gpiok 3 0>,
+						<&gpioj 3 0>,
+						<&gpiok 4 0>,
+						<&gpioj 4 0>,
+						<&gpiok 5 0>,
+						<&gpioj 5 0>,
+						<&gpiok 6 0>,
+						<&gpioj 6 0>,
+						<&gpioj 7 0>,
+						<&gpioi 14 0>,
+						<&gpioe 6 0>,
+						<&gpiok 7 0>,
+						<&gpioi 15 0>,
+						<&gpioi 10 0>,
+						<&gpiog 10 0>,
+						<&gpioi 13 0>,
+						<&gpioh 15 0>,
+						<&gpiob 2 0>,
+						<&gpiok 0 0>,
+						<&gpioe 4 0>,
+						<&gpioi 11 0>,
+						<&gpioe 5 0>,
+						<&gpiok 2 0>,
+						<&gpiog 7 0>,
+
+						<&gpioi 5 0>,		/* CAM header - 54 */
+						<&gpioh 8 0>,
+						<&gpioa 6 0>,
+						<&gpioj 9 0>,
+						<&gpioi 7 0>,
+						<&gpioi 6 0>,
+						<&gpioi 4 0>,
+						<&gpioh 14 0>,
+						<&gpiog 11 0>,
+						<&gpioh 11 0>,
+						<&gpioh 10 0>,
+						<&gpioh 9 0>,
+						<&gpioa 1 0>,
+						<&gpiod 4 0>,
+
+						<&gpioc 6 0>,		/* DSI header - 68 */
+						<&gpioi 0 0>,
+						<&gpioi 1 0>,
+						<&gpioi 2 0>,
+						<&gpioi 3 0>,
+						<&gpioc 1 0>,
+						<&gpiob 12 0>,
+						<&gpiod 3 0>,
+
+						<&gpioc 4 0>,			/* A0 */
+						<&gpioc 5 0>,
+						<&gpiob 0 0>,
+						<&gpiob 1 0>,
+						<&gpioc 3 0>,
+						<&gpioc 2 0>,
+						<&gpioc 0 0>,
+						<&gpioa 0 0>,			/* A7 */
+						<&gpioa 4 0>,			/* A12 */
+						<&gpioa 5 0>,			/* A13 */
+
+						<&gpioi 12 GPIO_ACTIVE_LOW>,
+						<&gpioj 13 GPIO_ACTIVE_LOW>,
+						<&gpioe 3 GPIO_ACTIVE_LOW>,
+
+						<&gpiog 9 0>,			/* SPI1 MISO */
+						<&gpiod 7 0>,			/* SPI1 MOSI */
+						<&gpiob 3 0>,			/* SPI1 SCK */
+
+						<&gpioa 15 0>,			/* USB HOST ENABLE */
+
+						<&gpiob 5 0>,			/* CAN RX */
+						<&gpiob 13 0>,			/* CAN TX */
+
+						<&gpiob 6 0>,			/* SDA1 */
+						<&gpioh 12 0>,
+
+						<&gpioz 0 0>,			/* analog only A8 */
+						<&gpioz 1 0>,			/* analog only A9 */
+						<&gpioz 2 0>,			/* analog only A10 */
+						<&gpioz 3 0>;			/* analog only A11 */
+
+		builtin-led-gpios = <&gpioj 13 GPIO_ACTIVE_LOW>,
+                        <&gpioi 12 GPIO_ACTIVE_LOW>,
+                        <&gpioj 13 GPIO_ACTIVE_LOW>,
+                        <&gpioe 3 GPIO_ACTIVE_LOW>;
+
+		pwm-pin-gpios =	    <&gpioj 9 0>,
+					<&arduino_header 8 0>,
+				    <&arduino_header 9 0>,
+				    <&arduino_header 10 0>,
+				    <&arduino_header 11 0>,
+				    <&arduino_header 12 0>,
+				    <&arduino_header 13 0>,
+				    <&arduino_header 14 0>,
+				    <&arduino_header 15 0>,
+				    <&arduino_header 16 0>,
+				    <&arduino_header 17 0>,
+				    <&arduino_header 18 0>,
+				    <&arduino_header 19 0>;
+
+		adc-pin-gpios =	<&gpioc 4 0>,
+					<&gpioc 5 0>,
+					<&gpiob 0 0>,
+					<&gpiob 1 0>,
+					<&gpioc 3 0>,
+					<&gpioc 2 0>,
+					<&gpioc 0 0>,			/* A6 */
+					<&gpioa 0 0>,
+					<&gpioz 0 0>,			/* analog only */
+					<&gpioz 1 0>,			/* analog only */
+					<&gpioz 2 0>,			/* analog only */
+					<&gpioz 3 0>,			/* analog only */
+					<&gpioa 4 0>,
+					<&gpioa 5 0>;
+
+		cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
+		serials = <&usart1>, <&usart2>, <&uart4>, <&usart6>; /* 'Serial1' onwards */
+		cans = <&fdcan2>;
+		i2cs = <&i2c2>, <&i2c4>, <&i2c1>;
+		spis = <&spi1>, <&spi5>;
+		pwms = <&pwm1 3 PWM_HZ(12000000) PWM_POLARITY_NORMAL>,
+			   <&pwm2 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm2 3 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm8 1 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm3 2 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm4 2 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm3 1 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm4 3 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+			   <&pwm4 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,
+				/* Temporarily removed SPI1 pins */
+			   /* <&pwm1 1 PWM_HZ(5000) PWM_POLARITY_NORMAL>, */
+			   /* <&pwm8 2 PWM_HZ(500) PWM_POLARITY_NORMAL>, */
+			   /* <&pwm1 2 PWM_HZ(5000) PWM_POLARITY_NORMAL>, */
+			   /* <&pwm12 1 PWM_HZ(500) PWM_POLARITY_NORMAL>; */
+   			   <&pwm1 1 PWM_HZ(5000) PWM_POLARITY_NORMAL>;
+
+		io-channels =	<&adc1 4>,
+				<&adc1 8>,
+				<&adc1 9>,
+				<&adc1 5>,
+				<&adc1 13>,
+				<&adc1 12>,
+				<&adc1 10>,
+				<&adc1 16>,
+				<&adc3 0>,
+				<&adc3 1>,
+				<&adc1 1>,
+				<&adc1 0>,
+				<&adc1 18>,
+				<&adc1 19>;
+
+		dac = <&dac1>;
+		dac-channels = <1>, <2>;
+		dac-resolution = <12>;
+	};
+};
+
+/* Include common flash filesystem configuration */
+qspi_flash: &n25q128a1 {};
+#include "../common/arduino_flash_fs.dtsi"

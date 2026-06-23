@@ -1,0 +1,30 @@
+# Copyright (c) Arduino s.r.l. and/or its affiliated companies
+# SPDX-License-Identifier: Apache-2.0
+
+# This file is used by scancode-toolkit to enforce the licenses that have been
+# validated to be compliant with Arduino open source policies.
+
+license_policies:
+  - license_key: apache-2.0
+    label: Permissive
+    compliance_alert: ''
+
+  - license_key: lgpl-2.1-plus
+    label: Weak Copyleft
+    compliance_alert: ''
+
+  - license_key: lgpl-3.0-plus
+    label: Weak Copyleft
+    compliance_alert: ''
+
+  - license_key: mit
+    label: Permissive
+    compliance_alert: ''
+
+  - license_key: mpl-2.0
+    label: Weak Copyleft
+    compliance_alert: ''
+
+  - license_key: pbl-1.0
+    label: Permissive
+    compliance_alert: ''

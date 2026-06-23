@@ -1,1 +1,11 @@
-rust/Cargo.lock
+/build/
+/distrib/
+/firmwares/*
+/rust/Cargo.lock
+/venv/
+llext-edk/
+cflags.txt
+cxxflags.txt
+includes.txt
+syms-dynamic.ld
+syms-static.ld

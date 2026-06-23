@@ -1,0 +1,374 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&zephyr_udc0 {
+	board_cdc_acm_uart: board_cdc_acm_uart {
+		compatible = "zephyr,cdc-acm-uart";
+	status = "okay";
+	};
+};
+
+/{
+	chosen {
+		zephyr,log-uart = &log_uarts;
+	};
+
+	log_uarts: log_uarts {
+		compatible = "zephyr,log-uart";
+		uarts = <&uart9 &board_cdc_acm_uart>;
+	};
+};
+
+&flash0 {
+	partitions {
+		mcuboot: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 DT_SIZE_K(64)>;
+		};
+		code_partition: partition@10000 {
+			label = "image-0";
+			reg = <0x00010000 (DT_SIZE_M(1) - DT_SIZE_K(64))>;
+		};
+		user_sketch: partition@100000 {
+			label = "user_sketch";
+			reg = <0x00100000 (DT_SIZE_M(1))>;
+		};
+	};
+};
+
+&flash1 {
+    // Conflicts with "storage" partition
+	/delete-node/ partitions;
+};
+
+&sci7 {
+	pinctrl-0 = <&sci7_default>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	uart7: uart {
+		status = "okay";
+		current-speed = <115200>;
+	};
+};
+
+&sci6 {
+	status = "okay";
+	pinctrl-0 = <&sci6_default>;
+	pinctrl-names = "default";
+
+	uart6: uart {
+		status = "okay";
+		current-speed = <115200>;
+	};
+};
+
+&sci5 {
+	status = "okay";
+	pinctrl-0 = <&sci5_default>;
+	pinctrl-names = "default";
+
+	uart5: uart {
+		status = "okay";
+		current-speed = <115200>;
+	};
+};
+
+&pinctrl {
+	iic0_default: iic0_default {
+		group1 {
+			/* SCL0 SDA0 */
+			psels = <RA_PSEL(RA_PSEL_I2C, 4, 8)>,
+			<RA_PSEL(RA_PSEL_I2C, 4, 7)>;
+			drive-strength = "medium";
+		};
+	};
+};
+
+&iic0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	interrupts = <87 1>, <88 1>, <89 1>, <90 1>;
+	interrupt-names = "rxi", "txi", "tei", "eri";
+	clock-frequency = <DT_FREQ_M(1)>;
+	pinctrl-0 = <&iic0_default>;
+	pinctrl-names = "default";
+};
+
+&canfdclk {
+	status = "okay";
+};
+
+&canfd_global {
+	status = "okay";
+	canfd0 {
+		status = "okay";
+	};
+};
+
+
+&pwm3 {
+	status = "okay";
+	pinctrl-0 = <&pwm3_default>;
+	pinctrl-names = "default";
+	interrupts = <65 1>, <66 1>;
+	interrupt-names = "gtioca", "overflow";
+};
+
+&pwm7 {
+	status = "okay";
+	pinctrl-0 = <&pwm7_default>;
+	pinctrl-names = "default";
+	interrupts = <67 1>, <68 1>;
+	interrupt-names = "gtioca", "overflow";
+	/* GPT7 is a 16-bit timer on RA6M5 (BSP_FEATURE_GPT_32BIT_CHANNEL_MASK=0x0F).
+	 * DIV_4 brings PCLKD (120MHz) down to 30MHz, giving period_cycles ~61224
+	 * at 490Hz which fits in 16-bit (65535). */
+	divider = <RA_PWM_SOURCE_DIV_4>;
+};
+
+&pwm8 {
+	status = "okay";
+	pinctrl-0 = <&pwm8_default>;
+	pinctrl-names = "default";
+	interrupts = <69 1>, <70 1>;
+	interrupt-names = "gtioca", "overflow";
+	/* GPT8 is a 16-bit timer on RA6M5 (BSP_FEATURE_GPT_32BIT_CHANNEL_MASK=0x0F).
+	 * DIV_4 brings PCLKD (120MHz) down to 30MHz, giving period_cycles ~61224
+	 * at 490Hz which fits in 16-bit (65535). */
+	divider = <RA_PWM_SOURCE_DIV_4>;
+};
+
+&adc0 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	a7: channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a4: channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a3: channel@2 {
+		reg = <2>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a2: channel@4 {
+		reg = <4>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a1: channel@5 {
+		reg = <5>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a0: channel@6 {
+		reg = <6>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a6: channel@c {
+		reg = <12>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+
+	a5: channel@d {
+		reg = <13>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&ioport1 5 GPIO_ACTIVE_HIGH>,
+				    <&ioport1 6 GPIO_ACTIVE_HIGH>,
+				    <&ioport1 11 GPIO_ACTIVE_HIGH>,
+				    <&ioport3 3 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 1 GPIO_ACTIVE_HIGH>,
+				    <&ioport2 10 GPIO_ACTIVE_HIGH>,
+				    <&ioport6 1 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 2 GPIO_ACTIVE_HIGH>,
+				    <&ioport9 0 GPIO_ACTIVE_HIGH>,
+				    <&ioport2 4 GPIO_ACTIVE_HIGH>,
+				    <&ioport3 15 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 7 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 8 GPIO_ACTIVE_HIGH>,
+				    <&ioport1 10 GPIO_ACTIVE_HIGH>,
+				    <&ioport6 2 GPIO_ACTIVE_HIGH>,
+
+				    <&ioport0 6 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 5 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 4 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 2 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 1 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 15 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 14 GPIO_ACTIVE_HIGH>,
+				    <&ioport0 0 GPIO_ACTIVE_HIGH>,
+
+				    <&ioport6 5 GPIO_ACTIVE_HIGH>,
+				    <&ioport6 8 GPIO_ACTIVE_HIGH>,
+				    <&ioport3 11 GPIO_ACTIVE_HIGH>,
+				    <&ioport6 0 GPIO_ACTIVE_HIGH>,
+
+				    <&ioport0 9 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 9 GPIO_ACTIVE_HIGH>,
+				    <&ioport5 5 GPIO_ACTIVE_HIGH>,
+				    <&ioport7 6 GPIO_ACTIVE_HIGH>,
+				    <&ioport7 7 GPIO_ACTIVE_HIGH>,
+				    <&ioport7 8 GPIO_ACTIVE_HIGH>,
+				    <&ioport8 2 GPIO_ACTIVE_HIGH>,
+
+					<&ioport1 7 GPIO_ACTIVE_HIGH>,	// LEDR
+					<&ioport4 0 GPIO_ACTIVE_HIGH>,
+					<&ioport8 0 GPIO_ACTIVE_HIGH>,
+
+  					// I2C pins
+  					<&ioport5 11 GPIO_ACTIVE_HIGH>, /*   D37    |     SDA1     */
+  					<&ioport5 12 GPIO_ACTIVE_HIGH>, /*   D38    |     SCL1     */
+  					<&ioport3 2 GPIO_ACTIVE_HIGH>, /*   D39    |     SDA2    */
+  					<&ioport3 1 GPIO_ACTIVE_HIGH>, /*   D40    |     SCL2    */
+
+  					// CAN pins
+  					<&ioport2 2 GPIO_ACTIVE_HIGH>, /*   D41    |   CAN RX    */
+  					<&ioport2 3 GPIO_ACTIVE_HIGH>, /*   D42    |   CAN TX    */
+  					<&ioport6 10 GPIO_ACTIVE_HIGH>, /*   D43    |   CAN1 RX   */
+  					<&ioport6 9 GPIO_ACTIVE_HIGH>, /*   D44    |   CAN1 TX   */
+
+  					// SPI pins
+  					<&ioport1 0 GPIO_ACTIVE_HIGH>, /*   D45    |   MISO1  */
+  					<&ioport1 1 GPIO_ACTIVE_HIGH>, /*   D46    |   MOSI1  */
+  					<&ioport1 2 GPIO_ACTIVE_HIGH>, /*   D47    |   SCLK1  */
+  					<&ioport1 3 GPIO_ACTIVE_HIGH>, /*   D48    |   CS1    */
+
+  					// UART pins
+  					<&ioport6 13 GPIO_ACTIVE_HIGH>, /*   D49    |   TX2    */
+  					<&ioport6 14 GPIO_ACTIVE_HIGH>, /*   D50    |   RX2    */
+  					<&ioport6 11 GPIO_ACTIVE_HIGH>, /*   D51    |   RTS2   */
+  					<&ioport4 4 GPIO_ACTIVE_HIGH>, /*   D52    |   CTS2   */
+  					<&ioport5 6 GPIO_ACTIVE_HIGH>, /*   D53    |   TX3    */
+  					<&ioport3 4 GPIO_ACTIVE_HIGH>, /*   D54    |   RX3    */
+  					<&ioport5 3 GPIO_ACTIVE_HIGH>, /*   D55    |   RTS3   */
+  					<&ioport5 2 GPIO_ACTIVE_HIGH>, /*   D56    |   CTS3   */
+  					<&ioport8 5 GPIO_ACTIVE_HIGH>, /*   D57    |   TX4    */
+  					<&ioport5 13 GPIO_ACTIVE_HIGH>, /*   D58    |   RX4    */
+  					<&ioport5 8 GPIO_ACTIVE_HIGH>, /*   D59    |   RTS4   */
+  					<&ioport5 5 GPIO_ACTIVE_HIGH>, /*   D60    |   CTS4   */
+  					<&ioport6 3 GPIO_ACTIVE_HIGH>, /*   D61    |   RTS0   */
+  					<&ioport6 4 GPIO_ACTIVE_HIGH>, /*   D62    |   CTS0   */
+
+  					// SSI (Audio)
+  					<&ioport1 12 GPIO_ACTIVE_HIGH>, /*   D63    |   SSI CK    */
+  					<&ioport1 13 GPIO_ACTIVE_HIGH>, /*   D64    |   SSI WS    */
+  					<&ioport1 14 GPIO_ACTIVE_HIGH>, /*   D65    |   SSI SDI   */
+  					<&ioport1 15 GPIO_ACTIVE_HIGH>, /*   D66    |   SSI SDO   */
+
+  					// Generic GPIO pins
+  					<&ioport9 8 GPIO_ACTIVE_HIGH>, /*   D67    |          */
+  					<&ioport4 3 GPIO_ACTIVE_HIGH>, /*   D68    |          */
+  					<&ioport9 1 GPIO_ACTIVE_HIGH>, /*   D69    |          */
+  					<&ioport6 12 GPIO_ACTIVE_HIGH>, /*   D70    |          */
+  					<&ioport3 12 GPIO_ACTIVE_HIGH>, /*   D71    |          */
+  					<&ioport3 13 GPIO_ACTIVE_HIGH>, /*   D72    |          */
+  					<&ioport3 14 GPIO_ACTIVE_HIGH>, /*   D73    |          */
+  					<&ioporta 1 GPIO_ACTIVE_HIGH>, /*   D74    |          */
+  					<&ioporta 8 GPIO_ACTIVE_HIGH>, /*   D75    |          */
+  					<&ioporta 9 GPIO_ACTIVE_HIGH>, /*   D76    |          */
+  					<&ioporta 10 GPIO_ACTIVE_HIGH>, /*   D77    |          */
+  					<&ioport5 7 GPIO_ACTIVE_HIGH>, /*   D78    |          */
+  					<&ioportb 0 GPIO_ACTIVE_HIGH>, /*   D79    |          */
+  					<&ioport6 15 GPIO_ACTIVE_HIGH>, /*   D80    |          */
+  					<&ioport0 3 GPIO_ACTIVE_HIGH>, /*   D81    |          */
+  					<&ioport0 7 GPIO_ACTIVE_HIGH>, /*   D82    |          */
+  					<&ioport0 8 GPIO_ACTIVE_HIGH>, /*   D83    |          */
+
+  					// SDCARD
+  					<&ioport4 13 GPIO_ACTIVE_HIGH>, /*   D84    |   SDHI CLK  */
+  					<&ioport4 12 GPIO_ACTIVE_HIGH>, /*   D85    |   SDHI CMD  */
+  					<&ioport4 11 GPIO_ACTIVE_HIGH>, /*   D86    |   SDHI D0   */
+  					<&ioport4 10 GPIO_ACTIVE_HIGH>, /*   D87    |   SDHI D1   */
+  					<&ioport2 6 GPIO_ACTIVE_HIGH>, /*   D88    |   SDHI D2   */
+  					<&ioport2 5 GPIO_ACTIVE_HIGH>, /*   D89    |   SDHI D3   */
+  					<&ioport4 15 GPIO_ACTIVE_HIGH>, /*   D90    |   SDHI CD   */
+  					<&ioport4 14 GPIO_ACTIVE_HIGH>, /*   D91    |   SDHI WP   */
+
+					<&ioport0 10 GPIO_ACTIVE_HIGH>; /*  SE05X_EN |        */
+
+
+		builtin-led-gpios = <&ioport4 0 GPIO_ACTIVE_LOW>,
+                        <&ioport1 7 GPIO_ACTIVE_LOW>,
+                        <&ioport4 0 GPIO_ACTIVE_LOW>,
+                        <&ioport8 0 GPIO_ACTIVE_LOW>;
+
+		pwm-pin-gpios =	<&ioport1 5 0>,
+				    <&ioport1 6 0>,
+				    <&ioport1 11 0>,
+				    <&ioport3 3 0>;
+
+		cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
+		serials = <&uart9>, <&uart7>, <&uart6>, <&uart5>; /* 'Serial1' onwards */
+		i2cs = <&iic0>, <&iic1>, <&i2c3>;
+		spis = <&spi1>;
+		pwms = <&pwm1 0 PWM_HZ(490) PWM_POLARITY_NORMAL>,
+		       <&pwm8 1 PWM_HZ(490) PWM_POLARITY_NORMAL>,
+		       <&pwm3 0 PWM_HZ(490) PWM_POLARITY_NORMAL>,
+		       <&pwm7 1 PWM_HZ(490) PWM_POLARITY_NORMAL>;
+		cans = <&canfd0>;
+
+		io-channels =	<&adc0 6>,
+				<&adc0 5>,
+				<&adc0 4>,
+				<&adc0 2>,
+				<&adc0 1>,
+				<&adc0 13>,
+				<&adc0 12>,
+				<&adc0 0>;
+
+		adc-pin-gpios =	<&ioport0 6 0>,
+				    <&ioport0 5 0>,
+				    <&ioport0 4 0>,
+				    <&ioport0 2 0>,
+				    <&ioport0 1 0>,
+				    <&ioport0 15 0>,
+				    <&ioport0 14 0>,
+				    <&ioport0 0 0>;
+	};
+};
+
+/* Include common flash filesystem configuration */
+qspi_flash: &at25sf128a {};
+#include "../common/arduino_flash_fs.dtsi"

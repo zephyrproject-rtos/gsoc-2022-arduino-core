@@ -2,3 +2,4 @@
 
 add_subdirectory(Wire)
 add_subdirectory(SPI)
+add_subdirectory(CAN)

@@ -1,0 +1,379 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+#include <zephyr/dt-bindings/pwm/stm32_pwm.h>
+&i2c4 {
+	status = "okay";
+	pinctrl-0 = <&i2c4_scl_pd12 &i2c4_sda_pd13>;
+	pinctrl-1 = <&i2c4_scl_pf14 &i2c4_sda_pf15>;
+	pinctrl-names = "default", "sleep"; /* TODO: sleep is jmisc mux */
+	clock-frequency = <I2C_BITRATE_FAST>;
+
+/*
+	gc2145: gc2145@3c {
+		status = "okay";
+		compatible = "galaxycore,gc2145";
+		reg = <0x3c>;
+		reset-gpios = <&gpioa 10 GPIO_ACTIVE_LOW>;
+		pwdn-gpios = <&gpiod 2 GPIO_ACTIVE_LOW>;
+
+		port {
+			gc2145_ep_out: endpoint {
+				remote-endpoint = <&dcmi_ep_in>;
+			};
+		};
+	};
+*/
+};
+
+&i2c3 {
+	status = "okay";
+	pinctrl-0 = <&i2c3_scl_pc0 &i2c3_sda_pc1>;
+	pinctrl-names = "default"; 
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+/* clock from HSI48 */
+&mco1 {
+	status = "okay";
+	clocks = <&rcc STM32_SRC_HSI48 MCO1_SEL(8)>;
+	prescaler = <MCO1_PRE(MCO_PRE_DIV_4)>;
+	pinctrl-0 = <&rcc_mco_pa8>;
+	pinctrl-names = "default";
+};
+
+&backup_sram {
+	status = "okay";
+};
+
+/*
+&dcmi {
+	status = "okay";
+	pinctrl-0 = <&dcmi_hsync_pd8 &dcmi_pixclk_pd9 &dcmi_vsync_pi5
+				&dcmi_d0_pc6 &dcmi_d1_pc7 &dcmi_d2_pc8 &dcmi_d3_pc9
+				&dcmi_d4_pe4 &dcmi_d5_pi4 &dcmi_d6_pi6 &dcmi_d7_pi7>;
+	pinctrl-names = "default";
+	dmas = <&gpdma1 12 86 (STM32_DMA_PERIPH_TO_MEMORY | STM32_DMA_PERIPH_NO_INC |
+			STM32_DMA_MEM_INC | STM32_DMA_PERIPH_32BITS | STM32_DMA_MEM_32BITS |
+			STM32_DMA_PRIORITY_HIGH) STM32_DMA_FIFO_1_4>;
+
+	port {
+		dcmi_ep_in: endpoint {
+			remote-endpoint-label = "gc2145_ep_out";
+			bus-width = <8>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			pclk-sample = <0>;
+		};
+	};
+};
+*/
+
+/delete-node/ &slot0_partition;
+/delete-node/ &slot1_partition;
+/delete-node/ &scratch_partition;
+/delete-node/ &storage_partition;
+
+&flash0 {
+	partitions {
+		slot0_partition: partition@10000 {
+			label = "image-0";
+			reg = < 0x10000 DT_SIZE_K(768) >;
+		};
+
+		bootanimation: partition@d0000 {
+			reg = < 0xd0000 DT_SIZE_K(192) >;
+		};
+
+		user_sketch: partition@100000 {
+			reg = < 0x100000 DT_SIZE_K(768) >;
+		};
+
+		storage_partition: partition@1c0000 {
+			reg = < 0x1c0000 DT_SIZE_K(256) >;
+		};
+	};
+};
+
+
+/* Enable PWM timers */
+&timers1 {
+	status = "okay";
+	st,prescaler = <63>;
+
+	pwm1: pwm {
+		status = "okay";
+		/* tim1_etr_pa12 is not available for PWM */
+		/* Currently only the pins marked with ~ on the pin headers are enabled */
+		pinctrl-0 = <&tim1_ch4_pa11 &tim1_ch3n_pb15  &tim1_ch2n_pb14 &tim1_ch1n_pb13>;
+		pinctrl-names = "default";
+	};
+};
+
+/* Currently only the pins marked with ~ on the pin headers are enabled */
+/* PB10 and PB11 conflict with I2C configuation */
+&timers2 {
+	status = "okay";
+	st,prescaler = <4>;
+
+	pwm2: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim2_ch2_pb3 &tim2_ch3_pb10 &tim2_ch4_pb11>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers3 {
+	status = "okay";
+	st,prescaler = <4>;
+
+	pwm3: pwm {
+		status = "okay";
+		/* Currently only the pins marked with ~ on the pin headers are enabled */
+		pinctrl-0 = <&tim3_ch3_pb0 &tim3_ch4_pb1 &tim3_ch1_pb4>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers4 {
+	status = "okay";
+	st,prescaler = <4>;
+
+	pwm4: pwm {
+		status = "okay";
+		/* PB6 PB7 not usable for PWM until dynamic pin muxing works */
+		/* Currently only the pins marked with ~ on the pin headers are enabled */
+		pinctrl-0 = <&tim4_ch3_pb8 &tim4_ch4_pb9 /*&tim4_ch1_pb6 &tim4_ch2_pb7*/>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers5 {
+    status = "okay";
+	st,prescaler = <4>;
+
+    pwm5: pwm {
+        status = "okay";
+        pinctrl-0 = <&tim5_ch1_ph10 &tim5_ch2_ph11 &tim5_ch3_ph12>;
+        pinctrl-names = "default";
+    };
+};
+
+/* Currently only the pins marked with ~ on the pin headers are enabled */
+&timers8 {
+	status = "okay";
+	st,prescaler = <63>;
+
+	pwm8: pwm {
+		status = "okay";
+		pinctrl-0 = <&tim8_ch4n_pb2>;
+		pinctrl-names = "default";
+	};
+};
+
+&timers16 {
+	status = "okay";
+	st,prescaler = <4>;
+
+	counter_servo: counter {
+		status = "okay";
+		label = "SERVO_COUNTER";
+	};
+};
+
+
+&timers17 {
+	status = "okay";
+	st,prescaler = <4>;
+
+	counter_matrix: counter {
+		status = "okay";
+		label = "LED_MATRIX_COUNTER";
+	};
+};
+
+&spi3 {
+	device0: device@0 {
+        compatible = "zephyr,spi-slave";
+        reg = <0>;
+		zephyr,deferred-init;
+	};
+};
+
+&rtc {
+    status = "okay";
+    clocks = <&rcc STM32_CLOCK(APB3, 21)>,
+             <&rcc STM32_SRC_LSE RTC_SEL(1)>;
+};
+
+&fdcan1 {
+	status = "okay";
+	pinctrl-0 = <&fdcan1_rx_pa11 &fdcan1_tx_pa12>;
+	pinctrl-names = "default";
+	clocks = <&rcc STM32_CLOCK_BUS_APB1_2 0x00000200>,
+		 <&rcc STM32_SRC_PLL1_Q FDCAN1_SEL(1)>;
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&gpiob 7 GPIO_ACTIVE_HIGH>, /* D0 - PB7 */
+				    <&gpiob 6 GPIO_ACTIVE_HIGH>, /* D1 - PB6 */
+				    <&gpiob 3 GPIO_ACTIVE_HIGH>, /* D2 - PB3 */
+				    <&gpiob 0 GPIO_ACTIVE_HIGH>, /* D3 - PB0 */
+				    <&gpioa 12 GPIO_ACTIVE_HIGH>, /* D4 - PA12 */
+				    <&gpioa 11 GPIO_ACTIVE_HIGH>, /* D5 - PA11 */
+				    <&gpiob 1 GPIO_ACTIVE_HIGH>, /* D6 - PB1 */
+				    <&gpiob 2 GPIO_ACTIVE_HIGH>, /* D7 - PB2 */
+				    <&gpiob 4 GPIO_ACTIVE_HIGH>, /* D8 - PB4 */
+				    <&gpiob 8 GPIO_ACTIVE_HIGH>, /* D9 - PB8 */
+				    <&gpiob 9 GPIO_ACTIVE_HIGH>, /* D10 - PB9 */
+				    <&gpiob 15 GPIO_ACTIVE_HIGH>, /* D11 - PB15 */
+				    <&gpiob 14 GPIO_ACTIVE_HIGH>, /* D12 - PB14 */
+				    <&gpiob 13 GPIO_ACTIVE_HIGH>, /* D13 - PB13 */
+
+					/* ADCs */
+				    <&gpioa 4 GPIO_ACTIVE_HIGH>, /* A0 - PA4 */
+				    <&gpioa 5 GPIO_ACTIVE_HIGH>, /* A1 - PA5 */
+				    <&gpioa 6 GPIO_ACTIVE_HIGH>, /* A2 - PA6 */
+				    <&gpioa 7 GPIO_ACTIVE_HIGH>, /* A3 - PA7 */
+				    <&gpioc 1 GPIO_ACTIVE_HIGH>, /* A4 - PC1 */
+				    <&gpioc 0 GPIO_ACTIVE_HIGH>, /* A5 - PC0 */
+
+				    <&gpiob 11 GPIO_ACTIVE_HIGH>,  /* D20 - PB11 */
+				    <&gpiob 10 GPIO_ACTIVE_HIGH>,  /* D21 - PB10 */
+
+				    <&gpioc 2 GPIO_ACTIVE_HIGH>,        /* JSPI */
+				    <&gpioc 3 GPIO_ACTIVE_HIGH>,
+				    <&gpiod 1 GPIO_ACTIVE_HIGH>,
+
+				    <&gpioc 6 GPIO_ACTIVE_HIGH>,	/* JMISC */
+				    <&gpiod 2 GPIO_ACTIVE_HIGH>,
+				    <&gpioc 7 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 2 GPIO_ACTIVE_HIGH>,
+				    <&gpioc 8 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 3 GPIO_ACTIVE_HIGH>,
+				    <&gpioc 9 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 5 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 4 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 6 GPIO_ACTIVE_HIGH>,
+				    <&gpioi 4 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 7 GPIO_ACTIVE_HIGH>,
+				    <&gpioi 6 GPIO_ACTIVE_HIGH>,
+				    <&gpioe 8 GPIO_ACTIVE_HIGH>,
+				    <&gpioi 7 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 14 GPIO_ACTIVE_HIGH>,
+				    <&gpiod 9 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 15 GPIO_ACTIVE_HIGH>,
+				    <&gpioi 5 GPIO_ACTIVE_HIGH>,
+				    <&gpioa 3 GPIO_ACTIVE_HIGH>,
+				    <&gpiod 8 GPIO_ACTIVE_HIGH>,
+				    <&gpioa 0 GPIO_ACTIVE_HIGH>,
+				    <&gpioa 8 GPIO_ACTIVE_HIGH>,
+				    <&gpioa 1 GPIO_ACTIVE_HIGH>,
+				    <&gpioa 10 GPIO_ACTIVE_HIGH>,
+
+				    <&gpioh 10 GPIO_ACTIVE_HIGH>,        /* LEDs */
+				    <&gpioh 11 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 12 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 13 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 14 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 15 GPIO_ACTIVE_HIGH>,
+
+				    <&gpiof 0 GPIO_ACTIVE_HIGH>,        /* LED matrix */
+				    <&gpiof 1 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 2 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 3 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 4 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 5 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 6 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 7 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 8 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 9 GPIO_ACTIVE_HIGH>,
+				    <&gpiof 10 GPIO_ACTIVE_HIGH>,
+				    <&gpiog 13 GPIO_ACTIVE_HIGH>,       /* Internal SPI RDY */
+				    <&gpioa 2 GPIO_ACTIVE_HIGH>,        /* Analog switch for VREF */
+				    <&gpioh 3 GPIO_ACTIVE_HIGH>;        /* BOOT0 */
+
+		builtin-led-gpios = <&gpioh 10 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 11 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 12 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 13 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 14 GPIO_ACTIVE_HIGH>,
+				    <&gpioh 15 GPIO_ACTIVE_HIGH>;
+
+		/* PWM pin mapping - Digital pins with their timer channels */
+		/* Currently only the pins marked with ~ on the pin headers are enabled */
+		pwm-pin-gpios =	
+				/*<&gpiob 7 0>,*/    /* D0/PB6 - TIM4_CH2 */
+				/*<&gpiob 6 0>,*/    /* D1/PB6 - TIM4_CH1 */
+				<&gpiob 3 0>,    /* D2/PB3 - TIM2_CH2 */
+				<&gpiob 0 0>,    /* D3/PB0 - TIM3_CH3 */
+				<&gpioa 11 0>,   /* D5/PA11 - TIM1_CH4 */
+				<&gpiob 1 0>,    /* D6/PB1 - TIM3_CH4 */
+				<&gpiob 2 0>,    /* D7/PB2 - TIM8_CH4N */
+				<&gpiob 4 0>,    /* D8/PB4 - TIM3_CH1 */
+				<&gpiob 8 0>,    /* D9/PB8 - TIM4_CH3 */
+				<&gpiob 9 0>,    /* D10/PB9 - TIM4_CH4 */
+				<&gpiob 15 0>,   /* D11/PB15 - TIM1_CH3N */
+				<&gpiob 14 0>,   /* D12/PB14 - TIM1_CH2N */
+				<&gpiob 13 0>,   /* D13/PB13 - TIM1_CH1N */
+				<&gpiob 11 0>,   /* D20/PB11 - TIM2_CH4 */
+				<&gpiob 10 0>,   /* D21/PB10 - TIM2_CH3 */
+				<&gpioh 10 0>,   /* LED3_R - TIM5_CH1 */
+				<&gpioh 11 0>,   /* LED3_G - TIM5_CH2 */
+				<&gpioh 12 0>;   /* LED3_B - TIM5_CH3 */
+
+		adc-pin-gpios =	<&gpioa 4 0>,
+					<&gpioa 5 0>,
+					<&gpioa 6 0>,
+					<&gpioa 7 0>,
+					<&gpioc 1 0>,
+					<&gpioc 0 0>;
+
+		arduino,router-serial = <&lpuart1>; /* 'Serial' is provided by the Monitor */
+		serials = <&usart1>, <&lpuart1>;
+		cans = <&fdcan1>;
+		i2cs = <&i2c2>, <&i2c4>, <&i2c3>;
+		spis = <&spi2>, <&spi3>;
+		/* PWM mapping for the digital pins  */
+		/* Currently only the pins marked with ~ on the pin headers are enabled */
+		pwms = 
+		       /*<&pwm4 2 PWM_HZ(500) PWM_POLARITY_NORMAL>,*/   /* D0/PB7 → TIM4_CH2 */
+		       /*<&pwm4 1 PWM_HZ(500) PWM_POLARITY_NORMAL>,*/   /* D1/PB6 → TIM4_CH1 */
+		       <&pwm2 2 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D2/PB3 → TIM2_CH2 */
+		       <&pwm3 3 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D3/PB0 → TIM3_CH3 */
+		       <&pwm1 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D5/PA11 → TIM1_CH4 */
+		       <&pwm3 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D6/PB1 → TIM3_CH4 */
+		       <&pwm8 4 PWM_HZ(500) (PWM_POLARITY_NORMAL | STM32_PWM_COMPLEMENTARY)>, /* D7/PB2 → TIM8_CH4N */
+		       <&pwm3 1 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D8/PB4 → TIM3_CH1 */
+		       <&pwm4 3 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D9/PB8 → TIM4_CH3 */
+		       <&pwm4 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D10/PB9 → TIM4_CH4 */
+		       <&pwm1 3 PWM_HZ(500) (PWM_POLARITY_NORMAL | STM32_PWM_COMPLEMENTARY)>, /* D11/PB15 → TIM1_CH3N */
+		       <&pwm1 2 PWM_HZ(500) (PWM_POLARITY_NORMAL | STM32_PWM_COMPLEMENTARY)>, /* D12/PB14 → TIM1_CH2N */
+		       <&pwm1 1 PWM_HZ(500) (PWM_POLARITY_NORMAL | STM32_PWM_COMPLEMENTARY)>, /* D13/PB13 → TIM1_CH1N */
+		       <&pwm2 4 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D20/PB11 → TIM2_CH4 */
+		       <&pwm2 3 PWM_HZ(500) PWM_POLARITY_NORMAL>,   /* D21/PB10 → TIM2_CH3 */
+		       <&pwm5 1 PWM_HZ(500) PWM_POLARITY_INVERTED>,   /* LED3_R/PH10 → TIM5_CH1 */
+		       <&pwm5 2 PWM_HZ(500) PWM_POLARITY_INVERTED>,   /* LED3_G/PH11 → TIM5_CH2 */
+		       <&pwm5 3 PWM_HZ(500) PWM_POLARITY_INVERTED>;   /* LED3_B/PH12 → TIM5_CH3 */
+
+		control-gpios = <&gpiog 13 GPIO_ACTIVE_HIGH>;    /* Internal SPI RDY */
+		analog-switch-gpios = <&gpioa 2 GPIO_ACTIVE_HIGH>;    /* Analog switch for VREF */
+
+		io-channels =	<&adc1 9>,     /* A0 - PA4 */
+				<&adc1 10>,   /* A1 - PA5 */
+				<&adc1 11>,   /* A2 - PA6 */
+				<&adc1 12>,   /* A3 - PA7 */
+				<&adc1 2>,    /* A4 - PC1 */
+				<&adc1 1>;    /* A5 - PC0 */
+
+		dac-pin-gpios =	<&gpioa 4 0>,
+				<&gpioa 5 0>;
+
+		dac = <&dac1>;
+		dac-channels = <1>, <2>;
+		dac-resolution = <12>;
+	};
+};

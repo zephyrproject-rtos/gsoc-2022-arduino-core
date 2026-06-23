@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 / {
 	zephyr,user {
 		digital-pin-gpios = <&arduino_header 6 0>,	/* Digital */
