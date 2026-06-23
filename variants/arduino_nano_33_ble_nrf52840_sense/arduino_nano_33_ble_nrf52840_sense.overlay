@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-&zephyr_udc0 {
-	board_cdc_acm_uart: board_cdc_acm_uart {
-		compatible = "zephyr,cdc-acm-uart";
-	status = "okay";
-	};
-};
+//&zephyr_udc0 {
+//	board_cdc_acm_uart: board_cdc_acm_uart {
+//		compatible = "zephyr,cdc-acm-uart";
+//	status = "okay";
+//	};
+//};
 
 &flash0 {
 	partitions {
@@ -49,14 +49,14 @@
 };
 
 /{
-	chosen {
-		zephyr,log-uart = &log_uarts;
-	};
-
-	log_uarts: log_uarts {
-		compatible = "zephyr,log-uart";
-		uarts = <&uart0 &board_cdc_acm_uart>;
-	};
+//	chosen {
+//		zephyr,log-uart = &log_uarts;
+//	};
+//
+//	log_uarts: log_uarts {
+//		compatible = "zephyr,log-uart";
+//		uarts = <&uart0 &board_cdc_acm_uart>;
+//	};
 };
 
 
@@ -135,7 +135,7 @@
 				<&adc 4>,
 				<&adc 1>;
 
-		cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
+		//cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
 		serials = <&uart0>; /* 'Serial1' onwards */
 		i2cs = <&arduino_nano_i2c>, <&i2c1>;
 	};
