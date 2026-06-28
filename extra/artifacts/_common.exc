@@ -1,0 +1,10 @@
+# Copyright (c) Arduino s.r.l. and/or its affiliated companies
+# SPDX-License-Identifier: Apache-2.0
+
+# This file contains all the files that must *never* be added to core package
+# archives. Excluding a file here has precedence over files listed in the
+# 'package.inc' list or automatically included by the 'package.sh' script.
+
+CMakeLists.txt
+llext-edk/Makefile.cflags
+llext-edk/cmake.cflags

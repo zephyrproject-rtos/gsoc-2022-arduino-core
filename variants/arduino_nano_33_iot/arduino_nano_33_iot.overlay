@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <zephyr/dt-bindings/adc/adc.h>
 
 / {

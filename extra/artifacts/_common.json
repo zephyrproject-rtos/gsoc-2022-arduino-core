@@ -1,0 +1,62 @@
+{
+  "name": "",
+  "architecture": "",
+  "version": "",
+  "category": "",
+  "url": "",
+  "archiveFileName": "",
+  "checksum": "",
+  "size": "",
+  "help": {
+    "online": "https://www.arduino.cc/en/Reference/HomePage"
+  },
+  "boards": [],
+  "libraryDependencies": [],
+  "toolsDependencies": [
+    {
+      "packager": "zephyr",
+      "name": "arm-zephyr-eabi",
+      "version": "0.16.8"
+    },
+    {
+      "packager": "arduino",
+      "name": "dfu-util",
+      "version": "0.11.0-arduino5"
+    },
+    {
+      "packager": "arduino",
+      "name": "bossac",
+      "version": "1.9.1-arduino2"
+    },
+    {
+      "packager": "arduino",
+      "name": "zephyr-sketch-tool",
+      "version": "0.3.0"
+    },
+    {
+      "packager": "arduino",
+      "name": "sync-zephyr-artifacts",
+      "version": "0.2.1"
+    },
+    {
+      "packager": "arduino",
+      "name": "adb",
+      "version": "32.0.0"
+    },
+    {
+      "packager": "arduino",
+      "name": "remoteocd",
+      "version": "0.0.4-rc.4"
+    },
+    {
+      "packager": "SiliconLabs",
+      "name": "openocd",
+      "version": "0.12.0-arduino1-static"
+    },
+    {
+      "packager": "arduino",
+      "name": "gen-rodata-ld",
+      "version": "0.1.1"
+    }
+  ]
+}

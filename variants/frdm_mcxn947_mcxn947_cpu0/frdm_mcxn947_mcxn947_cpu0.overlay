@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&zephyr_udc0 {
+	status = "okay";
+	board_cdc_acm_uart: board_cdc_acm_uart {
+		compatible = "zephyr,cdc-acm-uart";
+		status = "okay";
+	};
+};
+
+&flash {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		user_sketch: partition@F0000 {
+			reg = <0xF0000 DT_SIZE_K(56)>;
+		};
+	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>, <&gpio0 27 GPIO_ACTIVE_LOW>, <&gpio1 2 GPIO_ACTIVE_LOW>;
+		builtin-led-gpios = <&gpio0 10 GPIO_ACTIVE_LOW>, <&gpio0 27 GPIO_ACTIVE_LOW>, <&gpio1 2 GPIO_ACTIVE_LOW>;
+		cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
+		serials = <&flexcomm4_lpuart4>; /* 'Serial1' onwards */
+		i2cs = <&flexcomm2_lpi2c2>;
+		spis = <&flexcomm1_lpspi1>;
+	};
+};

@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#ifndef NEW_H
+#define NEW_H
+
+#include <stdlib.h>
+//#pragma long_calls
+
+namespace std {
+  struct nothrow_t {};
+  extern const nothrow_t nothrow;
+
+  // These are not actually implemented, to prevent overhead and
+  // complexity. They are still declared to allow implementing
+  // them in user code if needed.
+  typedef void (*new_handler)();
+  new_handler set_new_handler(new_handler new_p) noexcept;
+  new_handler get_new_handler() noexcept;
+
+  // This is normally declared in various headers that we do not have
+  // available, so just define it here. We could also use ::size_t
+  // below, but then anyone including <new> can no longer assume
+  // std::size_t is available.
+  using size_t = ::size_t;
+} // namespace std
+
+void * operator new(std::size_t size);
+void * operator new[](std::size_t size);
+
+#if __cplusplus >= 201703L
+void * operator new(std::size_t count, std::align_val_t al);
+void * operator new[](std::size_t count, std::align_val_t al);
+
+void* operator new(std::size_t count, std::align_val_t al,
+                      const std::nothrow_t& tag) noexcept;
+void* operator new[](std::size_t count, std::align_val_t al,
+                      const std::nothrow_t& tag) noexcept;
+#endif
+
+void * operator new(std::size_t size, const std::nothrow_t tag) noexcept;
+void * operator new[](std::size_t size, const std::nothrow_t& tag) noexcept;
+
+void * operator new(std::size_t size, void *place) noexcept;
+void * operator new[](std::size_t size, void *place) noexcept;
+
+
+void operator delete(void * ptr) noexcept;
+void operator delete[](void * ptr) noexcept;
+
+#if __cplusplus >= 201402L
+void operator delete(void* ptr, std::size_t size) noexcept;
+void operator delete[](void * ptr, std::size_t size) noexcept;
+#endif // __cplusplus >= 201402L
+
+void operator delete(void* ptr, const std::nothrow_t& tag) noexcept;
+void operator delete[](void* ptr, const std::nothrow_t& tag) noexcept;
+
+void operator delete(void* ptr, void* place) noexcept;
+void operator delete[](void* ptr, void* place) noexcept;
+
+#endif
+
