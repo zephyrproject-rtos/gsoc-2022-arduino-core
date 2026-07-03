@@ -1,0 +1,117 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* Arduino user sketch partition */
+user_sketch: &slot1_partition {};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&gpioa 4 0>, /* D0 */
+				<&gpioa 5 0>, /* D1 */
+				<&gpioa 3 0>, /* D2 */
+				<&gpioc 6 0>, /* D3 */
+				<&gpioc 7 0>, /* D4 */
+				<&gpioc 8 0>, /* D5 */
+				<&gpioc 9 0>, /* D6 */
+				<&gpiod 2 0>, /* D7 */
+				<&gpiod 3 0>, /* D8 */
+				<&gpiod 4 0>, /* D9 */
+				<&gpiod 5 0>, /* D10 */
+				<&gpioa 9 0>, /* D11 */
+				<&gpioa 8 0>, /* D12 */
+				<&gpiob 4 0>, /* D13 */
+				<&gpiob 0 0>, /* A0 */
+				<&gpiob 2 0>, /* A1 */
+				<&gpiob 5 0>, /* A2 */
+				<&gpioc 0 0>, /* A3 */
+				<&gpioa 6 0>, /* A4 */
+				<&gpioa 7 0>, /* A5 */
+				<&gpiob 1 0>, /* A6 */
+				<&gpiob 3 0>, /* A7 */
+				<&gpioc 1 0>, /* 22 LED R */
+				<&gpioc 2 0>, /* 23 LED G */
+				<&gpioc 3 0>, /* 24 LED B */
+				<&gpioa 0 0>, /* 25 Button */
+				<&gpioc 4 0>, /* 26 Serial Tx */
+				<&gpioc 5 0>; /* 27 Serial Rx */
+
+		builtin-led-gpios = <&gpioc 2 GPIO_ACTIVE_LOW>, /* 23 LED G */
+							<&gpioc 1 GPIO_ACTIVE_LOW>, /* 22 LED R */
+							<&gpioc 2 GPIO_ACTIVE_LOW>, /* 23 LED G */
+							<&gpioc 3 GPIO_ACTIVE_LOW>; /* 24 LED B */
+
+		pwm-pin-gpios =	<&gpiob 0 0>, /* A0 */
+						<&gpiob 2 0>, /* A1 */
+						<&gpiob 5 0>; /* A2 */
+
+		pwms = <&timer0_pwm 0 255 PWM_POLARITY_INVERTED>,
+				<&timer0_pwm 1 255 PWM_POLARITY_INVERTED>,
+				<&timer0_pwm 2 255 PWM_POLARITY_INVERTED>;
+
+		serials = <&usart0>;
+		i2cs = <&i2c0>;
+		spis = <&eusart1>;
+	};
+};
+
+&i2c0 {
+	pinctrl-0 = <&i2c0_default>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+	status = "okay";
+};
+
+&pinctrl {
+	eusart1_default: eusart1_default {
+		group0 {
+			pins = <EUSART1_TX_PA9>, <EUSART1_SCLK_PB4>;
+			drive-push-pull;
+			output-high;
+		};
+
+		group1 {
+			pins = <EUSART1_RX_PA8>;
+			input-enable;
+			silabs,input-filter;
+		};
+	};
+};
+
+&eusart1 {
+	compatible = "silabs,eusart-spi";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	clock-frequency = <4000000>;
+	pinctrl-0 = <&eusart1_default>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	cs-gpios = <&gpiod 5 GPIO_ACTIVE_LOW>;
+};
+
+&timer0 {
+	status = "okay";
+
+	timer0_pwm: pwm {
+		pinctrl-0 = <&timer0_default>;
+		pinctrl-names = "default";
+		status = "okay";
+	};
+};
+
+&pinctrl {
+	timer0_default: timer0_default {
+		group0 {
+			pins = <TIMER0_CC0_PB0>, <TIMER0_CC1_PB2>, <TIMER0_CC2_PB5>;
+			drive-push-pull;
+			output-high;
+		};
+	};
+};
+
+&sysrtc0 {
+	status = "okay";
+};
