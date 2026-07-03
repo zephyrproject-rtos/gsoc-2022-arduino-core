@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/adc/adc.h>
+
+&iic1 {
+	status = "okay";
+};
+
+&uart9 {
+	status = "okay";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		user_sketch: partition@32000 {
+			reg = <0x32000 DT_SIZE_K(56)>;
+		};
+	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&ioport6 0 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 14 GPIO_ACTIVE_HIGH>,
+				    <&ioport1 7 GPIO_ACTIVE_HIGH>;
+
+		builtin-led-gpios = <&ioport6 0 GPIO_ACTIVE_HIGH>,
+				    <&ioport4 14 GPIO_ACTIVE_HIGH>,
+				    <&ioport1 7 GPIO_ACTIVE_HIGH>;
+
+		serials = <&uart9>;
+		i2cs = <&iic1>;
+		spis = <&spi0>;
+	};
+};
