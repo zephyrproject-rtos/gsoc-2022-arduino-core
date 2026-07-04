@@ -63,6 +63,15 @@ private:
 #define DECLARE_EXTERN_SPI_N(n, p, i)                                                              \
 	COND_CODE_1(ARDUINO_SPI_DEFINED_##i, (DECL_EXTERN_SPI_0(i);), (DECL_EXTERN_SPI_N(i);))
 
+#undef SPI1
+#undef SPI2
+#undef SPI3
+#undef SPI4
+#undef SPI5
+#undef SPI6
+#undef SPI7
+#undef SPI8
+
 /* Declare SPI, SPI1, SPI2, ... */
 DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), spis, DECLARE_EXTERN_SPI_N)
 
