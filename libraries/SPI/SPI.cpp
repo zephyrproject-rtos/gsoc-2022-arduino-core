@@ -8,73 +8,46 @@
 #include "zephyrInternal.h"
 #include <zephyr/kernel.h>
 
-/* Serial Peripheral Control Register */
-uint8_t SPCR;
-
 arduino::ZephyrSPI::ZephyrSPI(const struct device *spi) : spi_dev(spi) {
 }
 
 uint8_t arduino::ZephyrSPI::transfer(uint8_t data) {
-	int ret;
-	uint8_t rx;
-	const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
-	const struct spi_buf_set tx_buf_set = {
-		.buffers = &tx_buf,
-		.count = 1,
-	};
-	const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
-	const struct spi_buf_set rx_buf_set = {
-		.buffers = &rx_buf,
-		.count = 1,
-	};
-
-	ret = spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
-	if (ret < 0) {
+	uint8_t rx = data;
+	if (transfer(&rx, sizeof(rx), &config) < 0) {
 		return 0;
 	}
-
 	return rx;
 }
 
 uint16_t arduino::ZephyrSPI::transfer16(uint16_t data) {
-	int ret;
-	uint16_t rx;
-	const struct spi_buf tx_buf = {.buf = &data, .len = sizeof(data)};
+	uint16_t rx = data;
+	if (transfer(&rx, sizeof(rx), &config16) < 0) {
+		return 0;
+	}
+	return rx;
+}
+
+void arduino::ZephyrSPI::transfer(void *buf, size_t count) {
+	int ret = transfer(buf, count, &config);
+	(void)ret;
+}
+
+int arduino::ZephyrSPI::transfer(void *buf, size_t len, const struct spi_config *config) {
+	const struct spi_buf tx_buf = {.buf = buf, .len = len};
 	const struct spi_buf_set tx_buf_set = {
 		.buffers = &tx_buf,
 		.count = 1,
 	};
-	const struct spi_buf rx_buf = {.buf = &rx, .len = sizeof(rx)};
+
+	const struct spi_buf rx_buf = {.buf = buf, .len = len};
 	const struct spi_buf_set rx_buf_set = {
 		.buffers = &rx_buf,
 		.count = 1,
 	};
 
-	ret = spi_transceive(spi_dev, &config, &tx_buf_set, &rx_buf_set);
-	if (ret < 0) {
-		return 0;
-	}
+	last_config = config;
 
-	return rx;
-}
-
-void arduino::ZephyrSPI::transfer(void *buf, size_t count) {
-	int ret;
-	const struct spi_buf tx_buf = {.buf = buf, .len = count};
-	const struct spi_buf_set tx_buf_set = {
-		.buffers = &tx_buf,
-		.count = 1,
-	};
-
-	ret = spi_write(spi_dev, &config, &tx_buf_set);
-	if (ret < 0) {
-		return;
-	}
-
-	ret = spi_read(spi_dev, &config, &tx_buf_set);
-	if (ret < 0) {
-		return;
-	}
+	return spi_transceive(spi_dev, config, &tx_buf_set, &rx_buf_set);
 }
 
 void arduino::ZephyrSPI::usingInterrupt(int interruptNumber) {
@@ -92,16 +65,57 @@ void arduino::ZephyrSPI::notUsingInterrupt(int interruptNumber) {
 }
 
 void arduino::ZephyrSPI::beginTransaction(SPISettings settings) {
-	memset(&config, 0, sizeof(config));
-	config.frequency = settings.getClockFreq();
-	config.operation = ((settings.getBitOrder() ^ 1) << 4) | (settings.getDataMode() << 1) |
-					   ((SPCR >> MSTR) & 1) | SPI_WORD_SET(8);
+	uint32_t mode = SPI_HOLD_ON_CS;
+
+	// Set bus mode
+	switch (settings.getBusMode()) {
+	case SPI_CONTROLLER:
+		break;
+	case SPI_PERIPHERAL:
+		mode |= SPI_OP_MODE_SLAVE;
+		break;
+	}
+
+	// Set data format
+	switch (settings.getBitOrder()) {
+	case LSBFIRST:
+		mode |= SPI_TRANSFER_LSB;
+		break;
+	case MSBFIRST:
+		mode |= SPI_TRANSFER_MSB;
+		break;
+	}
+
+	// Set data mode
+	switch (settings.getDataMode()) {
+	case SPI_MODE0:
+		break;
+	case SPI_MODE1:
+		mode |= SPI_MODE_CPHA;
+		break;
+	case SPI_MODE2:
+		mode |= SPI_MODE_CPOL;
+		break;
+	case SPI_MODE3:
+		mode |= SPI_MODE_CPOL | SPI_MODE_CPHA;
+		break;
+	}
+
+	// Set SPI configuration structure for 8-bit transfers
+	memset(&config, 0, sizeof(struct spi_config));
+	config.operation = mode | SPI_WORD_SET(8);
+	config.frequency = max((uint32_t)SPI_MIN_CLOCK_FREQUENCY, settings.getClockFreq());
+
+	// Set SPI configuration structure for 16-bit transfers
+	memset(&config16, 0, sizeof(struct spi_config));
+	config16.operation = mode | SPI_WORD_SET(16);
+	config16.frequency = max((uint32_t)SPI_MIN_CLOCK_FREQUENCY, settings.getClockFreq());
 
 	detachInterrupt();
 }
 
 void arduino::ZephyrSPI::endTransaction(void) {
-	spi_release(spi_dev, &config);
+	spi_release(spi_dev, last_config);
 	attachInterrupt();
 }
 
