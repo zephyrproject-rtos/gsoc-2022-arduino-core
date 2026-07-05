@@ -13,6 +13,7 @@ if(NOT DEFINED ARDUINO_BUILD_PATH)
 
 zephyr_sources(zephyrSerial.cpp)
 zephyr_sources(zephyrCommon.cpp)
+zephyr_sources(USB.cpp)
 
 if(CONFIG_USE_ARDUINO_API_RUST_IMPLEMENTATION)
   zephyr_sources(zephyrPrint.cpp)
