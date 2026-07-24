@@ -157,6 +157,7 @@ void analogWriteResolution(int bits);
 #include <inlines.h>
 
 #ifdef __cplusplus
+#include <SerialUSB.h>
 #include <zephyrSerial.h>
 #include <strings.h>
 #include <api/itoa.h>
