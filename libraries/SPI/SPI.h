@@ -10,6 +10,14 @@
 #include <api/HardwareSPI.h>
 #include <zephyr/drivers/spi.h>
 
+#ifdef SPI
+#undef SPI
+#endif
+
+#ifdef SPI1
+#undef SPI1
+#endif
+
 #define SPR0 0
 #define SPR1 1
 #define CPHA 2
