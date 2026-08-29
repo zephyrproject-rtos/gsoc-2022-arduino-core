@@ -1,0 +1,138 @@
+/*
+ * Copyright (c) Arduino s.r.l. and/or its affiliated companies
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+&usart6 {
+	status = "okay";
+	pinctrl-0 = <&usart6_tx_pg14 &usart6_rx_pg9>;
+	pinctrl-names = "default";
+	current-speed = <115200>;
+};
+
+&usart3 {
+	status = "okay";
+};
+
+&adc1 {
+	status = "okay";
+};
+
+&adc2 {
+	status = "okay";
+};
+
+&adc3 {
+	status = "okay";
+};
+
+&rtc {
+    status = "okay";
+
+	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x10000000>,
+	         <&rcc STM32_SRC_LSE RTC_SEL(1)>;
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&i2c3 {
+	status = "okay";
+	pinctrl-0 = <&i2c3_scl_ph7 &i2c3_sda_ph8>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+/{
+	chosen {
+		zephyr,console = &usart6;
+		zephyr,shell-uart = &usart6;
+		zephyr,uart-mcumgr = &usart6;
+		zephyr,log-uart = &log_uarts;
+	};
+
+	log_uarts: log_uarts {
+		compatible = "zephyr,log-uart";
+		uarts = <&usart6 &board_cdc_acm_uart>;
+	};
+
+	/* used to overcome problems with _C analog pins */
+	gpioz: gpio@deadbeef {
+		compatible = "vnd,gpio";
+		gpio-controller;
+		reg = <0xdeadbeef 0x1000>;
+		#gpio-cells = <0x2>;
+		status = "okay";
+	};
+};
+
+&flash0 {
+	partitions {
+		user_sketch: partition@e0000 {
+			reg = <0x0E0000 0x20000>;
+		};
+	};
+};
+
+/ {
+	zephyr,user {
+		digital-pin-gpios = <&gpioi 6 0>,	/* Outputs */
+						<&gpioi 5 0>,
+						<&gpioi 7 0>,
+						<&gpioi 4 0>,
+						<&gpioi 0 0>,	/* LEDs */
+						<&gpioi 1 0>,
+						<&gpioi 3 0>,
+						<&gpioh 15 0>,
+						<&gpioh 12 0>,
+						<&gpioh 11 0>,
+						<&gpioe 5 0>,
+						<&gpioe 4 0>,	/* User button */
+						<&gpioz 0 0>,	/* Inputs */
+						<&gpioz 1 0>,
+						<&gpiof 12 0>,
+						<&gpiob 0 0>,
+						<&gpiof 10 0>,
+						<&gpiof 8 0>,
+						<&gpiof 6 0>,
+						<&gpiof 4 0>,
+						<&gpiog 8 0>,	/* bus detect */
+						<&gpiob 14 0>,  /* Modbus DE */
+						<&gpiob 13 0>;  /* Modbus RE */
+
+		builtin-led-gpios = <&gpioh 12 0>,
+						<&gpioh 11 0>,
+						<&gpioh 12 0>,
+                        <&gpioe 5 0>;
+
+		adc-pin-gpios =	<&gpioz 0 0>,
+					<&gpioz 1 0>,
+					<&gpiof 12 0>,
+					<&gpiob 0 0>,
+					<&gpiof 10 0>,
+					<&gpiof 8 0>,
+					<&gpiof 6 0>,
+					<&gpiof 4 0>;
+
+		cdc-acm-serial = <&board_cdc_acm_uart>; /* 'Serial' object is managed by SerialUSB */
+		serials = <&usart3>, <&usart6>; /* 'Serial1' onwards */
+		i2cs = <&i2c3>, <&i2c1>;
+
+		io-channels =	<&adc1 0>,
+				<&adc3 0>,
+				<&adc1 6>,
+				<&adc2 9>,
+				<&adc3 6>,
+				<&adc3 7>,
+				<&adc3 8>,
+				<&adc3 9>;
+	};
+};
+
+/* Include common flash filesystem configuration */
+#include "../common/arduino_flash_fs.dtsi"
