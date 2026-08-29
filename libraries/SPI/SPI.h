@@ -10,6 +10,9 @@
 #include <api/HardwareSPI.h>
 #include <zephyr/drivers/spi.h>
 
+#undef SPI
+#undef SPI1
+
 #define SPR0 0
 #define SPR1 1
 #define CPHA 2
@@ -18,6 +21,14 @@
 #define DORD 5
 #define SPE  6
 #define SPIE 7
+
+#define SPI_HAS_PERIPHERAL_MODE (1)
+
+// TODO:
+// This depends on the clock settings, can't be used for all boards.
+#ifndef SPI_MIN_CLOCK_FREQUENCY
+#define SPI_MIN_CLOCK_FREQUENCY 1000000
+#endif
 
 /* Count the number of GPIOs for limit of number of interrupts */
 #define INTERRUPT_HELPER(n, p, i) 1
@@ -48,8 +59,13 @@ public:
 	virtual void end();
 
 private:
+	int transfer(void *buf, size_t len, const struct spi_config *config);
+
+protected:
 	const struct device *spi_dev;
 	struct spi_config config;
+	struct spi_config config16;
+	const struct spi_config *last_config;
 	int interrupt[INTERRUPT_COUNT];
 	size_t interrupt_pos = 0;
 };
@@ -75,7 +91,6 @@ extern arduino::ZephyrSPI SPI;
 #endif
 
 /* Serial Peripheral Control Register */
-extern uint8_t SPCR;
 
 using arduino::SPI_MODE0;
 using arduino::SPI_MODE1;
