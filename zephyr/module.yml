@@ -420,3 +420,27 @@ blobs:
     url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/api/itoa.h
     description: "Arduino Core API Header"
     doc-url: https://raw.githubusercontent.com/arduino/ArduinoCore-API/refs/tags/1.5.2/README.md
+  - path: airoc-firmware/4343WA1_bin.c
+    sha256: 9dbefb3e549c70370acbc75cb9492b8ea266818aa7b3d2b41057c86b61bdbd11
+    type: img
+    version: '0.56.0'
+    license-path: zephyr/blobs/airoc-firmware/LICENSE
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.56.0/loader/blobs/4343WA1_bin.c
+    description: "Wi-Fi Firmware for CYW4343W Device"
+  - path: airoc-firmware/4343WA1_clm_blob.c
+    sha256: cf465fa5577bdcd1a75a154d346097dc847b1fcda88ab2e985c28f28fc580f59
+    type: img
+    version: '0.56.0'
+    license-path: zephyr/blobs/airoc-firmware/LICENSE
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.56.0/loader/blobs/4343WA1_clm_blob.c
+    description: "Wi-Fi Firmware for CYW4343W Device"
+  - path: airoc-firmware/wifi_nvram_image.h
+    sha256: cd53540b859db757cc35075094c6d5c3d951d51d510e5378654998e5c44a5607
+    type: img
+    version: '0.56.0'
+    license-path: zephyr/blobs/airoc-firmware/LICENSE
+    click-through: true
+    url: https://raw.githubusercontent.com/arduino/ArduinoCore-zephyr/refs/tags/0.56.0/loader/blobs/wifi_nvram_image.h
+    description: "Wi-Fi Firmware for CYW4343W Device"
